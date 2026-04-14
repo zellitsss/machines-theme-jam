@@ -1,49 +1,55 @@
 import {GameObj} from "kaplay";
 
-export interface Cell {
+export interface CellData {
+    x: number | null;
+    y: number | null;
+    type: string;
+    rot: number;
     canPlace: boolean;
     canClear: boolean;
     canRotate: boolean;
+}
 
-    rotation: number; // 0|1|2|3 multiplicand of 90 degree
-    type: string;
+export interface Cell extends CellData {
     obj: GameObj | null;
 }
 
 export const CellFactory = {
-    Blocked: (): Cell => ({
-        canPlace: false,
-        canClear: false,
-        canRotate: false,
-        rotation: 0,
-        type: '',
-        obj: null
-    }),
-
-    LockedFixed: (type: string, rotation: number): Cell => ({
-        canPlace: false,
-        canClear: false,
-        canRotate: false,
-        type,
-        rotation,
-        obj: null
-    }),
-
     Freedom: (): Cell => ({
         canPlace: true,
         canClear: true,
         canRotate: true,
         type: '',
-        rotation: 0,
-        obj: null
+        rot: 0,
+        obj: null,
+        x: null,
+        y: null
     }),
-
-    LockedRotate: (type: string, rotation: number): Cell => ({
-        canPlace: false,
-        canClear: false,
-        canRotate: true,
-        type,
-        rotation,
-        obj: null
-    })
+//
+//     Blocked: (): Cell => ({
+//         canPlace: false,
+//         canClear: false,
+//         canRotate: false,
+//         rot: 0,
+//         type: '',
+//         obj: null
+//     }),
+//
+//     LockedFixed: (type: string, rot: number): Cell => ({
+//         canPlace: false,
+//         canClear: false,
+//         canRotate: false,
+//         type,
+//         rot,
+//         obj: null
+//     }),
+//
+//     LockedRotate: (type: string, rotation: number): Cell => ({
+//         canPlace: false,
+//         canClear: false,
+//         canRotate: true,
+//         type,
+//         rotation,
+//         obj: null
+//     })
 }

@@ -1,6 +1,7 @@
 import {KAPLAYCtx} from 'kaplay';
 import Grid from '../grid';
 import {PipeDictionary} from '../pipe-dictionary';
+import {LevelData} from "../LevelData";
 
 const GRID_COLS = 3;
 const GRID_ROWS = 5
@@ -30,14 +31,14 @@ export default function createGameScene(k: KAPLAYCtx) {
         let grid = new Grid(GRID_COLS, GRID_ROWS);
         for (let x = 0; x < GRID_ROWS; x++) {
             for (let y = 0; y < GRID_COLS; y++) {
-                // TODO: may be we could fill with the background or whatever
+                
             }
         }
 
-        levelData.cells.forEach((cellDef: any) => {
+        (levelData as LevelData).cells.forEach((cellDef) => {
             let x = cellDef.x;
             let y = cellDef.y;
-            let sprite = PipeDictionary.get(cellDef.pipe)?.sprite;
+            let sprite = PipeDictionary.get(cellDef.type)?.sprite;
             let cell = grid.at(x, y);
             cell.obj = k.add([
                 k.pos((x + .5) * CELL_SIZE, (y + .5) * CELL_SIZE),

@@ -1,4 +1,4 @@
-import { Cell, CellFactory } from './cell';
+import {Cell, CellFactory} from './cell';
 
 export default class Grid {
     private matrix: Cell[][] = [];

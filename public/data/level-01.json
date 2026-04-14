@@ -5,65 +5,65 @@
         {
             "x": 0,
             "y": 0,
-            "pipe": "pipe-l",
+            "type": "pipe-l",
             "rot": 3
         },
         {
             "x": 1,
             "y": 0,
-            "pipe": "pipe-straight",
+            "type": "pipe-straight",
             "rot": 1
         },
         {
             "x": 2,
             "y": 0,
-            "pipe": "pipe-gate",
+            "type": "pipe-gate",
             "rot": 3
         },
         {
             "x": 0,
             "y": 1,
-            "pipe": "pipe-l",
+            "type": "pipe-l",
             "rot": 2
         },
         {
             "x": 1,
             "y": 1,
-            "pipe": "pipe-straight",
+            "type": "pipe-straight",
             "rot": 1
         },
         {
             "x": 2,
             "y": 1,
-            "pipe": "pipe-l"
+            "type": "pipe-l"
         },
         {
             "x": 2,
             "y": 2,
-            "pipe": "pipe-straight"
+            "type": "pipe-straight"
         },
         {
             "x": 0,
             "y": 3,
-            "pipe": "pipe-l",
+            "type": "pipe-l",
             "rot": 3
         },
         {
             "x": 1,
             "y": 3,
-            "pipe": "pipe-straight",
+            "type": "pipe-straight",
             "rot": 1
         },
         {
             "x": 2,
             "y": 3,
-            "pipe": "pipe-l",
+            "type": "pipe-l",
             "rot": 1
         },
         {
             "x": 0,
             "y": 4,
-            "pipe": "pipe-gate"
+            "type": "pipe-gate"
         }
     ]
 }
