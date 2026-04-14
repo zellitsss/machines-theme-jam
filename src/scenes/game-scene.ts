@@ -38,7 +38,8 @@ export default function createGameScene(k: KAPLAYCtx) {
             let x = cellDef.x;
             let y = cellDef.y;
             let sprite = PipeDictionary.get(cellDef.pipe)?.sprite;
-            grid.at(x, y).obj = k.add([
+            let cell = grid.at(x, y);
+            cell.obj = k.add([
                 k.pos((x + .5) * CELL_SIZE, (y + .5) * CELL_SIZE),
                 k.sprite(sprite ? sprite : "", {
                     width: CELL_SIZE,
@@ -46,7 +47,8 @@ export default function createGameScene(k: KAPLAYCtx) {
                 }),
                 k.rotate(cellDef.rot ? cellDef.rot * 90 : 0),
                 k.anchor("center")
-            ])
+            ]);
+            cell.type = cellDef.type;
         });
     }
 }
