@@ -13,4 +13,4 @@ k.loadSprite("bean", "sprites/bean.png");
 k.scene(NAME_MainMenu, createMainMenuScene(k));
 k.scene(NAME_Game, createGameScene(k));
 
-k.go(NAME_MainMenu);
+k.go(NAME_Game);
