@@ -1,12 +1,13 @@
-import { Pipe } from './pipe';
+import {GameObj} from "kaplay";
 
 export interface Cell {
     canPlace: boolean;
     canClear: boolean;
     canRotate: boolean;
 
-    rotation: number; // 0|1|2|3 multiplican of 90 degree
-    pipe: Pipe | null;
+    rotation: number; // 0|1|2|3 multiplicand of 90 degree
+    type: string;
+    obj: GameObj | null;
 }
 
 export const CellFactory = {
@@ -15,30 +16,34 @@ export const CellFactory = {
         canClear: false,
         canRotate: false,
         rotation: 0,
-        pipe: null
+        type: '',
+        obj: null
     }),
 
-    LockedFixed: (pipe: Pipe, rotation: number): Cell => ({
+    LockedFixed: (type: string, rotation: number): Cell => ({
         canPlace: false,
         canClear: false,
         canRotate: false,
-        pipe,
-        rotation
+        type,
+        rotation,
+        obj: null
     }),
 
     Freedom: (): Cell => ({
         canPlace: true,
         canClear: true,
         canRotate: true,
-        pipe: null,
-        rotation: 0
+        type: '',
+        rotation: 0,
+        obj: null
     }),
 
-    LockedRotate: (pipe: Pipe, rotation: number): Cell => ({
+    LockedRotate: (type: string, rotation: number): Cell => ({
         canPlace: false,
         canClear: false,
         canRotate: true,
-        pipe,
-        rotation
+        type,
+        rotation,
+        obj: null
     })
 }

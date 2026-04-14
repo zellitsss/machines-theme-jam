@@ -1,6 +1,7 @@
-import { KAPLAYCtx } from 'kaplay';
+import {KAPLAYCtx} from 'kaplay';
 import Grid from '../grid';
-import { PipeDictionary } from '../pipe-dictionary';
+import {PipeDictionary} from '../pipe-dictionary';
+
 const GRID_COLS = 3;
 const GRID_ROWS = 5
 const CELL_SIZE = 128;
@@ -37,10 +38,7 @@ export default function createGameScene(k: KAPLAYCtx) {
             let x = cellDef.x;
             let y = cellDef.y;
             let sprite = PipeDictionary.get(cellDef.pipe)?.sprite;
-            console.log(cellDef)
-            console.log(sprite)
-            obj: k.add([
-                // k.rect(CELL_SIZE, CELL_SIZE),
+            grid.at(x, y).obj = k.add([
                 k.pos((x + .5) * CELL_SIZE, (y + .5) * CELL_SIZE),
                 k.sprite(sprite ? sprite : "", {
                     width: CELL_SIZE,
