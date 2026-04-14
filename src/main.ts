@@ -8,7 +8,9 @@ const NAME_Game = "game";
 const k = kaplay();
 
 k.loadRoot("./"); // A good idea for Itch.io publishing later
-k.loadSprite("bean", "sprites/bean.png");
+k.loadSprite("pipe-straight", "sprites/pipe-straight.png");
+k.loadSprite("pipe-l", "sprites/pipe-l.png");
+k.loadSprite("pipe-gate", "sprites/pipe-gate.png");
 
 k.scene(NAME_MainMenu, createMainMenuScene(k));
 k.scene(NAME_Game, createGameScene(k));
