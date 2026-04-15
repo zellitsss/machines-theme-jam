@@ -1,8 +1,8 @@
 import {GameObj} from "kaplay";
 
 export interface CellData {
-    x: number | null;
-    y: number | null;
+    x: number;
+    y: number;
     type: string;
     rot: number;
     canPlace: boolean;
@@ -15,15 +15,15 @@ export interface Cell extends CellData {
 }
 
 export const CellFactory = {
-    Freedom: (): Cell => ({
+    Freedom: (x: number, y: number): Cell => ({
         canPlace: true,
         canClear: true,
         canRotate: true,
         type: '',
         rot: 0,
         obj: null,
-        x: null,
-        y: null
+        x: x,
+        y: y,
     }),
 //
 //     Blocked: (): Cell => ({

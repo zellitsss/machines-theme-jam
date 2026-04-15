@@ -7,8 +7,9 @@ export default class Grid {
     
     constructor(cols: number, rows: number) {
         if (cols > 0 && rows > 0) {
-            this._matrix = Array.from({ length: rows }, () =>
-                Array.from({ length: cols }, () => CellFactory.Freedom()));
+            this._matrix = Array.from({ length: rows }, (_, y) =>
+                Array.from({ length: cols }, (_, x) => CellFactory.Freedom(x, y))
+            );
         }
     }
 
