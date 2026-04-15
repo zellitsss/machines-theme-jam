@@ -116,6 +116,11 @@ export default function createGameScene(k: KAPLAYCtx) {
         const levelData = await k.loadJSON("levelData", "data/level-01.json");
         const level = levelData as LevelData;
 
+        // Load inventory data
+        const inventory: Map<string, number> = new Map(
+            Object.entries(level.inventory ?? {})
+        );
+
         initializePipeDictionary();
 
         //Create grid

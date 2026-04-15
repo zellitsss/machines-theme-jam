@@ -65,5 +65,9 @@
             "y": 4,
             "type": "pipe-gate-start"
         }
-    ]
+    ],
+    "inventory": {
+        "pipe-i": 3,
+        "pipe-l": 2
+    }
 }
