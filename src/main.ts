@@ -1,9 +1,7 @@
 import kaplay from "kaplay";
 import createGameScene from './scenes/game-scene';
 import createMainMenuScene from './scenes/main-menu-scene';
-
-const NAME_MainMenu = "main-menu";
-const NAME_Game = "game";
+import {NAME_Game, NAME_MainMenu} from "./constants";
 
 const k = kaplay();
 
