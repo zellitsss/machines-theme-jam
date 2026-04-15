@@ -101,8 +101,16 @@ function checkWinCondition(grid: Grid): boolean {
     return false;
 }
 
+async function loadAssets(k: KAPLAYCtx) {
+    await k.loadSprite("pipe-i", "sprites/pipe-straight.png");
+    await k.loadSprite("pipe-l", "sprites/pipe-l.png");
+    await k.loadSprite("pipe-gate", "sprites/pipe-gate.png");
+    await k.loadSprite("pipe-blocked", "sprites/pipe-blocked.png");
+}
+
 export default function createGameScene(k: KAPLAYCtx) {
     return async () => {
+        await loadAssets(k);
         // Load Level data
         const levelData = await k.loadJSON("levelData", "data/level-01.json");
         const level = levelData as LevelData;
