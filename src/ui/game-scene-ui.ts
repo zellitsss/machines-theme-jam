@@ -1,0 +1,69 @@
+import { KAPLAYCtx } from "kaplay";
+import { CELL_SIZE } from "../constants";
+import { PipeDictionary } from "../pipe-dictionary";
+
+export const LAYER_BACKGROUND = "background";
+export const LAYER_GAME = "game";
+export const LAYER_UI = "ui";
+
+const INVENTORY_PANEL_GAP = 100;
+const SLOT_PADDING = 10;
+const COUNT_TEXT_SIZE = 22;
+const CONTAINER_PADDING = 14;
+
+export function setupLayers(k: KAPLAYCtx): void {
+    k.setLayers([LAYER_BACKGROUND, LAYER_GAME, LAYER_UI], LAYER_GAME);
+}
+
+export function createInventorySlots(k: KAPLAYCtx, inventory: Map<string, number>, gridCols: number): void {
+    const entries = [...inventory].filter(([pipeType]) => PipeDictionary.get(pipeType));
+    if (entries.length === 0) {
+        return;
+    }
+
+    const panelLeft = gridCols * CELL_SIZE + INVENTORY_PANEL_GAP;
+    const innerHeight = entries.length * CELL_SIZE + (entries.length - 1) * SLOT_PADDING;
+    const containerW = CELL_SIZE + 2 * CONTAINER_PADDING;
+    const containerH = innerHeight + 2 * CONTAINER_PADDING;
+
+    const container = k.add([
+        k.pos(panelLeft, 0),
+        k.layer(LAYER_UI),
+        k.anchor("topleft"),
+        k.rect(containerW, containerH, { fill: true }),
+        k.color(k.rgb(251, 255, 6)),
+        k.outline(2, k.rgb(125, 127, 134)),
+    ]);
+
+    entries.forEach(([pipeType, count], index) => {
+        const def = PipeDictionary.get(pipeType)!;
+        const slotTop = CONTAINER_PADDING + index * (CELL_SIZE + SLOT_PADDING);
+
+        const slot = container.add([
+            k.pos(CONTAINER_PADDING, slotTop),
+            k.anchor("topleft"),
+            k.rect(CELL_SIZE, CELL_SIZE, { fill: true }),
+            k.color(255, 255, 255),
+            k.outline(2, k.rgb(0, 0, 0)),
+        ]);
+
+        slot.add([
+            k.pos(CELL_SIZE / 2, CELL_SIZE / 2),
+            k.anchor("center"),
+            k.sprite(def.sprite, {
+                width: CELL_SIZE - 4,
+                height: CELL_SIZE - 4,
+            }),
+        ]);
+
+        slot.add([
+            k.pos(CELL_SIZE - 4, CELL_SIZE - 2),
+            k.anchor("botright"),
+            k.text(String(count), {
+                size: COUNT_TEXT_SIZE,
+                align: "right",
+            }),
+            k.color(0, 0, 0),
+        ]);
+    });
+}

@@ -4,4 +4,5 @@ export interface LevelData {
     cols: number;
     rows: number;
     cells: CellData[];
+    inventory: Record<string, number>;
 }

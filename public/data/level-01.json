@@ -85,5 +85,9 @@
             "type": "pipe-gate-start",
             "canRotate": false
         }
-    ]
+    ],
+    "inventory": {
+        "pipe-i": 3,
+        "pipe-l": 2
+    }
 }
