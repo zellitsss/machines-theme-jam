@@ -9,14 +9,21 @@ const CELL_SIZE = 128;
 
 function initializePipeDictionary() {
     PipeDictionary.add('pipe-straight', {
-        sprite: 'pipe-straight'
+        sprite: 'pipe-straight',
+        flow: [3, 0, 3, 0]
     });
     PipeDictionary.add('pipe-l', {
-        sprite: 'pipe-l'
+        sprite: 'pipe-l',
+        flow: [0, 0, 3, 3]
     });
-    PipeDictionary.add('pipe-gate', {
-        sprite: 'pipe-gate'
+    PipeDictionary.add('pipe-gate-start', {
+        sprite: 'pipe-gate',
+        flow: [2, 0, 0, 0]
     });
+    PipeDictionary.add('pipe-gate-end', {
+        sprite: 'pipe-gate',
+        flow: [1, 0, 0, 0]
+    })
 }
 
 export default function createGameScene(k: KAPLAYCtx) {

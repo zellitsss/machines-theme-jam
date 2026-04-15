@@ -1,5 +1,8 @@
 export interface PipeDef {
     sprite: string;
+    // [Top, Right, Bottom, Left]
+    // 0: No connection, 1: Inlet, 2: Outlet, 3: Both
+    flow: [number, number, number, number]
 }
 export const PipeDictionary = {
     _definitions: new Map<string, PipeDef>(),

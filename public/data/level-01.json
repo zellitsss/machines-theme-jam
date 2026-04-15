@@ -17,7 +17,7 @@
         {
             "x": 2,
             "y": 0,
-            "type": "pipe-gate",
+            "type": "pipe-gate-end",
             "rot": 3
         },
         {
@@ -63,7 +63,7 @@
         {
             "x": 0,
             "y": 4,
-            "type": "pipe-gate"
+            "type": "pipe-gate-start"
         }
     ]
 }
