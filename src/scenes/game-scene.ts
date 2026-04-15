@@ -3,15 +3,15 @@ import Grid from '../grid';
 import {PipeDictionary} from '../pipe-dictionary';
 import {LevelData} from "../LevelData";
 import {Cell} from "../cell";
-import {CellConnections, ConnectionType, TRAVEL_OFFSET} from "../types";
-import {canIn, canOut, getOppositeSide, getRotatedConnections} from "../utils";
+import {ConnectionType} from "../types";
+import {canIn, getOppositeSide, getRotatedConnections} from "../utils";
 import {CELL_SIZE, ROTATE_SCALE_PEAK, ROTATE_TWEEN_SEC, ROTATION_ANGLE_PER_STEP} from "../constants";
 
 const activeTweenByCell = new WeakMap<Cell, TweenController>();
 
 function initializePipeDictionary() {
-    PipeDictionary.add('pipe-i', {
-        sprite: 'pipe-i',
+    PipeDictionary.add("pipe-i", {
+        sprite: "pipe-i",
         flow: [
             ConnectionType.Both,
             ConnectionType.None,
@@ -19,8 +19,8 @@ function initializePipeDictionary() {
             ConnectionType.None
         ]
     });
-    PipeDictionary.add('pipe-l', {
-        sprite: 'pipe-l',
+    PipeDictionary.add("pipe-l", {
+        sprite: "pipe-l",
         flow: [
             ConnectionType.None,
             ConnectionType.None,
@@ -28,8 +28,8 @@ function initializePipeDictionary() {
             ConnectionType.Both
         ]
     });
-    PipeDictionary.add('pipe-gate-start', {
-        sprite: 'pipe-gate',
+    PipeDictionary.add("pipe-gate-start", {
+        sprite: "pipe-gate",
         flow: [
             ConnectionType.Outlet,
             ConnectionType.None,
@@ -37,8 +37,8 @@ function initializePipeDictionary() {
             ConnectionType.None
         ]
     });
-    PipeDictionary.add('pipe-gate-end', {
-        sprite: 'pipe-gate',
+    PipeDictionary.add("pipe-gate-end", {
+        sprite: "pipe-gate",
         flow: [
             ConnectionType.Inlet,
             ConnectionType.None,
@@ -46,15 +46,43 @@ function initializePipeDictionary() {
             ConnectionType.None
         ]
     });
-    PipeDictionary.add('pipe-blocked', {
-        sprite: 'pipe-blocked',
+    PipeDictionary.add("pipe-blocked", {
+        sprite: "pipe-blocked",
         flow: [
             ConnectionType.None,
             ConnectionType.None,
             ConnectionType.None,
             ConnectionType.None
         ]
+    });
+    PipeDictionary.add("pipe-i-1w", {
+        sprite: "pipe-i-1w",
+        flow: [
+            ConnectionType.Outlet,
+            ConnectionType.None,
+            ConnectionType.Inlet,
+            ConnectionType.None
+        ]
+    });
+    PipeDictionary.add("pipe-l-1w1", {
+        sprite: "pipe-l-1w1",
+        flow: [
+            ConnectionType.None,
+            ConnectionType.None,
+            ConnectionType.Inlet,
+            ConnectionType.Outlet
+        ]
+    });
+    PipeDictionary.add("pipe-l-1w2", {
+        sprite: "pipe-l-1w2",
+        flow: [
+            ConnectionType.None,
+            ConnectionType.None,
+            ConnectionType.Outlet,
+            ConnectionType.Inlet
+        ]
     })
+    
 }
 
 function checkWinCondition(grid: Grid): boolean {
@@ -106,6 +134,9 @@ async function loadAssets(k: KAPLAYCtx) {
     await k.loadSprite("pipe-l", "sprites/pipe-l.png");
     await k.loadSprite("pipe-gate", "sprites/pipe-gate.png");
     await k.loadSprite("pipe-blocked", "sprites/pipe-blocked.png");
+    await k.loadSprite("pipe-i-1w", "sprites/pipe-i-1w.png");
+    await k.loadSprite("pipe-l-1w1", "sprites/pipe-l-1w1.png");
+    await k.loadSprite("pipe-l-1w2", "sprites/pipe-l-1w2.png");
 }
 
 export default function createGameScene(k: KAPLAYCtx) {
