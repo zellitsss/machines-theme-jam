@@ -4,11 +4,9 @@ import {PipeDictionary} from '../pipe-dictionary';
 import {LevelData} from "../LevelData";
 import {Cell} from "../cell";
 import {CellConnections, ConnectionType, TRAVEL_OFFSET} from "../types";
-import {canIn, canOut, getOppositeSide} from "../utils";
+import {canIn, canOut, getOppositeSide, getRotatedConnections} from "../utils";
+import {CELL_SIZE, ROTATE_SCALE_PEAK, ROTATE_TWEEN_SEC, ROTATION_ANGLE_PER_STEP} from "../constants";
 
-const CELL_SIZE = 128;
-const ROTATE_TWEEN_SEC = 0.25;
-const ROTATE_SCALE_PEAK = 0.9;
 const activeTweenByCell = new WeakMap<Cell, TweenController>();
 
 function initializePipeDictionary() {
@@ -59,43 +57,6 @@ function initializePipeDictionary() {
     })
 }
 
-function getRotatedConnections(base: CellConnections, rotationStep: number) {
-    let connections = [...base];
-    for (let i = 0; i < rotationStep; i++) {
-        const last = connections.pop();
-        if (last == undefined) continue
-        connections.unshift(last);
-    }
-    return connections as CellConnections;
-}
-
-function getNextConnectedCell(grid: Grid, currentCell: Cell, side: number): Cell | null {
-    const offset = TRAVEL_OFFSET[side];
-    const nextX = currentCell.x + offset.x;
-    const nextY = currentCell.y + offset.y;
-    if (nextX >= 0 && nextX < grid.getCols() && nextY >= 0 && nextY < grid.getRows())
-    {
-        return grid.at(nextX, nextY);
-    }
-    return null;
-}
-
-function getExitSide(current: Cell, enteredSide: number): number
-{
-    const rotatedConnections = getRotatedConnections(PipeDictionary.get(current.type)?.flow ?? [0, 0, 0, 0], current.rot);
-    for (let side = 0; side < 4; side++) {
-        if (side === enteredSide)
-        {
-            continue;
-        }
-        if (canOut(rotatedConnections[side]))
-        {
-            return side;
-        }
-    }
-    return null;
-}
-
 function checkWinCondition(grid: Grid): boolean {
     const startCell = grid.getStartCell();
     if (!startCell.obj) {
@@ -116,12 +77,12 @@ function checkWinCondition(grid: Grid): boolean {
             return true;
         }
         
-        const exitSide = getExitSide(current, incomingSide);
+        const exitSide = current.getExitSide(incomingSide);
         if (exitSide === null) {
             break;
         }
         
-        const next = getNextConnectedCell(grid, current, exitSide);
+        const next = grid.getNextConnectedCell(current, exitSide);
         if (!next) {
             break;
         }
@@ -173,7 +134,9 @@ export default function createGameScene(k: KAPLAYCtx) {
             cell.x = x;
             cell.y = y;
             cell.rot = rot;
-            cell.canRotate = cellDef.canRotate !== undefined ? cellDef.canRotate : true;
+            cell.canRotate = cellDef.canRotate ?? true;
+            cell.canClear = cellDef.canClear ?? true;
+            cell.canPlace = cellDef.canPlace ?? true;
 
             if (cellDef.type == 'pipe-gate-start') {
                 grid.setStartCell(cell);
@@ -183,7 +146,7 @@ export default function createGameScene(k: KAPLAYCtx) {
             }
         });
 
-        function tryRotatePipe(cell: Cell, button: MouseButton): boolean {
+        function tryRotatePipe(cell: Cell, isClockwise: boolean): boolean {
             if (!cell.obj || !cell.type || !cell.canRotate) {
                 return false;
             }
@@ -193,23 +156,16 @@ export default function createGameScene(k: KAPLAYCtx) {
             if (activeTweenByCell.get(cell)) {
                 return false;
             }
-
-            const delta = button === "left" ? -90 : 90;
-            if (button === "left") {
-                cell.rot = (cell.rot - 1 + 4) % 4;
-            } else {
-                cell.rot = (cell.rot + 1) % 4;
-            }
-
-            animatePipeRotation(cell, delta);
-
+            cell.rot = ((cell.rot + (isClockwise ? 1 : -1)) % 4 + 4) % 4;
+            animatePipeRotation(cell, isClockwise);
             return true;
         }
 
-        function animatePipeRotation(cell: Cell, delta: number) {
+        function animatePipeRotation(cell: Cell, isClockwise: boolean) {
             const obj = cell.obj!;
             const from = obj.angle;
-            const to = from + delta;
+            let bias = isClockwise ? 1 : -1;
+            const to = from + bias * ROTATION_ANGLE_PER_STEP;
             // Rotate tween
             const tween = obj.tween(from, to, ROTATE_TWEEN_SEC, (a) => {
                 obj.angle = a;
@@ -237,7 +193,7 @@ export default function createGameScene(k: KAPLAYCtx) {
             const p = k.toWorld(k.mousePos());
             const cell = grid.cellAtWorld(p.x, p.y);
             if (cell) {
-                tryRotatePipe(cell, button);
+                tryRotatePipe(cell, button === "left");
                 const isWin = checkWinCondition(grid);
                 k.debug.log(isWin ? "Win" : "Lose");
             }

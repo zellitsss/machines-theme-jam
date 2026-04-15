@@ -1,4 +1,5 @@
 import {Cell, CellFactory} from './cell';
+import {TRAVEL_OFFSET} from "./types";
 
 export default class Grid {
     private _cols: number;
@@ -17,6 +18,17 @@ export default class Grid {
                 Array.from({ length: cols }, (_, x) => CellFactory.Freedom(x, y))
             );
         }
+    }
+
+    getNextConnectedCell(currentCell: Cell, side: number): Cell | null {
+        const offset = TRAVEL_OFFSET[side];
+        const nextX = currentCell.x + offset.x;
+        const nextY = currentCell.y + offset.y;
+        if (nextX >= 0 && nextX < this.getCols() && nextY >= 0 && nextY < this.getRows())
+        {
+            return this.at(nextX, nextY);
+        }
+        return null;
     }
 
     cellAtWorld(worldX: number, worldY: number): Cell | null {
