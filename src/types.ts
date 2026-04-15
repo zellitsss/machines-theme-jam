@@ -1,12 +1,8 @@
-﻿import Grid from "./grid";
-import {Cell} from "./cell";
-
-export enum Side {
+﻿export enum Side {
     Top,
     Right,
     Bottom,
-    Left,
-    None
+    Left
 }
 
 export const TRAVEL_OFFSET = [

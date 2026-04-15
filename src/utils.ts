@@ -1,4 +1,4 @@
-﻿import {ConnectionType} from "./types";
+﻿import {ConnectionType, Side} from "./types";
 
 export function canConnect(type: ConnectionType): boolean {
     return type > ConnectionType.None;
@@ -10,4 +10,8 @@ export function canOut(type: ConnectionType): boolean {
 
 export function canIn(type: ConnectionType): boolean {
     return type == ConnectionType.Inlet || type == ConnectionType.Both;
+}
+
+export function getOppositeSide(side: Side): number {
+    return side == null ? null : (side + 2) % 4;
 }
