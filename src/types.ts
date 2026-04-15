@@ -1,11 +1,4 @@
-﻿export enum Side {
-    Top,
-    Right,
-    Bottom,
-    Left
-}
-
-export const TRAVEL_OFFSET = [
+﻿export const TRAVEL_OFFSET = [
     {x: 0, y: -1},     // up
     {x: 1, y: 0},      // right
     {x: 0, y: 1},      // down

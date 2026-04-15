@@ -3,7 +3,7 @@ import Grid from '../grid';
 import {PipeDictionary} from '../pipe-dictionary';
 import {LevelData} from "../LevelData";
 import {Cell} from "../cell";
-import {CellConnections, ConnectionType, Side, TRAVEL_OFFSET} from "../types";
+import {CellConnections, ConnectionType, TRAVEL_OFFSET} from "../types";
 import {canOut} from "../utils";
 
 const CELL_SIZE = 128;
@@ -57,26 +57,30 @@ function getRotatedConnections(base: CellConnections, rotationStep: number) {
     return connections as CellConnections;
 }
 
-function getNextConnectedCell(grid: Grid, currentCell: Cell): Cell | null {
-    const x = currentCell.x;
-    const y = currentCell.y;
-    console.log("get next connected cell: ", x, y);
-    let rotatedConnections = getRotatedConnections(PipeDictionary.get(currentCell.type)?.flow ?? [0, 0, 0, 0], currentCell.rot);
-    for (let i = 0; i < 4; i++) {
-        if (rotatedConnections[i] == 0) {
+function getNextConnectedCell(grid: Grid, currentCell: Cell, side: number): Cell | null {
+    const offset = TRAVEL_OFFSET[side];
+    const nextX = currentCell.x + offset.x;
+    const nextY = currentCell.y + offset.y;
+    if (nextX >= 0 && nextX < grid.getCols() && nextY >= 0 && nextY < grid.getRows())
+    {
+        return grid.at(nextX, nextY);
+    }
+    return null;
+}
+
+function getExitSide(current: Cell, enteredSide: number): number
+{
+    const rotatedConnections = getRotatedConnections(PipeDictionary.get(current.type)?.flow ?? [0, 0, 0, 0], current.rot);
+    for (let side = 0; side < 4; side++) {
+        if (side === enteredSide)
+        {
+            continue;
+        }
+        if (canOut(rotatedConnections[side]))
+        {
+            return side;
         }
     }
-    let outSide = rotatedConnections.findIndex(c => canOut(c));
-    console.log("direction: ", outSide);
-    if (outSide >= 0) {
-        const nextX = x + TRAVEL_OFFSET[outSide].x;
-        const nextY = y + TRAVEL_OFFSET[outSide].y;
-        if (nextX >= 0 && nextX < grid.getCols() && nextY >= 0 && nextY < grid.getRows()) {
-            console.log("next: ", nextX, nextY);
-            return grid.at(nextX, nextY);
-        }
-    }
-    console.log("no next");
     return null;
 }
 
@@ -88,17 +92,26 @@ function checkWinCondition(grid: Grid): boolean {
 
     let current = startCell;
     let visited = new Set<string>();
+    let incomingSide = -1;
     while (current) {
         const posKey = `${current.x},${current.y}`;
         if (visited.has(posKey)) {
             return false;
         }
         visited.add(posKey);
-
-        if (current.type == 'pipe-gate-end') {
+        
+        if (current.type === "pipe-gate-end") {
             return true;
         }
-        const next = getNextConnectedCell(grid, current);
+        
+        const exitSide = getExitSide(current, incomingSide);
+        if (exitSide === null) {
+            break;
+        }
+        
+        const next = getNextConnectedCell(grid, current, exitSide);
+        
+        incomingSide = (exitSide + 2) % 4;
         if (next) {
             current = next;
         }
@@ -172,8 +185,8 @@ export default function createGameScene(k: KAPLAYCtx) {
             const cell = grid.cellAtWorld(p.x, p.y);
             if (cell) {
                 tryRotatePipe(cell, button);
-                var isWin =checkWinCondition(grid);
-                k.debug.log(isWin ? "Win" : "Lose");
+                const isWin = checkWinCondition(grid);
+                console.log(isWin ? "Win" : "Lose");
             }
         });
    
