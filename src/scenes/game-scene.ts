@@ -53,12 +53,13 @@ function getRotatedConnections(base: CellConnections, rotationStep: number) {
     let connections = [...base];
     for (let i = 0; i < rotationStep; i++) {
         const last = connections.pop();
+        if (last == undefined) continue
         connections.unshift(last);
     }
     return connections as CellConnections;
 }
 
-function getNextConnectedCell(grid: Grid, currentCell: Cell): Cell {
+function getNextConnectedCell(grid: Grid, currentCell: Cell): Cell | null {
     const x = currentCell.x;
     const y = currentCell.y;
     let rotatedConnections = getRotatedConnections(PipeDictionary.get(currentCell.type)?.flow ?? [0, 0, 0, 0], currentCell.rot);
