@@ -26,11 +26,15 @@ function initializePipeDictionary() {
     })
 }
 
+function checkWinCondition(grid: Grid): boolean {
+    
+    return false;
+}
+
 export default function createGameScene(k: KAPLAYCtx) {
     return async () => {
         // Load Level data
         const levelData = await k.loadJSON("levelData", "data/level-01.json");
-        console.log(levelData);
 
         initializePipeDictionary();
 
@@ -40,6 +44,7 @@ export default function createGameScene(k: KAPLAYCtx) {
         (levelData as LevelData).cells.forEach((cellDef) => {
             let x = cellDef.x;
             let y = cellDef.y;
+            
             let sprite = PipeDictionary.get(cellDef.type)?.sprite;
             let cell = grid.at(x, y);
             cell.obj = k.add([
@@ -52,6 +57,20 @@ export default function createGameScene(k: KAPLAYCtx) {
                 k.anchor("center")
             ]);
             cell.type = cellDef.type;
+
+            if (cellDef.type == 'pipe-gate-start')
+            {
+                grid.setStartCell(cell);
+            }
+            if (cellDef.type == 'pipe-gate-end')
+            {
+                grid.setEndCell(cell);
+            }
         });
+        
+        k.onMousePress(() => {
+            let isWin = checkWinCondition(grid);
+            console.log(isWin);
+        })
     }
 }
