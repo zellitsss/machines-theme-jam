@@ -1,16 +1,39 @@
 import {Cell, CellFactory} from './cell';
 
 export default class Grid {
+    private _cols: number;
+    private _rows: number;
+    private _cellSize: number;
     private _matrix: Cell[][] = [];
     private _startCell: Cell;
     private _endCell: Cell;
-    
-    constructor(cols: number, rows: number) {
+
+    constructor(cols: number, rows: number, cellSize: number) {
+        this._cols = cols;
+        this._rows = rows;
+        this._cellSize = cellSize;
         if (cols > 0 && rows > 0) {
             this._matrix = Array.from({ length: rows }, (_, y) =>
                 Array.from({ length: cols }, (_, x) => CellFactory.Freedom(x, y))
             );
         }
+    }
+
+    cellAtWorld(worldX: number, worldY: number): Cell | null {
+        const gx = Math.floor(worldX / this._cellSize);
+        const gy = Math.floor(worldY / this._cellSize);
+        if (gx < 0 || gy < 0 || gx >= this._cols || gy >= this._rows) {
+            return null;
+        }
+        return this.at(gx, gy);
+    }
+
+    getCols(): number {
+        return this._cols;
+    }
+
+    getRows(): number {
+        return this._rows;
     }
 
     at(x: number, y: number): Cell {
