@@ -29,11 +29,6 @@ export default function createGameScene(k: KAPLAYCtx) {
 
         // Create grid
         let grid = new Grid(GRID_COLS, GRID_ROWS);
-        for (let x = 0; x < GRID_ROWS; x++) {
-            for (let y = 0; y < GRID_COLS; y++) {
-                
-            }
-        }
 
         (levelData as LevelData).cells.forEach((cellDef) => {
             let x = cellDef.x;
