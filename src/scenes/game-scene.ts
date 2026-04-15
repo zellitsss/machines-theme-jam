@@ -3,14 +3,14 @@ import Grid from '../grid';
 import {PipeDictionary} from '../pipe-dictionary';
 import {LevelData} from "../LevelData";
 import {Cell} from "../cell";
-import {CellConnections, ConnectionType, TRAVEL_OFFSET} from "../types";
+import {CellConnections, ConnectionType, Side, TRAVEL_OFFSET} from "../types";
 import {canOut} from "../utils";
 
 const CELL_SIZE = 128;
 
 function initializePipeDictionary() {
-    PipeDictionary.add('pipe-straight', {
-        sprite: 'pipe-straight',
+    PipeDictionary.add('pipe-i', {
+        sprite: 'pipe-i',
         flow: [
             ConnectionType.Both,
             ConnectionType.None,
@@ -60,12 +60,14 @@ function getRotatedConnections(base: CellConnections, rotationStep: number) {
 function getNextConnectedCell(grid: Grid, currentCell: Cell): Cell | null {
     const x = currentCell.x;
     const y = currentCell.y;
+    console.log("get next connected cell: ", x, y);
     let rotatedConnections = getRotatedConnections(PipeDictionary.get(currentCell.type)?.flow ?? [0, 0, 0, 0], currentCell.rot);
     for (let i = 0; i < 4; i++) {
         if (rotatedConnections[i] == 0) {
         }
     }
     let outSide = rotatedConnections.findIndex(c => canOut(c));
+    console.log("direction: ", outSide);
     if (outSide >= 0) {
         const nextX = x + TRAVEL_OFFSET[outSide].x;
         const nextY = y + TRAVEL_OFFSET[outSide].y;
@@ -74,6 +76,7 @@ function getNextConnectedCell(grid: Grid, currentCell: Cell): Cell | null {
             return grid.at(nextX, nextY);
         }
     }
+    console.log("no next");
     return null;
 }
 
@@ -85,7 +88,6 @@ function checkWinCondition(grid: Grid): boolean {
 
     let current = startCell;
     let visited = new Set<string>();
-    console.log("start: ", current.x, current.y);
     while (current) {
         const posKey = `${current.x},${current.y}`;
         if (visited.has(posKey)) {
@@ -96,7 +98,6 @@ function checkWinCondition(grid: Grid): boolean {
         if (current.type == 'pipe-gate-end') {
             return true;
         }
-
         const next = getNextConnectedCell(grid, current);
         if (next) {
             current = next;
