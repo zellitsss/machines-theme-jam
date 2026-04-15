@@ -6,7 +6,7 @@ import {Cell} from "../cell";
 import {ConnectionType} from "../types";
 import {canIn, getOppositeSide, getRotatedConnections} from "../utils";
 import {CELL_SIZE, ROTATE_SCALE_PEAK, ROTATE_TWEEN_SEC, ROTATION_ANGLE_PER_STEP} from "../constants";
-import { setupLayers } from '../ui/game-scene-ui';
+import { createInventorySlots, setupLayers } from '../ui/game-scene-ui';
 
 const activeTweenByCell = new WeakMap<Cell, TweenController>();
 
@@ -192,6 +192,8 @@ export default function createGameScene(k: KAPLAYCtx) {
                 grid.setEndCell(cell);
             }
         });
+
+        createInventorySlots(k, inventory, level.cols);
 
         function tryRotatePipe(cell: Cell, isClockwise: boolean): boolean {
             if (!cell.obj || !cell.type || !cell.canRotate) {
