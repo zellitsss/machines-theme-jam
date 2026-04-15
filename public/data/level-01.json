@@ -39,6 +39,24 @@
             "type": "pipe-l"
         },
         {
+            "x": 0,
+            "y": 2,
+            "type": "pipe-blocked",
+            "rot": 0,
+            "canRotate": false,
+            "canPlace": false,
+            "canClear": false
+        },
+        {
+            "x": 1,
+            "y": 2,
+            "type": "pipe-blocked",
+            "rot": 0,
+            "canRotate": false,
+            "canPlace": false,
+            "canClear": false
+        },
+        {
             "x": 2,
             "y": 2,
             "type": "pipe-i"

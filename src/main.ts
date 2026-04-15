@@ -11,6 +11,7 @@ k.loadRoot("./"); // A good idea for Itch.io publishing later
 k.loadSprite("pipe-i", "sprites/pipe-straight.png");
 k.loadSprite("pipe-l", "sprites/pipe-l.png");
 k.loadSprite("pipe-gate", "sprites/pipe-gate.png");
+k.loadSprite("pipe-blocked", "sprites/pipe-blocked.png");
 
 k.scene(NAME_MainMenu, createMainMenuScene(k));
 k.scene(NAME_Game, createGameScene(k));

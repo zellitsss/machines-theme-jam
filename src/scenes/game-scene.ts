@@ -47,6 +47,15 @@ function initializePipeDictionary() {
             ConnectionType.None,
             ConnectionType.None
         ]
+    });
+    PipeDictionary.add('pipe-blocked', {
+        sprite: 'pipe-blocked',
+        flow: [
+            ConnectionType.None,
+            ConnectionType.None,
+            ConnectionType.None,
+            ConnectionType.None
+        ]
     })
 }
 
