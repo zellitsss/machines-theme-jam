@@ -1,4 +1,4 @@
-import {KAPLAYCtx} from 'kaplay';
+import {KAPLAYCtx, MouseButton} from 'kaplay';
 import Grid from '../grid';
 import {PipeDictionary} from '../pipe-dictionary';
 import {LevelData} from "../LevelData";
@@ -6,8 +6,6 @@ import {Cell} from "../cell";
 import {CellConnections, ConnectionType, Side, TRAVEL_OFFSET} from "../types";
 import {canOut} from "../utils";
 
-const GRID_COLS = 3;
-const GRID_ROWS = 5
 const CELL_SIZE = 128;
 
 function initializePipeDictionary() {
@@ -73,7 +71,7 @@ function getNextConnectedCell(grid: Grid, currentCell: Cell): Cell | null {
     if (outSide >= 0) {
         const nextX = x + TRAVEL_OFFSET[outSide].x;
         const nextY = y + TRAVEL_OFFSET[outSide].y;
-        if (nextX >= 0 && nextX < GRID_COLS && nextY >= 0 && nextY < GRID_ROWS) {
+        if (nextX >= 0 && nextX < grid.getCols() && nextY >= 0 && nextY < grid.getRows()) {
             console.log("next: ", nextX, nextY);
             return grid.at(nextX, nextY);
         }
@@ -109,35 +107,57 @@ function checkWinCondition(grid: Grid): boolean {
     return false;
 }
 
+function tryRotatePipe(cell: Cell, button: MouseButton): boolean {
+    if (!cell.obj || !cell.type || !cell.canRotate) {
+        return false;
+    }
+    if (!PipeDictionary.has(cell.type)) {
+        return false;
+    }
+    if (button === "left") {
+        cell.rot = (cell.rot - 1 + 4) % 4;
+    } else {
+        cell.rot = (cell.rot + 1) % 4;
+    }
+
+    cell.obj.angle = cell.rot * 90;
+    return true;
+}
+
 export default function createGameScene(k: KAPLAYCtx) {
     return async () => {
         // Load Level data
         const levelData = await k.loadJSON("levelData", "data/level-01.json");
+        const level = levelData as LevelData;
 
         initializePipeDictionary();
 
-        // Create grid
-        let grid = new Grid(GRID_COLS, GRID_ROWS);
+        //Create grid
+        const grid = new Grid(level.cols, level.rows, CELL_SIZE);
 
-        (levelData as LevelData).cells.forEach((cellDef) => {
+        level.cells.forEach((cellDef) => {
             let x = cellDef.x;
             let y = cellDef.y;
 
             let sprite = PipeDictionary.get(cellDef.type)?.sprite;
             let cell = grid.at(x, y);
+            const rot = (cellDef.rot ?? 0) % 4;
             cell.obj = k.add([
                 k.pos((x + .5) * CELL_SIZE, (y + .5) * CELL_SIZE),
                 k.sprite(sprite ? sprite : "", {
                     width: CELL_SIZE,
                     height: CELL_SIZE
                 }),
-                k.rotate(cellDef.rot ? cellDef.rot * 90 : 0),
+                k.rotate(rot * 90),
                 k.anchor("center")
             ]);
             cell.type = cellDef.type;
             cell.x = x;
             cell.y = y;
-            cell.rot = cellDef.rot ? cellDef.rot : 0;
+            cell.rot = rot;
+            if (cellDef.type === "pipe-gate-start" || cellDef.type === "pipe-gate-end") {
+                cell.canRotate = false;
+            }
 
             if (cellDef.type == 'pipe-gate-start') {
                 grid.setStartCell(cell);
@@ -147,9 +167,15 @@ export default function createGameScene(k: KAPLAYCtx) {
             }
         });
 
-        k.onMousePress(() => {
-            let isWin = checkWinCondition(grid);
-            console.log(isWin);
-        })
+        k.onMousePress(["left", "right"], (button: MouseButton) => {
+            const p = k.toWorld(k.mousePos());
+            const cell = grid.cellAtWorld(p.x, p.y);
+            if (cell) {
+                tryRotatePipe(cell, button);
+                var isWin =checkWinCondition(grid);
+                k.debug.log(isWin ? "Win" : "Lose");
+            }
+        });
+   
     }
 }
