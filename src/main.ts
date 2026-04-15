@@ -3,7 +3,11 @@ import createGameScene from './scenes/game-scene';
 import createMainMenuScene from './scenes/main-menu-scene';
 import {NAME_Game, NAME_MainMenu} from "./constants";
 
-const k = kaplay();
+const k = kaplay({
+    width: 1280,
+    height: 720,
+    scale: 1,
+});
 
 k.loadRoot("./"); // A good idea for Itch.io publishing later
 
