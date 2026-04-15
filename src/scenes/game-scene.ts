@@ -5,6 +5,7 @@ import {LevelData} from "../LevelData";
 import {Cell} from "../cell";
 import {CellConnections, ConnectionType, Side, TRAVEL_OFFSET} from "../types";
 import {canOut} from "../utils";
+import { setupLayers } from '../ui/game-scene-ui';
 
 const CELL_SIZE = 128;
 const ROTATE_TWEEN_SEC = 0.25;
@@ -112,6 +113,8 @@ function checkWinCondition(grid: Grid): boolean {
 
 export default function createGameScene(k: KAPLAYCtx) {
     return async () => {
+        setupLayers(k);
+
         // Load Level data
         const levelData = await k.loadJSON("levelData", "data/level-01.json");
         const level = levelData as LevelData;
