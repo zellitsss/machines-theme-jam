@@ -1,4 +1,4 @@
-import {KAPLAYCtx, MouseButton} from 'kaplay';
+import {KAPLAYCtx, MouseButton, TweenController} from 'kaplay';
 import Grid from '../grid';
 import {PipeDictionary} from '../pipe-dictionary';
 import {LevelData} from "../LevelData";
@@ -7,6 +7,9 @@ import {CellConnections, ConnectionType, TRAVEL_OFFSET} from "../types";
 import {canIn, canOut, getOppositeSide} from "../utils";
 
 const CELL_SIZE = 128;
+const ROTATE_TWEEN_SEC = 0.25;
+const ROTATE_SCALE_PEAK = 0.9;
+const activeTweenByCell = new WeakMap<Cell, TweenController>();
 
 function initializePipeDictionary() {
     PipeDictionary.add('pipe-i', {
@@ -128,23 +131,6 @@ function checkWinCondition(grid: Grid): boolean {
     return false;
 }
 
-function tryRotatePipe(cell: Cell, button: MouseButton): boolean {
-    if (!cell.obj || !cell.type || !cell.canRotate) {
-        return false;
-    }
-    if (!PipeDictionary.has(cell.type)) {
-        return false;
-    }
-    if (button === "left") {
-        cell.rot = (cell.rot - 1 + 4) % 4;
-    } else {
-        cell.rot = (cell.rot + 1) % 4;
-    }
-
-    cell.obj.angle = cell.rot * 90;
-    return true;
-}
-
 export default function createGameScene(k: KAPLAYCtx) {
     return async () => {
         // Load Level data
@@ -170,7 +156,9 @@ export default function createGameScene(k: KAPLAYCtx) {
                     height: CELL_SIZE
                 }),
                 k.rotate(rot * 90),
-                k.anchor("center")
+                k.scale(1),
+                k.anchor("center"),
+                k.timer()
             ]);
             cell.type = cellDef.type;
             cell.x = x;
@@ -186,6 +174,56 @@ export default function createGameScene(k: KAPLAYCtx) {
             }
         });
 
+        function tryRotatePipe(cell: Cell, button: MouseButton): boolean {
+            if (!cell.obj || !cell.type || !cell.canRotate) {
+                return false;
+            }
+            if (!PipeDictionary.has(cell.type)) {
+                return false;
+            }
+            if (activeTweenByCell.get(cell)) {
+                return false;
+            }
+
+            const delta = button === "left" ? -90 : 90;
+            if (button === "left") {
+                cell.rot = (cell.rot - 1 + 4) % 4;
+            } else {
+                cell.rot = (cell.rot + 1) % 4;
+            }
+
+            animatePipeRotation(cell, delta);
+
+            return true;
+        }
+
+        function animatePipeRotation(cell: Cell, delta: number) {
+            const obj = cell.obj!;
+            const from = obj.angle;
+            const to = from + delta;
+            // Rotate tween
+            const tween = obj.tween(from, to, ROTATE_TWEEN_SEC, (a) => {
+                obj.angle = a;
+            }, k.easings.easeInOutQuad);
+
+            const half = ROTATE_TWEEN_SEC / 2;
+            const scaleNormal = k.vec2(1, 1);
+            const scaleSmall = k.vec2(ROTATE_SCALE_PEAK, ROTATE_SCALE_PEAK);
+            // Scale tween
+            obj
+                .tween(scaleNormal, scaleSmall, half, (v) => obj.scaleTo(v), k.easings.easeOutQuad)
+                .then(() =>
+                    obj.tween(scaleSmall, scaleNormal, half, (v) => obj.scaleTo(v), k.easings.easeOutQuad)
+                );
+
+            activeTweenByCell.set(cell, tween);
+            tween.onEnd(() => {
+                activeTweenByCell.delete(cell);
+                obj.angle = cell.rot * 90;
+                obj.scaleTo(1);
+            });
+        }
+
         k.onMousePress(["left", "right"], (button: MouseButton) => {
             const p = k.toWorld(k.mousePos());
             const cell = grid.cellAtWorld(p.x, p.y);
@@ -195,6 +233,5 @@ export default function createGameScene(k: KAPLAYCtx) {
                 k.debug.log(isWin ? "Win" : "Lose");
             }
         });
-   
     }
 }
