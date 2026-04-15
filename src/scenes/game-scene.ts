@@ -4,7 +4,7 @@ import {PipeDictionary} from '../pipe-dictionary';
 import {LevelData} from "../LevelData";
 import {Cell} from "../cell";
 import {CellConnections, ConnectionType, TRAVEL_OFFSET} from "../types";
-import {canOut} from "../utils";
+import {canIn, canOut, getOppositeSide} from "../utils";
 
 const CELL_SIZE = 128;
 
@@ -110,11 +110,19 @@ function checkWinCondition(grid: Grid): boolean {
         }
         
         const next = getNextConnectedCell(grid, current, exitSide);
+        if (!next) {
+            break;
+        }
+        
+        // Check if next cell is connected to the current cell
+        const nextEntrySide = getOppositeSide(exitSide);
+        const nextRotatedConnections = getRotatedConnections(PipeDictionary.get(next.type)?.flow ?? [0, 0, 0, 0], next.rot);
+        if (!canIn(nextRotatedConnections[nextEntrySide])) {
+            break;
+        }
         
         incomingSide = (exitSide + 2) % 4;
-        if (next) {
-            current = next;
-        }
+        current = next;
     }
 
     return false;
@@ -168,9 +176,7 @@ export default function createGameScene(k: KAPLAYCtx) {
             cell.x = x;
             cell.y = y;
             cell.rot = rot;
-            if (cellDef.type === "pipe-gate-start" || cellDef.type === "pipe-gate-end") {
-                cell.canRotate = false;
-            }
+            cell.canRotate = cellDef.canRotate !== undefined ? cellDef.canRotate : true;
 
             if (cellDef.type == 'pipe-gate-start') {
                 grid.setStartCell(cell);
@@ -186,7 +192,7 @@ export default function createGameScene(k: KAPLAYCtx) {
             if (cell) {
                 tryRotatePipe(cell, button);
                 const isWin = checkWinCondition(grid);
-                console.log(isWin ? "Win" : "Lose");
+                k.debug.log(isWin ? "Win" : "Lose");
             }
         });
    
