@@ -5,7 +5,14 @@ import {LevelData} from "../LevelData";
 import {Cell} from "../cell";
 import {ConnectionType} from "../types";
 import {canIn, getOppositeSide, getRotatedConnections} from "../utils";
-import {CELL_SIZE, ROTATE_SCALE_PEAK, ROTATE_TWEEN_SEC, ROTATION_ANGLE_PER_STEP} from "../constants";
+import {
+    CELL_SIZE,
+    LEFT_PANEL_RATIO, MAIN_PANEL_RATIO,
+    RIGHT_PANEL_RATIO,
+    ROTATE_SCALE_PEAK,
+    ROTATE_TWEEN_SEC,
+    ROTATION_ANGLE_PER_STEP
+} from "../constants";
 import { createInventorySlots, setupLayers } from '../ui/game-scene-ui';
 import {panel, PanelComp} from "../components/panel";
 
@@ -217,17 +224,17 @@ export default function createGameScene(k: KAPLAYCtx) {
         const leftPanel = k.add([
             k.pos(),
             k.anchor("topleft"),
-            panel(k.width() / 6, k.height())
+            panel(k.width() * LEFT_PANEL_RATIO, k.height())
         ]);
         const mainPanel = k.add([
-            k.pos(k.width() / 6, 0),
+            k.pos(leftPanel.pos.x + leftPanel.width, 0),
             k.anchor("topleft"),
-            panel(k.width() * 4 / 6, k.height())       
+            panel(k.width() * MAIN_PANEL_RATIO, k.height())       
         ]);
         const rightPanel = k.add([
-            k.pos(k.width() * 5 / 6, 0),
+            k.pos(mainPanel.pos.x + mainPanel.width, 0),
             k.anchor("topleft"),
-            panel(k.width() / 6, k.height())      
+            panel(k.width() * RIGHT_PANEL_RATIO, k.height())      
         ]);
 
         //Create grid
