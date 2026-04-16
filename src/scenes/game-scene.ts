@@ -238,7 +238,7 @@ export default function createGameScene(k: KAPLAYCtx) {
         ]);
 
         //Create grid
-        const grid = new Grid(level.cols, level.rows, CELL_SIZE);
+        const grid = new Grid(mainPanel, level.cols, level.rows, CELL_SIZE);
         level.cells.forEach((cellDef) => {
             let x = cellDef.x;
             let y = cellDef.y;

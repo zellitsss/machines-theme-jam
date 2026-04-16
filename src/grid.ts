@@ -9,8 +9,10 @@ export default class Grid {
     private _matrix: Cell[][] = [];
     private _startCell: Cell;
     private _endCell: Cell;
+    private _parent: GameObj;
 
-    constructor(cols: number, rows: number, cellSize: number) {
+    constructor(parent: GameObj, cols: number, rows: number, cellSize: number) {
+        this._parent = parent;
         this._cols = cols;
         this._rows = rows;
         this._cellSize = cellSize;
@@ -33,8 +35,8 @@ export default class Grid {
     }
 
     cellAtWorld(worldX: number, worldY: number): Cell | null {
-        const gx = Math.floor(worldX / this._cellSize);
-        const gy = Math.floor(worldY / this._cellSize);
+        const gx = Math.floor((worldX - this._parent.pos.x) / this._cellSize);
+        const gy = Math.floor((worldY - this._parent.pos.y) / this._cellSize);
         if (gx < 0 || gy < 0 || gx >= this._cols || gy >= this._rows) {
             return null;
         }
