@@ -4,9 +4,11 @@ import createMainMenuScene from './scenes/main-menu-scene';
 import {NAME_Game, NAME_MainMenu} from "./constants";
 
 const k = kaplay({
-    width: 1280,
-    height: 720,
+    width: 960,
+    height: 640,
     scale: 1,
+    debug: true,
+    debugKey: "`"
 });
 
 k.loadRoot("./"); // A good idea for Itch.io publishing later

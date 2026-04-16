@@ -7,6 +7,7 @@ import {ConnectionType} from "../types";
 import {canIn, getOppositeSide, getRotatedConnections} from "../utils";
 import {CELL_SIZE, ROTATE_SCALE_PEAK, ROTATE_TWEEN_SEC, ROTATION_ANGLE_PER_STEP} from "../constants";
 import { createInventorySlots, setupLayers } from '../ui/game-scene-ui';
+import {panel} from "../components/panel";
 
 const activeTweenByCell = new WeakMap<Cell, TweenController>();
 
@@ -140,6 +141,49 @@ async function loadAssets(k: KAPLAYCtx) {
     await k.loadSprite("pipe-l-1w2", "sprites/pipe-l-1w2.png");
 }
 
+function tryRotatePipe(k: KAPLAYCtx, cell: Cell, isClockwise: boolean): boolean {
+    if (!cell.obj || !cell.type || !cell.canRotate) {
+        return false;
+    }
+    if (!PipeDictionary.has(cell.type)) {
+        return false;
+    }
+    if (activeTweenByCell.get(cell)) {
+        return false;
+    }
+    cell.rot = ((cell.rot + (isClockwise ? 1 : -1)) % 4 + 4) % 4;
+    animatePipeRotation(k, cell, isClockwise);
+    return true;
+}
+
+function animatePipeRotation(k: KAPLAYCtx, cell: Cell, isClockwise: boolean) {
+    const obj = cell.obj!;
+    const from = obj.angle;
+    let bias = isClockwise ? 1 : -1;
+    const to = from + bias * ROTATION_ANGLE_PER_STEP;
+    // Rotate tween
+    const tween = obj.tween(from, to, ROTATE_TWEEN_SEC, (a) => {
+        obj.angle = a;
+    }, k.easings.easeInOutQuad);
+
+    const half = ROTATE_TWEEN_SEC / 2;
+    const scaleNormal = k.vec2(1, 1);
+    const scaleSmall = k.vec2(ROTATE_SCALE_PEAK, ROTATE_SCALE_PEAK);
+    // Scale tween
+    obj
+        .tween(scaleNormal, scaleSmall, half, (v) => obj.scaleTo(v), k.easings.easeOutQuad)
+        .then(() =>
+            obj.tween(scaleSmall, scaleNormal, half, (v) => obj.scaleTo(v), k.easings.easeOutQuad)
+        );
+
+    activeTweenByCell.set(cell, tween);
+    tween.onEnd(() => {
+        activeTweenByCell.delete(cell);
+        obj.angle = cell.rot * 90;
+        obj.scaleTo(1);
+    });
+}
+
 export default function createGameScene(k: KAPLAYCtx) {
     return async () => {
         setupLayers(k);
@@ -192,57 +236,32 @@ export default function createGameScene(k: KAPLAYCtx) {
                 grid.setEndCell(cell);
             }
         });
+        
+        const leftPanel = k.add([
+            k.pos(),
+            k.anchor("topleft"),
+            panel(k.width() / 6, k.height())
+        ]);
+        
+        const mainPanel = k.add([
+            k.pos(k.width() / 6, 0),
+            k.anchor("topleft"),
+            panel(k.width() * 4 / 6, k.height())       
+        ]);
+        
+        const rightPanel = k.add([
+            k.pos(k.width() * 5 / 6, 0),
+            k.anchor("topleft"),
+            panel(k.width() / 6, k.height())      
+        ]);
 
-        createInventorySlots(k, inventory, level.cols);
-
-        function tryRotatePipe(cell: Cell, isClockwise: boolean): boolean {
-            if (!cell.obj || !cell.type || !cell.canRotate) {
-                return false;
-            }
-            if (!PipeDictionary.has(cell.type)) {
-                return false;
-            }
-            if (activeTweenByCell.get(cell)) {
-                return false;
-            }
-            cell.rot = ((cell.rot + (isClockwise ? 1 : -1)) % 4 + 4) % 4;
-            animatePipeRotation(cell, isClockwise);
-            return true;
-        }
-
-        function animatePipeRotation(cell: Cell, isClockwise: boolean) {
-            const obj = cell.obj!;
-            const from = obj.angle;
-            let bias = isClockwise ? 1 : -1;
-            const to = from + bias * ROTATION_ANGLE_PER_STEP;
-            // Rotate tween
-            const tween = obj.tween(from, to, ROTATE_TWEEN_SEC, (a) => {
-                obj.angle = a;
-            }, k.easings.easeInOutQuad);
-
-            const half = ROTATE_TWEEN_SEC / 2;
-            const scaleNormal = k.vec2(1, 1);
-            const scaleSmall = k.vec2(ROTATE_SCALE_PEAK, ROTATE_SCALE_PEAK);
-            // Scale tween
-            obj
-                .tween(scaleNormal, scaleSmall, half, (v) => obj.scaleTo(v), k.easings.easeOutQuad)
-                .then(() =>
-                    obj.tween(scaleSmall, scaleNormal, half, (v) => obj.scaleTo(v), k.easings.easeOutQuad)
-                );
-
-            activeTweenByCell.set(cell, tween);
-            tween.onEnd(() => {
-                activeTweenByCell.delete(cell);
-                obj.angle = cell.rot * 90;
-                obj.scaleTo(1);
-            });
-        }
+        // createInventorySlots(k, inventory, level.cols);
 
         k.onMousePress(["left", "right"], (button: MouseButton) => {
             const p = k.toWorld(k.mousePos());
             const cell = grid.cellAtWorld(p.x, p.y);
             if (cell) {
-                tryRotatePipe(cell, button === "left");
+                tryRotatePipe(k, cell, button === "left");
                 const isWin = checkWinCondition(grid);
                 k.debug.log(isWin ? "Win" : "Lose");
             }
