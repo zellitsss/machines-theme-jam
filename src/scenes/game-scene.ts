@@ -13,7 +13,7 @@ import {
     ROTATE_TWEEN_SEC,
     ROTATION_ANGLE_PER_STEP
 } from "../constants";
-import { createInventorySlots, setupLayers } from '../ui/game-scene-ui';
+import { createInventorySlots, LAYER_UI, setupLayers } from '../ui/game-scene-ui';
 import {panel, PanelComp} from "../components/panel";
 
 const activeTweenByCell = new WeakMap<Cell, TweenController>();
@@ -222,6 +222,7 @@ export default function createGameScene(k: KAPLAYCtx) {
         
         // Layout
         const leftPanel = k.add([
+            k.layer(LAYER_UI),
             k.pos(),
             k.anchor("topleft"),
             panel(k.width() * LEFT_PANEL_RATIO, k.height())
@@ -232,6 +233,7 @@ export default function createGameScene(k: KAPLAYCtx) {
             panel(k.width() * MAIN_PANEL_RATIO, k.height())       
         ]);
         const rightPanel = k.add([
+            k.layer(LAYER_UI),
             k.pos(mainPanel.pos.x + mainPanel.width, 0),
             k.anchor("topleft"),
             panel(k.width() * RIGHT_PANEL_RATIO, k.height())      

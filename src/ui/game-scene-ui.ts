@@ -1,6 +1,7 @@
-import {GameObj, KAPLAYCtx} from "kaplay";
+import {GameObj, KAPLAYCtx, MouseButton} from "kaplay";
 import { CELL_SIZE } from "../constants";
 import { PipeDictionary } from "../pipe-dictionary";
+import { drag } from "../components/drag";
 
 export const LAYER_BACKGROUND = "background";
 export const LAYER_GAME = "game";
@@ -16,6 +17,7 @@ export function setupLayers(k: KAPLAYCtx): void {
 }
 
 export function createInventorySlots(k: KAPLAYCtx, container: GameObj, inventory: Map<string, number>): void {
+    const slots: GameObj[] = [];
     const entries = Array.from(inventory.entries());
     entries.forEach(([pipeType, count], index) => {
         const def = PipeDictionary.get(pipeType)!;
@@ -27,6 +29,8 @@ export function createInventorySlots(k: KAPLAYCtx, container: GameObj, inventory
             k.rect(CELL_SIZE, CELL_SIZE, { fill: true }),
             k.color(255, 255, 255),
             k.outline(2, k.rgb(0, 0, 0)),
+            k.area(),
+            drag(k),
         ]);
 
         slot.add([
@@ -47,5 +51,26 @@ export function createInventorySlots(k: KAPLAYCtx, container: GameObj, inventory
             }),
             k.color(0, 0, 0),
         ]);
+
+        slot.onClick((button: MouseButton) => {
+            if (button === "left") {
+                if (slot.isDragging()) {
+                    return;
+                }
+                slot.pick();
+            }
+        });
+
+        slots.push(slot);
+    });
+
+    k.onMouseRelease((button: MouseButton) => {
+        if (button === "left") {
+            slots.forEach(slot => {
+                if (slot.isDragging()) {
+                    slot.release();
+                }
+            });
+        }
     });
 }
