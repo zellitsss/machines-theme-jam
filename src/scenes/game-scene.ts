@@ -1,4 +1,4 @@
-import {KAPLAYCtx, MouseButton, TweenController} from 'kaplay';
+import {GameObj, KAPLAYCtx, MouseButton, TweenController} from 'kaplay';
 import Grid from '../grid';
 import {PipeDictionary} from '../pipe-dictionary';
 import {LevelData} from "../LevelData";
@@ -7,7 +7,7 @@ import {ConnectionType} from "../types";
 import {canIn, getOppositeSide, getRotatedConnections} from "../utils";
 import {CELL_SIZE, ROTATE_SCALE_PEAK, ROTATE_TWEEN_SEC, ROTATION_ANGLE_PER_STEP} from "../constants";
 import { createInventorySlots, setupLayers } from '../ui/game-scene-ui';
-import {panel} from "../components/panel";
+import {panel, PanelComp} from "../components/panel";
 
 const activeTweenByCell = new WeakMap<Cell, TweenController>();
 
@@ -185,6 +185,19 @@ function animatePipeRotation(k: KAPLAYCtx, cell: Cell, isClockwise: boolean) {
 }
 
 export default function createGameScene(k: KAPLAYCtx) {
+
+    function setupSidePanel(panel: GameObj<PanelComp>) {
+
+    }
+
+    function setupMainPanel(panel: GameObj<PanelComp>) {
+
+    }
+
+    function setupRightPanel(panel: GameObj<PanelComp>) {
+
+    }
+    
     return async () => {
         setupLayers(k);
 
@@ -199,10 +212,26 @@ export default function createGameScene(k: KAPLAYCtx) {
         );
 
         initializePipeDictionary();
+        
+        // Layout
+        const leftPanel = k.add([
+            k.pos(),
+            k.anchor("topleft"),
+            panel(k.width() / 6, k.height())
+        ]);
+        const mainPanel = k.add([
+            k.pos(k.width() / 6, 0),
+            k.anchor("topleft"),
+            panel(k.width() * 4 / 6, k.height())       
+        ]);
+        const rightPanel = k.add([
+            k.pos(k.width() * 5 / 6, 0),
+            k.anchor("topleft"),
+            panel(k.width() / 6, k.height())      
+        ]);
 
         //Create grid
         const grid = new Grid(level.cols, level.rows, CELL_SIZE);
-
         level.cells.forEach((cellDef) => {
             let x = cellDef.x;
             let y = cellDef.y;
@@ -210,7 +239,7 @@ export default function createGameScene(k: KAPLAYCtx) {
             let sprite = PipeDictionary.get(cellDef.type)?.sprite;
             let cell = grid.at(x, y);
             const rot = (cellDef.rot ?? 0) % 4;
-            cell.obj = k.add([
+            cell.obj = mainPanel.add([
                 k.pos((x + .5) * CELL_SIZE, (y + .5) * CELL_SIZE),
                 k.sprite(sprite ? sprite : "", {
                     width: CELL_SIZE,
@@ -236,24 +265,6 @@ export default function createGameScene(k: KAPLAYCtx) {
                 grid.setEndCell(cell);
             }
         });
-        
-        const leftPanel = k.add([
-            k.pos(),
-            k.anchor("topleft"),
-            panel(k.width() / 6, k.height())
-        ]);
-        
-        const mainPanel = k.add([
-            k.pos(k.width() / 6, 0),
-            k.anchor("topleft"),
-            panel(k.width() * 4 / 6, k.height())       
-        ]);
-        
-        const rightPanel = k.add([
-            k.pos(k.width() * 5 / 6, 0),
-            k.anchor("topleft"),
-            panel(k.width() / 6, k.height())      
-        ]);
 
         // createInventorySlots(k, inventory, level.cols);
 

@@ -1,5 +1,6 @@
 import {Cell, CellFactory} from './cell';
 import {TRAVEL_OFFSET} from "./types";
+import {GameObj} from "kaplay";
 
 export default class Grid {
     private _cols: number;
