@@ -1,4 +1,4 @@
-import { KAPLAYCtx } from "kaplay";
+import {GameObj, KAPLAYCtx} from "kaplay";
 import { CELL_SIZE } from "../constants";
 import { PipeDictionary } from "../pipe-dictionary";
 
@@ -15,26 +15,8 @@ export function setupLayers(k: KAPLAYCtx): void {
     k.setLayers([LAYER_BACKGROUND, LAYER_GAME, LAYER_UI], LAYER_GAME);
 }
 
-export function createInventorySlots(k: KAPLAYCtx, inventory: Map<string, number>, gridCols: number): void {
-    const entries = [...inventory].filter(([pipeType]) => PipeDictionary.get(pipeType));
-    if (entries.length === 0) {
-        return;
-    }
-
-    const panelLeft = gridCols * CELL_SIZE + INVENTORY_PANEL_GAP;
-    const innerHeight = entries.length * CELL_SIZE + (entries.length - 1) * SLOT_PADDING;
-    const containerW = CELL_SIZE + 2 * CONTAINER_PADDING;
-    const containerH = innerHeight + 2 * CONTAINER_PADDING;
-
-    const container = k.add([
-        k.pos(panelLeft, 0),
-        k.layer(LAYER_UI),
-        k.anchor("topleft"),
-        k.rect(containerW, containerH, { fill: true }),
-        k.color(k.rgb(251, 255, 6)),
-        k.outline(2, k.rgb(125, 127, 134)),
-    ]);
-
+export function createInventorySlots(k: KAPLAYCtx, container: GameObj, inventory: Map<string, number>): void {
+    const entries = Array.from(inventory.entries());
     entries.forEach(([pipeType, count], index) => {
         const def = PipeDictionary.get(pipeType)!;
         const slotTop = CONTAINER_PADDING + index * (CELL_SIZE + SLOT_PADDING);

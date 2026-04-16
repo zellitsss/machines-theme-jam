@@ -212,13 +212,13 @@ export default function createGameScene(k: KAPLAYCtx) {
         // Load Level data
         const levelData = await k.loadJSON("levelData", "data/level-01.json");
         const level = levelData as LevelData;
+        
+        initializePipeDictionary();
 
         // Load inventory data
-        const inventory: Map<string, number> = new Map(
-            Object.entries(level.inventory ?? {})
+        let inventory: Map<string, number> = new Map(
+            Object.entries(level.inventory ?? {}).filter(([id, count]) => count > 0 && PipeDictionary.has(id))
         );
-
-        initializePipeDictionary();
         
         // Layout
         const leftPanel = k.add([
@@ -273,7 +273,7 @@ export default function createGameScene(k: KAPLAYCtx) {
             }
         });
 
-        // createInventorySlots(k, inventory, level.cols);
+        createInventorySlots(k, leftPanel, inventory);
 
         k.onMousePress(["left", "right"], (button: MouseButton) => {
             const p = k.toWorld(k.mousePos());
