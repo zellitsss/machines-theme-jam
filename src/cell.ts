@@ -27,7 +27,7 @@ export class Cell implements CellData {
         this.y = y;
     }
 
-    getExitSide(enteredSide: number): number
+    getExitSide(enteredSide: number): number | null
     {
         const rotatedConnections = getRotatedConnections(PipeDictionary.get(this.type)?.flow ?? [0, 0, 0, 0], this.rot);
         for (let side = 0; side < 4; side++) {
