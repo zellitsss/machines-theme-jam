@@ -210,7 +210,7 @@ export default function createGameScene(k: KAPLAYCtx) {
 
         await loadAssets(k);
         // Load Level data
-        const levelData = await k.loadJSON("levelData", "data/level-01.json");
+        const levelData = await k.loadJSON("levelData", "data/level-02.json");
         const level = levelData as LevelData;
         
         initializePipeDictionary();
