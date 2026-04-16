@@ -1,10 +1,10 @@
-import {GameObj, KAPLAYCtx, MouseButton, TweenController} from 'kaplay';
-import Grid from '../grid';
-import {PipeDictionary} from '../pipe-dictionary';
-import {LevelData} from "../LevelData";
-import {Cell} from "../cell";
-import {ConnectionType} from "../types";
-import {canIn, getOppositeSide, getRotatedConnections} from "../utils";
+import { GameObj, KAPLAYCtx, MouseButton, TweenController, Vec2 } from "kaplay";
+import Grid from "../grid";
+import { PipeDictionary } from "../pipe-dictionary";
+import { LevelData } from "../LevelData";
+import { Cell } from "../cell";
+import { ConnectionType } from "../types";
+import { canIn, getOppositeSide, getRotatedConnections } from "../utils";
 import {
     CELL_SIZE,
     LEFT_PANEL_RATIO, MAIN_PANEL_RATIO,
@@ -13,8 +13,9 @@ import {
     ROTATE_TWEEN_SEC,
     ROTATION_ANGLE_PER_STEP
 } from "../constants";
-import { createInventorySlots, LAYER_UI, setupLayers } from '../ui/game-scene-ui';
-import {panel, PanelComp} from "../components/panel";
+import { createInventorySlots, Inventory, LAYER_UI, setupLayers } from "../ui/game-scene-ui";
+import { panel } from "../components/panel";
+import { drag } from "../components/drag";
 
 const activeTweenByCell = new WeakMap<Cell, TweenController>();
 
@@ -192,19 +193,6 @@ function animatePipeRotation(k: KAPLAYCtx, cell: Cell, isClockwise: boolean) {
 }
 
 export default function createGameScene(k: KAPLAYCtx) {
-
-    function setupSidePanel(panel: GameObj<PanelComp>) {
-
-    }
-
-    function setupMainPanel(panel: GameObj<PanelComp>) {
-
-    }
-
-    function setupRightPanel(panel: GameObj<PanelComp>) {
-
-    }
-    
     return async () => {
         setupLayers(k);
 
@@ -212,11 +200,10 @@ export default function createGameScene(k: KAPLAYCtx) {
         // Load Level data
         const levelData = await k.loadJSON("levelData", "data/level-02.json");
         const level = levelData as LevelData;
-        
+
         initializePipeDictionary();
 
-        // Load inventory data
-        let inventory: Map<string, number> = new Map(
+        const inventoryData: Map<string, number> = new Map(
             Object.entries(level.inventory ?? {}).filter(([id, count]) => count > 0 && PipeDictionary.has(id))
         );
         
@@ -241,36 +228,136 @@ export default function createGameScene(k: KAPLAYCtx) {
 
         //Create grid
         const grid = new Grid(mainPanel, level.cols, level.rows, CELL_SIZE);
-        level.cells.forEach((cellDef) => {
-            let x = cellDef.x;
-            let y = cellDef.y;
 
-            let sprite = PipeDictionary.get(cellDef.type)?.sprite;
-            let cell = grid.at(x, y);
-            const rot = (cellDef.rot ?? 0) % 4;
-            cell.obj = mainPanel.add([
-                k.pos((x + .5) * CELL_SIZE, (y + .5) * CELL_SIZE),
+        function logWinState() {
+            k.debug.log(checkWinCondition(grid) ? "Win" : "Lose");
+        }
+
+        let inventory: Inventory;
+
+        function clearCell(cell: Cell) {
+            if (cell.obj) {
+                cell.obj.destroy();
+            }
+            cell.obj = null;
+            cell.type = "";
+            cell.rot = 0;
+            cell.placedFromInventory = false;
+        }
+
+        function tryPlaceFromInventory(pipeType: string, worldPos: Vec2): boolean {
+            const cell = grid.cellAtWorld(worldPos.x, worldPos.y);
+            if (!cell || cell.obj || !cell.canPlace) {
+                return false;
+            }
+            if (!PipeDictionary.has(pipeType)) {
+                return false;
+            }
+            placePipe(cell, pipeType, 0, true);
+            logWinState();
+            return true;
+        }
+
+        inventory = createInventorySlots(k, leftPanel, inventoryData, tryPlaceFromInventory);
+
+        function placePipe(cell: Cell, pipeType: string, rot: number, fromInventory: boolean) {
+            const sprite = PipeDictionary.get(pipeType)?.sprite;
+            cell.placedFromInventory = fromInventory;
+            cell.type = pipeType;
+            cell.rot = rot % 4;
+
+            const comps: unknown[] = [
+                k.pos((cell.x + 0.5) * CELL_SIZE, (cell.y + 0.5) * CELL_SIZE),
                 k.sprite(sprite ? sprite : "", {
                     width: CELL_SIZE,
-                    height: CELL_SIZE
+                    height: CELL_SIZE,
                 }),
-                k.rotate(rot * 90),
+                k.rotate(cell.rot * 90),
                 k.scale(1),
                 k.anchor("center"),
                 k.timer(),
-                k.area()
-            ]);
-            cell.obj.onClick((button: MouseButton) => {
-                tryRotatePipe(k, cell, button === "left");
-                k.debug.log(checkWinCondition(grid) ? "Win" : "Lose");
-            });
-            cell.type = cellDef.type;
-            cell.x = x;
-            cell.y = y;
-            cell.rot = rot;
+                k.area(),
+            ];
+
+            if (fromInventory) {
+                comps.push(
+                    drag({
+                        k,
+                        layer: LAYER_UI,
+                        getPayload: () => {
+                            if (!cell.placedFromInventory || !cell.type) {
+                                return null;
+                            }
+                            return {
+                                pipeType: cell.type,
+                                source: "grid" as const,
+                                fromCell: cell,
+                            };
+                        },
+                        onDrop(worldPos, payload) {
+                            if (payload.source !== "grid" || !payload.fromCell || payload.fromCell !== cell) {
+                                return;
+                            }
+                            const fromCell = cell;
+                            const pipeTypeMoved = fromCell.type;
+                            const rotMoved = fromCell.rot;
+                            const targetCell = grid.cellAtWorld(worldPos.x, worldPos.y);
+
+                            if (targetCell === fromCell) {
+                                return;
+                            }
+
+                            if (targetCell && !targetCell.obj && targetCell.canPlace) {
+                                clearCell(fromCell);
+                                placePipe(targetCell, pipeTypeMoved, rotMoved, true);
+                                logWinState();
+                                return;
+                            }
+
+                            clearCell(fromCell);
+                            inventory.add(pipeTypeMoved, 1);
+                            logWinState();
+                        },
+                        onTap: () => {
+                            if (tryRotatePipe(k, cell, true)) {
+                                logWinState();
+                            }
+                        },
+                    })
+                );
+            }
+
+            cell.obj = mainPanel.add(comps as GameObj[]);
+
+            if (fromInventory) {
+                cell.obj.onClick((button: MouseButton) => {
+                    if (button !== "left") return;
+                    if (cell.obj?.isDragging()) return;
+                    cell.obj!.pick();
+                });
+            } else {
+                cell.obj.onClick((button: MouseButton) => {
+                    if (button !== "left") return;
+                    if (tryRotatePipe(k, cell, true)) {
+                        logWinState();
+                    }
+                });
+            }
+        }
+
+        level.cells.forEach((cellDef) => {
+            const x = cellDef.x;
+            const y = cellDef.y;
+            const cell = grid.at(x, y);
+            const rot = (cellDef.rot ?? 0) % 4;
+
             cell.canRotate = cellDef.canRotate ?? true;
             cell.canClear = cellDef.canClear ?? true;
             cell.canPlace = cellDef.canPlace ?? true;
+            cell.x = x;
+            cell.y = y;
+
+            placePipe(cell, cellDef.type, rot, false);
 
             if (cellDef.type == 'pipe-gate-start') {
                 grid.setStartCell(cell);
@@ -279,7 +366,5 @@ export default function createGameScene(k: KAPLAYCtx) {
                 grid.setEndCell(cell);
             }
         });
-
-        createInventorySlots(k, leftPanel, inventory);
-    }
+    };
 }

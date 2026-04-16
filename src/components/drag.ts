@@ -1,27 +1,130 @@
-import { GameObj, KAPLAYCtx } from "kaplay";
+import { GameObj, KAPLAYCtx, KEventController, MouseButton, Vec2 } from "kaplay";
+import { Cell } from "../cell";
+import { PipeDictionary } from "../pipe-dictionary";
+import { CELL_SIZE } from "../constants";
 
+export type DragPayload = {
+    pipeType: string;
+    source: "inventory" | "grid";
+    fromCell?: Cell;
+};
 
-export function drag(k: KAPLAYCtx) {
-    let currentDragging: GameObj | null = null;
+export type DragOpts = {
+    k: KAPLAYCtx;
+    layer: string; // Layer name for the drag ghost (e.g. ui).
+    getPayload: () => DragPayload | null;
+    onDrop: (worldPos: Vec2, payload: DragPayload) => void;
+    onTap?: () => void;
+    dragThreshold?: number;
+};
+
+const DEFAULT_THRESHOLD = 4;
+
+export function drag(opts: DragOpts) {
+    const k = opts.k;
+    const threshold = opts.dragThreshold ?? DEFAULT_THRESHOLD;
+
+    let ghost: GameObj | null = null;
+    let payload: DragPayload | null = null;
     let offset = k.vec2(0, 0);
+    let pressed = false;
+    let pressStart = k.vec2(0, 0);
+    let pendingPayload: DragPayload | null = null;
+    let releaseCtl: KEventController | null = null;
+
+    function clearSubscription() {
+        if (releaseCtl) {
+            releaseCtl.cancel();
+            releaseCtl = null;
+        }
+    }
+
+    function destroyGhost() {
+        if (ghost) {
+            ghost.destroy();
+            ghost = null;
+        }
+        payload = null;
+    }
+
+    function beginDrag(p: DragPayload) {
+        const def = PipeDictionary.get(p.pipeType);
+        if (!def) return;
+        payload = p;
+        const mouse = k.mousePos();
+        ghost = k.add([
+            k.layer(opts.layer),
+            k.pos(mouse),
+            k.anchor("center"),
+            k.sprite(def.sprite, {
+                width: CELL_SIZE - 4,
+                height: CELL_SIZE - 4,
+            }),
+        ]);
+        offset = mouse.sub(ghost.pos);
+        if (p.source === "grid" && p.fromCell?.obj) {
+            p.fromCell.obj.opacity = 0;
+        }
+    }
+
+    function finishPressOrDrag() {
+        if (!pressed && !ghost) return;
+        const wasDragging = ghost !== null;
+        const p = payload ?? pendingPayload;
+
+        if (wasDragging && p) {
+            const worldPos = k.mousePos();
+            try {
+                opts.onDrop(worldPos, p);
+            } finally {
+                if (p.source === "grid" && p.fromCell?.obj) {
+                    p.fromCell.obj.opacity = 1;
+                }
+                destroyGhost();
+            }
+        } else if (pressed && !wasDragging && opts.onTap) {
+            opts.onTap();
+        }
+
+        pressed = false;
+        pendingPayload = null;
+        clearSubscription();
+    }
 
     return {
         id: "drag",
         require: ["pos", "area"],
+
         pick() {
-            currentDragging = this;
-            offset = k.mousePos().sub(this.pos);
+            if (pressed || ghost) return;
+            const p = opts.getPayload();
+            if (!p) return;
+            pendingPayload = p;
+            pressed = true;
+            pressStart = k.mousePos();
+
+            clearSubscription();
+            releaseCtl = k.onMouseRelease((button: MouseButton) => {
+                if (button !== "left") return;
+                finishPressOrDrag();
+            });
         },
-        release() {
-            currentDragging = null;
-        },
+
         isDragging() {
-            return currentDragging !== null;
+            return ghost !== null;
         },
+
         update() {
-            if (currentDragging) {
-                this.pos = k.mousePos().sub(offset);
+            if (ghost) {
+                ghost.pos = k.mousePos().sub(offset);
+                return;
+            }
+            if (pressed && pendingPayload) {
+                const moved = k.mousePos().sub(pressStart).len();
+                if (moved >= threshold) {
+                    beginDrag(pendingPayload);
+                }
             }
         },
-    }
+    };
 }

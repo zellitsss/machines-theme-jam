@@ -10,6 +10,7 @@ export interface CellData {
     canPlace: boolean;
     canClear: boolean;
     canRotate: boolean;
+    placedFromInventory?: boolean;
 }
 
 export class Cell implements CellData {
@@ -20,11 +21,17 @@ export class Cell implements CellData {
     canPlace: boolean;
     canClear: boolean;
     canRotate: boolean;
+    placedFromInventory: boolean = false;
     obj: GameObj | null;
     
     constructor(x: number = 0, y: number = 0) {
         this.x = x;
         this.y = y;
+        this.type = "";
+        this.obj = null;
+        this.canPlace = true;
+        this.canClear = true;
+        this.canRotate = true;
     }
 
     getExitSide(enteredSide: number): number | null
