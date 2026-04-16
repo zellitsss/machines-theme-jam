@@ -255,8 +255,13 @@ export default function createGameScene(k: KAPLAYCtx) {
                 k.rotate(rot * 90),
                 k.scale(1),
                 k.anchor("center"),
-                k.timer()
+                k.timer(),
+                k.area()
             ]);
+            cell.obj.onClick((button: MouseButton) => {
+                tryRotatePipe(k, cell, button === "left");
+                k.debug.log(checkWinCondition(grid) ? "Win" : "Lose");
+            });
             cell.type = cellDef.type;
             cell.x = x;
             cell.y = y;
@@ -274,15 +279,5 @@ export default function createGameScene(k: KAPLAYCtx) {
         });
 
         createInventorySlots(k, leftPanel, inventory);
-
-        k.onMousePress(["left", "right"], (button: MouseButton) => {
-            const p = k.toWorld(k.mousePos());
-            const cell = grid.cellAtWorld(p.x, p.y);
-            if (cell) {
-                tryRotatePipe(k, cell, button === "left");
-                const isWin = checkWinCondition(grid);
-                k.debug.log(isWin ? "Win" : "Lose");
-            }
-        });
     }
 }
