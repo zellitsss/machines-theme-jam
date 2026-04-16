@@ -16,4 +16,4 @@ k.loadRoot("./"); // A good idea for Itch.io publishing later
 k.scene(NAME_MainMenu, createMainMenuScene(k));
 k.scene(NAME_Game, createGameScene(k));
 
-k.go(NAME_Game);
+k.go(NAME_MainMenu);
