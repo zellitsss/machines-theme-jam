@@ -7,4 +7,6 @@ export const NAME_Game = "game";
 
 export const LEFT_PANEL_RATIO = 1/4;
 export const RIGHT_PANEL_RATIO = 1/4;
-export const MAIN_PANEL_RATIO = 1/2;
+export const CENTER_PANEL_RATIO = 1/2;
+export const TOP_PANEL_HEIGHT = 120;
+export const MAIN_PANEL_PADDING = 20;

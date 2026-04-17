@@ -6,13 +6,12 @@ import {Cell} from "../cell";
 import {ConnectionType} from "../types";
 import {canIn, getOppositeSide, getRotatedConnections} from "../utils";
 import {
-    CELL_SIZE,
-    LEFT_PANEL_RATIO,
-    MAIN_PANEL_RATIO,
+    CELL_SIZE, CENTER_PANEL_RATIO,
+    LEFT_PANEL_RATIO, MAIN_PANEL_PADDING,
     RIGHT_PANEL_RATIO,
     ROTATE_SCALE_PEAK,
     ROTATE_TWEEN_SEC,
-    ROTATION_ANGLE_PER_STEP
+    ROTATION_ANGLE_PER_STEP, TOP_PANEL_HEIGHT
 } from "../constants";
 import {createInventorySlots, Inventory, LAYER_UI, setupLayers} from "../ui/game-scene-ui";
 import {panel} from "../components/panel";
@@ -119,28 +118,28 @@ function checkWinCondition(grid: Grid): boolean {
             return false;
         }
         visited.add(posKey);
-        
+
         if (current.type === "pipe-gate-end") {
             return true;
         }
-        
+
         const exitSide = current.getExitSide(incomingSide);
         if (exitSide === null) {
             break;
         }
-        
+
         const next = grid.getNextConnectedCell(current, exitSide);
         if (!next) {
             break;
         }
-        
+
         // Check if next cell is connected to the current cell
         const nextEntrySide = getOppositeSide(exitSide);
         const nextRotatedConnections = getRotatedConnections(PipeDictionary.get(next.type)?.flow ?? [0, 0, 0, 0], next.rot);
         if (!canIn(nextRotatedConnections[nextEntrySide])) {
             break;
         }
-        
+
         incomingSide = (exitSide + 2) % 4;
         current = next;
     }
@@ -204,6 +203,12 @@ function animatePipeRotation(k: KAPLAYCtx, cell: Cell, isClockwise: boolean) {
     });
 }
 
+function calculateCellVisualSize(width: number, height: number, cols: number, rows: number): number {
+    const cellWidth = width / cols;
+    const cellHeight = height / rows;
+    return Math.min(cellWidth, cellHeight);
+}
+
 export default function createGameScene(k: KAPLAYCtx) {
     return async () => {
         setupLayers(k);
@@ -218,7 +223,7 @@ export default function createGameScene(k: KAPLAYCtx) {
         const inventoryData: Map<string, number> = new Map(
             Object.entries(level.inventory ?? {}).filter(([id, count]) => count > 0 && PipeDictionary.has(id))
         );
-        
+
         // Layout
         const leftPanel = k.add([
             k.layer(LAYER_UI),
@@ -226,20 +231,32 @@ export default function createGameScene(k: KAPLAYCtx) {
             k.anchor("topleft"),
             panel(k.width() * LEFT_PANEL_RATIO, k.height())
         ]);
-        const mainPanel = k.add([
-            k.pos(leftPanel.pos.x + leftPanel.width, 0),
-            k.anchor("topleft"),
-            panel(k.width() * MAIN_PANEL_RATIO, k.height())       
+        const topPanel = -k.add([
+            k.anchor("top"),
+            k.pos(leftPanel.pos.x + (k.width() * CENTER_PANEL_RATIO / 2), 0),
+            panel(k.width() * CENTER_PANEL_RATIO, TOP_PANEL_HEIGHT)
+        ]);
+        const centerPanel = k.add([
+            k.pos(leftPanel.pos.x + leftPanel.width, TOP_PANEL_HEIGHT),
+            k.anchor("top"),
+            panel(k.width() * CENTER_PANEL_RATIO, k.height() - TOP_PANEL_HEIGHT)
         ]);
         const rightPanel = k.add([
             k.layer(LAYER_UI),
-            k.pos(mainPanel.pos.x + mainPanel.width, 0),
+            k.pos(centerPanel.pos.x + centerPanel.width, 0),
             k.anchor("topleft"),
-            panel(k.width() * RIGHT_PANEL_RATIO, k.height())      
+            panel(k.width() * RIGHT_PANEL_RATIO, k.height())
         ]);
 
+
         //Create grid
-        const grid = new Grid(mainPanel, level.cols, level.rows, CELL_SIZE);
+        const grid = new Grid(centerPanel, level.cols, level.rows, CELL_SIZE);
+
+        const cellVisualSize = calculateCellVisualSize(
+            centerPanel.width - MAIN_PANEL_PADDING * 2,
+            centerPanel.height - MAIN_PANEL_PADDING * 2,
+            level.cols,
+            level.rows);
 
         function logWinState() {
             k.debug.log(checkWinCondition(grid) ? "Win" : "Lose");
@@ -279,10 +296,10 @@ export default function createGameScene(k: KAPLAYCtx) {
             cell.rot = rot % 4;
 
             const comps: unknown[] = [
-                k.pos((cell.x + 0.5) * CELL_SIZE, (cell.y + 0.5) * CELL_SIZE),
+                k.pos((cell.x + 0.5) * cellVisualSize, (cell.y + 0.5) * cellVisualSize),
                 k.sprite(sprite ? sprite : "", {
-                    width: CELL_SIZE,
-                    height: CELL_SIZE,
+                    width: cellVisualSize,
+                    height: cellVisualSize,
                 }),
                 k.rotate(cell.rot * 90),
                 k.scale(1),
@@ -339,7 +356,7 @@ export default function createGameScene(k: KAPLAYCtx) {
                 );
             }
 
-            cell.obj = mainPanel.add(comps as GameObj[]);
+            cell.obj = centerPanel.add(comps as GameObj[]);
 
             if (fromInventory) {
                 cell.obj.onClick((button: MouseButton) => {
