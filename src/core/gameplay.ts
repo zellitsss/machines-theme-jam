@@ -20,7 +20,6 @@ export const getExitSide = (wire: GameObj<CellState>, enteredSide: number): numb
 }
 
 export const isWiresConnected = (wires: GameObj<CellState>[], startWire: GameObj<CellState>, endWire: GameObj<CellState>): boolean => {
-    console.log(wires, startWire, endWire)
     if (!startWire || !endWire) {
         return false;
     }

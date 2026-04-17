@@ -17,20 +17,16 @@ export type CellConnections = [ConnectionType, ConnectionType, ConnectionType, C
 export interface CellConstraint {
     canPlace: boolean;
     canRotate: boolean;
-    prePlacedType?: string;
-    prePlacedRot?: number;
+    rot?: number;
+    type?: string;
+    modifier?: number;
 }
 
 export type GridConstraints = Record<string, CellConstraint>;
 
-export interface CellData {
+export interface CellData extends CellConstraint {
     x: number;
     y: number;
-    type: string;
-    rot: number;
-    canPlace: boolean;
-    canRotate: boolean;
-    modifier: number;
 }
 
 export interface LevelData {

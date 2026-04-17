@@ -135,6 +135,9 @@ export default function createGameScene(k: KAPLAYCtx) {
             if (config) {
                 config.canRotate = cellData.canRotate ?? true;
                 config.canPlace = cellData.canPlace ?? true;
+                config.rot = cellData.rot ?? 0;
+                config.type = cellData.type ?? "";
+                config.modifier = cellData.modifier ?? 0;
             }
             const wire = k.add(createWire(
                 k,
