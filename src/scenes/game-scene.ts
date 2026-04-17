@@ -4,14 +4,7 @@ import {wireDictionary} from "../wire-dictionary";
 import {LevelData} from "../LevelData";
 import {Cell} from "../cell";
 import {calculateCellVisualSize} from "../utils";
-import {
-    CENTER_PANEL_RATIO,
-    LEFT_PANEL_RATIO, MAIN_PANEL_PADDING,
-    RIGHT_PANEL_RATIO,
-    ROTATE_SCALE_PEAK,
-    ROTATE_TWEEN_SEC,
-    ROTATION_ANGLE_PER_STEP, TOP_PANEL_HEIGHT
-} from "../constants";
+import * as Constants from "../constants";
 import {createInventorySlots, Inventory, LAYER_UI, setupLayers} from "../ui/game-scene-ui";
 import {panel} from "../components/panel";
 import {drag} from "../components/drag";
@@ -50,15 +43,15 @@ function animateWireRotation(k: KAPLAYCtx, cell: Cell, isClockwise: boolean) {
     const obj = cell.obj!;
     const from = obj.angle;
     let bias = isClockwise ? 1 : -1;
-    const to = from + bias * ROTATION_ANGLE_PER_STEP;
+    const to = from + bias * Constants.ROTATION_ANGLE_PER_STEP;
     // Rotate tween
-    const tween = obj.tween(from, to, ROTATE_TWEEN_SEC, (a) => {
+    const tween = obj.tween(from, to, Constants.ROTATE_TWEEN_SEC, (a) => {
         obj.angle = a;
     }, k.easings.easeInOutQuad);
 
-    const half = ROTATE_TWEEN_SEC / 2;
+    const half = Constants.ROTATE_TWEEN_SEC / 2;
     const scaleNormal = k.vec2(1, 1);
-    const scaleSmall = k.vec2(ROTATE_SCALE_PEAK, ROTATE_SCALE_PEAK);
+    const scaleSmall = k.vec2(Constants.ROTATE_SCALE_PEAK, Constants.ROTATE_SCALE_PEAK);
     // Scale tween
     obj
         .tween(scaleNormal, scaleSmall, half, (v) => obj.scaleTo(v), k.easings.easeOutQuad)
@@ -92,35 +85,35 @@ export default function createGameScene(k: KAPLAYCtx) {
             k.layer(LAYER_UI),
             k.pos(),
             k.anchor("topleft"),
-            panel(k.width() * LEFT_PANEL_RATIO, k.height())
+            panel(k.width() * Constants.LEFT_PANEL_RATIO, k.height())
         ]);
         const topPanel = -k.add([
             k.anchor("top"),
-            k.pos(leftPanel.pos.x + (k.width() * CENTER_PANEL_RATIO / 2), 0),
-            panel(k.width() * CENTER_PANEL_RATIO, TOP_PANEL_HEIGHT)
+            k.pos(leftPanel.pos.x + (k.width() * Constants.CENTER_PANEL_RATIO / 2), 0),
+            panel(k.width() * Constants.CENTER_PANEL_RATIO, Constants.TOP_PANEL_HEIGHT)
         ]);
         const centerPanel = k.add([
-            k.pos(leftPanel.pos.x + leftPanel.width, TOP_PANEL_HEIGHT),
+            k.pos(leftPanel.pos.x + leftPanel.width, Constants.TOP_PANEL_HEIGHT),
             k.anchor("top"),
-            panel(k.width() * CENTER_PANEL_RATIO, k.height() - TOP_PANEL_HEIGHT)
+            panel(k.width() * Constants.CENTER_PANEL_RATIO, k.height() - Constants.TOP_PANEL_HEIGHT)
         ]);
         const rightPanel = k.add([
             k.layer(LAYER_UI),
             k.pos(centerPanel.pos.x + centerPanel.width, 0),
             k.anchor("topleft"),
-            panel(k.width() * RIGHT_PANEL_RATIO, k.height())
+            panel(k.width() * Constants.RIGHT_PANEL_RATIO, k.height())
         ]);
         
         const cellVisualSize = calculateCellVisualSize(
-            centerPanel.width - MAIN_PANEL_PADDING * 2,
-            centerPanel.height - MAIN_PANEL_PADDING * 2,
+            centerPanel.width - Constants.MAIN_PANEL_PADDING * 2,
+            centerPanel.height - Constants.MAIN_PANEL_PADDING * 2,
             level.cols,
             level.rows);
         
         //Create grid
         const grid = new Grid(centerPanel, level.cols, level.rows, cellVisualSize);
-        const gridOffsetX = ((centerPanel.width - MAIN_PANEL_PADDING * 2) - level.cols * cellVisualSize) / 2 + MAIN_PANEL_PADDING;
-        const girdOffsetY = ((centerPanel.height - MAIN_PANEL_PADDING * 2) - level.rows * cellVisualSize) / 2 + MAIN_PANEL_PADDING;
+        const gridOffsetX = ((centerPanel.width - Constants.MAIN_PANEL_PADDING * 2) - level.cols * cellVisualSize) / 2 + Constants.MAIN_PANEL_PADDING;
+        const girdOffsetY = ((centerPanel.height - Constants.MAIN_PANEL_PADDING * 2) - level.rows * cellVisualSize) / 2 + Constants.MAIN_PANEL_PADDING;
 
         function logWinState() {
             k.debug.log(grid.checkWinCondition() ? "Win" : "Lose");
