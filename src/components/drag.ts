@@ -52,6 +52,7 @@ export function drag(opts: DragOpts) {
         if (!def) return;
         payload = p;
         const mouse = k.mousePos();
+        const angle = p.source === "grid" && p.fromCell?.obj ? p.fromCell.obj.angle : 0;
         ghost = k.add([
             k.layer(opts.layer),
             k.pos(mouse),
@@ -60,6 +61,7 @@ export function drag(opts: DragOpts) {
                 width: CELL_SIZE - 4,
                 height: CELL_SIZE - 4,
             }),
+            k.rotate(angle),
         ]);
         offset = mouse.sub(ghost.pos);
         if (p.source === "grid" && p.fromCell?.obj) {
