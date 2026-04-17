@@ -1,6 +1,8 @@
 import {Cell, CellFactory} from './cell';
 import {TRAVEL_OFFSET} from "./types";
 import {GameObj} from "kaplay";
+import {canIn, getOppositeSide, getRotatedConnections} from "./utils";
+import {wireDictionary} from "./wire-dictionary";
 
 export default class Grid {
     private _cols: number;
@@ -69,5 +71,49 @@ export default class Grid {
     
     getEndCell(): Cell {
         return this._endCell;   
+    }
+
+    checkWinCondition(): boolean {
+        const startCell = this.getStartCell();
+        if (!startCell.obj) {
+            return false;
+        }
+
+        let current = startCell;
+        let visited = new Set<string>();
+        let incomingSide = -1;
+        while (current) {
+            const posKey = `${current.x},${current.y}`;
+            if (visited.has(posKey)) {
+                return false;
+            }
+            visited.add(posKey);
+
+            if (current.type === "wire-gate-end") {
+                return true;
+            }
+
+            const exitSide = current.getExitSide(incomingSide);
+            if (exitSide === null) {
+                break;
+            }
+
+            const next = this.getNextConnectedCell(current, exitSide);
+            if (!next) {
+                break;
+            }
+
+            // Check if next cell is connected to the current cell
+            const nextEntrySide = getOppositeSide(exitSide);
+            const nextRotatedConnections = getRotatedConnections(wireDictionary.get(next.type)?.flow ?? [0, 0, 0, 0], next.rot);
+            if (!canIn(nextRotatedConnections[nextEntrySide])) {
+                break;
+            }
+
+            incomingSide = (exitSide + 2) % 4;
+            current = next;
+        }
+
+        return false;
     }
 }

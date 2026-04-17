@@ -1,6 +1,4 @@
-﻿import {CellConnections, ConnectionType, TRAVEL_OFFSET} from "./types";
-import Grid from "./grid";
-import {Cell} from "./cell";
+﻿import {CellConnections, ConnectionType} from "./types";
 
 export function canConnect(type: ConnectionType): boolean {
     return type > ConnectionType.None;
@@ -26,4 +24,10 @@ export function getRotatedConnections(base: CellConnections, rotationStep: numbe
         connections.unshift(last);
     }
     return connections as CellConnections;
+}
+
+export function calculateCellVisualSize(width: number, height: number, cols: number, rows: number): number {
+    const cellWidth = width / cols;
+    const cellHeight = height / rows;
+    return Math.min(cellWidth, cellHeight);
 }

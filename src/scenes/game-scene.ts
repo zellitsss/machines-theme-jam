@@ -3,7 +3,7 @@ import Grid from "../grid";
 import {wireDictionary} from "../wire-dictionary";
 import {LevelData} from "../LevelData";
 import {Cell} from "../cell";
-import {canIn, getOppositeSide, getRotatedConnections} from "../utils";
+import {calculateCellVisualSize, canIn, getOppositeSide, getRotatedConnections} from "../utils";
 import {
     CENTER_PANEL_RATIO,
     LEFT_PANEL_RATIO, MAIN_PANEL_PADDING,
@@ -18,50 +18,6 @@ import {drag} from "../components/drag";
 
 const activeTweenByCell = new WeakMap<Cell, TweenController>();
 
-function checkWinCondition(grid: Grid): boolean {
-    const startCell = grid.getStartCell();
-    if (!startCell.obj) {
-        return false;
-    }
-
-    let current = startCell;
-    let visited = new Set<string>();
-    let incomingSide = -1;
-    while (current) {
-        const posKey = `${current.x},${current.y}`;
-        if (visited.has(posKey)) {
-            return false;
-        }
-        visited.add(posKey);
-
-        if (current.type === "wire-gate-end") {
-            return true;
-        }
-
-        const exitSide = current.getExitSide(incomingSide);
-        if (exitSide === null) {
-            break;
-        }
-
-        const next = grid.getNextConnectedCell(current, exitSide);
-        if (!next) {
-            break;
-        }
-
-        // Check if next cell is connected to the current cell
-        const nextEntrySide = getOppositeSide(exitSide);
-        const nextRotatedConnections = getRotatedConnections(wireDictionary.get(next.type)?.flow ?? [0, 0, 0, 0], next.rot);
-        if (!canIn(nextRotatedConnections[nextEntrySide])) {
-            break;
-        }
-
-        incomingSide = (exitSide + 2) % 4;
-        current = next;
-    }
-
-    return false;
-}
-
 async function loadAssets(k: KAPLAYCtx) {
     await Promise.all([
         k.loadSprite("wire-i", "sprites/wire-i.png"),
@@ -75,7 +31,7 @@ async function loadAssets(k: KAPLAYCtx) {
     ]);
 }
 
-function tryRotatewire(k: KAPLAYCtx, cell: Cell, isClockwise: boolean): boolean {
+function tryRotateWire(k: KAPLAYCtx, cell: Cell, isClockwise: boolean): boolean {
     if (!cell.obj || !cell.type || !cell.canRotate) {
         return false;
     }
@@ -116,12 +72,6 @@ function animateWireRotation(k: KAPLAYCtx, cell: Cell, isClockwise: boolean) {
         obj.angle = cell.rot * 90;
         obj.scaleTo(1);
     });
-}
-
-function calculateCellVisualSize(width: number, height: number, cols: number, rows: number): number {
-    const cellWidth = width / cols;
-    const cellHeight = height / rows;
-    return Math.min(cellWidth, cellHeight);
 }
 
 export default function createGameScene(k: KAPLAYCtx) {
@@ -173,7 +123,7 @@ export default function createGameScene(k: KAPLAYCtx) {
         const girdOffsetY = ((centerPanel.height - MAIN_PANEL_PADDING * 2) - level.rows * cellVisualSize) / 2 + MAIN_PANEL_PADDING;
 
         function logWinState() {
-            k.debug.log(checkWinCondition(grid) ? "Win" : "Lose");
+            k.debug.log(grid.checkWinCondition() ? "Win" : "Lose");
         }
 
         let inventory: Inventory;
@@ -265,7 +215,7 @@ export default function createGameScene(k: KAPLAYCtx) {
                             logWinState();
                         },
                         onTap: () => {
-                            if (tryRotatewire(k, cell, true)) {
+                            if (tryRotateWire(k, cell, true)) {
                                 logWinState();
                             }
                         },
@@ -284,7 +234,7 @@ export default function createGameScene(k: KAPLAYCtx) {
             } else {
                 cell.obj.onClick((button: MouseButton) => {
                     if (button !== "left") return;
-                    if (tryRotatewire(k, cell, true)) {
+                    if (tryRotateWire(k, cell, true)) {
                         logWinState();
                     }
                 });
