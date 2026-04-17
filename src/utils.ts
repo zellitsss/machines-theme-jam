@@ -33,6 +33,10 @@ export function calculateCellVisualSize(width: number, height: number, cols: num
     return Math.min(cellWidth, cellHeight);
 }
 
-export function getPosKey(gridPos: Vec2): string {
-    return `${gridPos.x},${gridPos.y}`;
+export function getPosKey(x: number, y: number): string {
+    return `${x},${y}`;
+}
+
+export function getRotationFromStep(step: number): number {
+    return ((step % 4 + 4) % 4) * 90;
 }

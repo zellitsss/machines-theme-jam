@@ -22,3 +22,20 @@ export interface CellConstraint {
 }
 
 export type GridConstraints = Record<string, CellConstraint>;
+
+export interface CellData {
+    x: number;
+    y: number;
+    type: string;
+    rot: number;
+    canPlace: boolean;
+    canRotate: boolean;
+    modifier: number;
+}
+
+export interface LevelData {
+    cols: number;
+    rows: number;
+    cells: CellData[];
+    inventory: Record<string, number>;
+}
