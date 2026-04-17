@@ -11,6 +11,7 @@ export interface CellData {
     canClear: boolean;
     canRotate: boolean;
     placedFromInventory?: boolean;
+    modifier: number;
 }
 
 export class Cell implements CellData {
@@ -18,6 +19,7 @@ export class Cell implements CellData {
     y: number;
     type: string;
     rot: number = 0;
+    modifier: number = 0;
     canPlace: boolean;
     canClear: boolean;
     canRotate: boolean;

@@ -1,21 +1,22 @@
-import { GameObj, KAPLAYCtx, MouseButton, TweenController, Vec2 } from "kaplay";
+import {GameObj, KAPLAYCtx, MouseButton, TweenController, Vec2} from "kaplay";
 import Grid from "../grid";
-import { PipeDictionary } from "../pipe-dictionary";
-import { LevelData } from "../LevelData";
-import { Cell } from "../cell";
-import { ConnectionType } from "../types";
-import { canIn, getOppositeSide, getRotatedConnections } from "../utils";
+import {PipeDictionary} from "../pipe-dictionary";
+import {LevelData} from "../LevelData";
+import {Cell} from "../cell";
+import {ConnectionType} from "../types";
+import {canIn, getOppositeSide, getRotatedConnections} from "../utils";
 import {
     CELL_SIZE,
-    LEFT_PANEL_RATIO, MAIN_PANEL_RATIO,
+    LEFT_PANEL_RATIO,
+    MAIN_PANEL_RATIO,
     RIGHT_PANEL_RATIO,
     ROTATE_SCALE_PEAK,
     ROTATE_TWEEN_SEC,
     ROTATION_ANGLE_PER_STEP
 } from "../constants";
-import { createInventorySlots, Inventory, LAYER_UI, setupLayers } from "../ui/game-scene-ui";
-import { panel } from "../components/panel";
-import { drag } from "../components/drag";
+import {createInventorySlots, Inventory, LAYER_UI, setupLayers} from "../ui/game-scene-ui";
+import {panel} from "../components/panel";
+import {drag} from "../components/drag";
 
 const activeTweenByCell = new WeakMap<Cell, TweenController>();
 
@@ -91,8 +92,16 @@ function initializePipeDictionary() {
             ConnectionType.Outlet,
             ConnectionType.Inlet
         ]
+    });
+    PipeDictionary.add("pipe-modifier", {
+        sprite: "pipe-modifier",
+        flow: [
+            ConnectionType.Both,
+            ConnectionType.None,
+            ConnectionType.Both,
+            ConnectionType.None
+        ]
     })
-    
 }
 
 function checkWinCondition(grid: Grid): boolean {
@@ -140,13 +149,16 @@ function checkWinCondition(grid: Grid): boolean {
 }
 
 async function loadAssets(k: KAPLAYCtx) {
-    await k.loadSprite("pipe-i", "sprites/pipe-straight.png");
-    await k.loadSprite("pipe-l", "sprites/pipe-l.png");
-    await k.loadSprite("pipe-gate", "sprites/pipe-gate.png");
-    await k.loadSprite("pipe-blocked", "sprites/pipe-blocked.png");
-    await k.loadSprite("pipe-i-1w", "sprites/pipe-i-1w.png");
-    await k.loadSprite("pipe-l-1w1", "sprites/pipe-l-1w1.png");
-    await k.loadSprite("pipe-l-1w2", "sprites/pipe-l-1w2.png");
+    await Promise.all([
+        k.loadSprite("pipe-i", "sprites/pipe-straight.png"),
+        k.loadSprite("pipe-l", "sprites/pipe-l.png"),
+        k.loadSprite("pipe-gate", "sprites/pipe-gate.png"),
+        k.loadSprite("pipe-blocked", "sprites/pipe-blocked.png"),
+        k.loadSprite("pipe-i-1w", "sprites/pipe-i-1w.png"),
+        k.loadSprite("pipe-l-1w1", "sprites/pipe-l-1w1.png"),
+        k.loadSprite("pipe-l-1w2", "sprites/pipe-l-1w2.png"),
+        k.loadSprite("pipe-modifier", "sprites/pipe-modifier.png")
+    ]);
 }
 
 function tryRotatePipe(k: KAPLAYCtx, cell: Cell, isClockwise: boolean): boolean {

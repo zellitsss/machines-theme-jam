@@ -59,6 +59,7 @@
     "inventory": {
         "pipe-i": 1,
         "pipe-l": 2,
-        "pipe-i-1w": 1
+        "pipe-i-1w": 1,
+        "pipe-modifier": 1
     }
 }
