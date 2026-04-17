@@ -3,10 +3,9 @@ import Grid from "../grid";
 import {wireDictionary} from "../wire-dictionary";
 import {LevelData} from "../LevelData";
 import {Cell} from "../cell";
-import {ConnectionType} from "../types";
 import {canIn, getOppositeSide, getRotatedConnections} from "../utils";
 import {
-    CELL_SIZE, CENTER_PANEL_RATIO,
+    CENTER_PANEL_RATIO,
     LEFT_PANEL_RATIO, MAIN_PANEL_PADDING,
     RIGHT_PANEL_RATIO,
     ROTATE_SCALE_PEAK,
@@ -18,90 +17,6 @@ import {panel} from "../components/panel";
 import {drag} from "../components/drag";
 
 const activeTweenByCell = new WeakMap<Cell, TweenController>();
-
-function initializeWireDictionary() {
-    wireDictionary.add("wire-i", {
-        sprite: "wire-i",
-        flow: [
-            ConnectionType.Both,
-            ConnectionType.None,
-            ConnectionType.Both,
-            ConnectionType.None
-        ]
-    });
-    wireDictionary.add("wire-l", {
-        sprite: "wire-l",
-        flow: [
-            ConnectionType.None,
-            ConnectionType.None,
-            ConnectionType.Both,
-            ConnectionType.Both
-        ]
-    });
-    wireDictionary.add("wire-gate-start", {
-        sprite: "wire-gate",
-        flow: [
-            ConnectionType.Outlet,
-            ConnectionType.None,
-            ConnectionType.None,
-            ConnectionType.None
-        ]
-    });
-    wireDictionary.add("wire-gate-end", {
-        sprite: "wire-gate",
-        flow: [
-            ConnectionType.Inlet,
-            ConnectionType.None,
-            ConnectionType.None,
-            ConnectionType.None
-        ]
-    });
-    wireDictionary.add("wire-blocked", {
-        sprite: "wire-blocked",
-        flow: [
-            ConnectionType.None,
-            ConnectionType.None,
-            ConnectionType.None,
-            ConnectionType.None
-        ]
-    });
-    wireDictionary.add("wire-i-1w", {
-        sprite: "wire-i-1w",
-        flow: [
-            ConnectionType.Outlet,
-            ConnectionType.None,
-            ConnectionType.Inlet,
-            ConnectionType.None
-        ]
-    });
-    wireDictionary.add("wire-l-1w1", {
-        sprite: "wire-l-1w1",
-        flow: [
-            ConnectionType.None,
-            ConnectionType.None,
-            ConnectionType.Inlet,
-            ConnectionType.Outlet
-        ]
-    });
-    wireDictionary.add("wire-l-1w2", {
-        sprite: "wire-l-1w2",
-        flow: [
-            ConnectionType.None,
-            ConnectionType.None,
-            ConnectionType.Outlet,
-            ConnectionType.Inlet
-        ]
-    });
-    wireDictionary.add("wire-modifier", {
-        sprite: "wire-modifier",
-        flow: [
-            ConnectionType.Both,
-            ConnectionType.None,
-            ConnectionType.Both,
-            ConnectionType.None
-        ]
-    })
-}
 
 function checkWinCondition(grid: Grid): boolean {
     const startCell = grid.getStartCell();
@@ -217,8 +132,6 @@ export default function createGameScene(k: KAPLAYCtx) {
         // Load Level data
         const levelData = await k.loadJSON("levelData", "data/level-02.json");
         const level = levelData as LevelData;
-
-        initializeWireDictionary();
 
         const inventoryData: Map<string, number> = new Map(
             Object.entries(level.inventory ?? {}).filter(([id, count]) => count > 0 && wireDictionary.has(id))
