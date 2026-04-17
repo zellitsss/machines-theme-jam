@@ -19,7 +19,7 @@ import {drag} from "../components/drag";
 
 const activeTweenByCell = new WeakMap<Cell, TweenController>();
 
-function initializewireDictionary() {
+function initializeWireDictionary() {
     wireDictionary.add("wire-i", {
         sprite: "wire-i",
         flow: [
@@ -171,11 +171,11 @@ function tryRotatewire(k: KAPLAYCtx, cell: Cell, isClockwise: boolean): boolean 
         return false;
     }
     cell.rot = ((cell.rot + (isClockwise ? 1 : -1)) % 4 + 4) % 4;
-    animatewireRotation(k, cell, isClockwise);
+    animateWireRotation(k, cell, isClockwise);
     return true;
 }
 
-function animatewireRotation(k: KAPLAYCtx, cell: Cell, isClockwise: boolean) {
+function animateWireRotation(k: KAPLAYCtx, cell: Cell, isClockwise: boolean) {
     const obj = cell.obj!;
     const from = obj.angle;
     let bias = isClockwise ? 1 : -1;
@@ -218,7 +218,7 @@ export default function createGameScene(k: KAPLAYCtx) {
         const levelData = await k.loadJSON("levelData", "data/level-02.json");
         const level = levelData as LevelData;
 
-        initializewireDictionary();
+        initializeWireDictionary();
 
         const inventoryData: Map<string, number> = new Map(
             Object.entries(level.inventory ?? {}).filter(([id, count]) => count > 0 && wireDictionary.has(id))
