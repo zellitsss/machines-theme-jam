@@ -247,16 +247,17 @@ export default function createGameScene(k: KAPLAYCtx) {
             k.anchor("topleft"),
             panel(k.width() * RIGHT_PANEL_RATIO, k.height())
         ]);
-
-
-        //Create grid
-        const grid = new Grid(centerPanel, level.cols, level.rows, CELL_SIZE);
-
+        
         const cellVisualSize = calculateCellVisualSize(
             centerPanel.width - MAIN_PANEL_PADDING * 2,
             centerPanel.height - MAIN_PANEL_PADDING * 2,
             level.cols,
             level.rows);
+        
+        //Create grid
+        const grid = new Grid(centerPanel, level.cols, level.rows, cellVisualSize);
+        const gridOffsetX = ((centerPanel.width - MAIN_PANEL_PADDING * 2) - level.cols * cellVisualSize) / 2 + MAIN_PANEL_PADDING;
+        const girdOffsetY = ((centerPanel.height - MAIN_PANEL_PADDING * 2) - level.rows * cellVisualSize) / 2 + MAIN_PANEL_PADDING;
 
         function logWinState() {
             k.debug.log(checkWinCondition(grid) ? "Win" : "Lose");
@@ -296,7 +297,10 @@ export default function createGameScene(k: KAPLAYCtx) {
             cell.rot = rot % 4;
 
             const comps: unknown[] = [
-                k.pos((cell.x + 0.5) * cellVisualSize, (cell.y + 0.5) * cellVisualSize),
+                k.pos(
+                    gridOffsetX + (cell.x + 0.5) * cellVisualSize,
+                    girdOffsetY + (cell.y + 0.5) * cellVisualSize
+                ),
                 k.sprite(sprite ? sprite : "", {
                     width: cellVisualSize,
                     height: cellVisualSize,
