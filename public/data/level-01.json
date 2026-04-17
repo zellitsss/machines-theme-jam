@@ -19,7 +19,8 @@
             "y": 0,
             "type": "wire-gate-end",
             "rot": 3,
-            "canRotate": false
+            "canRotate": false,
+            "canPlace": false
         },
         {
             "x": 0,
@@ -44,8 +45,7 @@
             "type": "wire-blocked",
             "rot": 0,
             "canRotate": false,
-            "canPlace": false,
-            "canClear": false
+            "canPlace": false
         },
         {
             "x": 1,
@@ -53,8 +53,7 @@
             "type": "wire-blocked",
             "rot": 0,
             "canRotate": false,
-            "canPlace": false,
-            "canClear": false
+            "canPlace": false
         },
         {
             "x": 2,
@@ -83,7 +82,8 @@
             "x": 0,
             "y": 4,
             "type": "wire-gate-start",
-            "canRotate": false
+            "canRotate": false,
+            "canPlace": false
         }
     ],
     "inventory": {

@@ -19,7 +19,8 @@
             "y": 0,
             "type": "wire-gate-end",
             "rot": 3,
-            "canRotate": false
+            "canRotate": false,
+            "canPlace": false
         },
         {
             "x": 0,
@@ -53,7 +54,8 @@
             "x": 0,
             "y": 4,
             "type": "wire-gate-start",
-            "canRotate": false
+            "canRotate": false,
+            "canPlace": false
         }
     ],
     "inventory": {

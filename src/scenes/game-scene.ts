@@ -128,7 +128,6 @@ export default function createGameScene(k: KAPLAYCtx) {
             cell.obj = null;
             cell.type = "";
             cell.rot = 0;
-            cell.placedFromInventory = false;
         }
 
         function tryPlaceFromInventory(wireType: string, worldPos: Vec2): boolean {
@@ -139,16 +138,15 @@ export default function createGameScene(k: KAPLAYCtx) {
             if (!wireDictionary.has(wireType)) {
                 return false;
             }
-            placeWire(cell, wireType, 0, true);
+            placeWire(cell, wireType, 0);
             logWinState();
             return true;
         }
 
         inventory = createInventorySlots(k, leftPanel, inventoryData, tryPlaceFromInventory);
 
-        function placeWire(cell: Cell, wireType: string, rot: number, fromInventory: boolean) {
+        function placeWire(cell: Cell, wireType: string, rot: number) {
             const sprite = wireDictionary.get(wireType)?.sprite;
-            cell.placedFromInventory = fromInventory;
             cell.type = wireType;
             cell.rot = rot % 4;
 
@@ -168,13 +166,13 @@ export default function createGameScene(k: KAPLAYCtx) {
                 k.area(),
             ];
 
-            if (fromInventory) {
+            if (cell.canPlace) {
                 comps.push(
                     drag({
                         k,
                         layer: LAYER_UI,
                         getPayload: () => {
-                            if (!cell.placedFromInventory || !cell.type) {
+                            if (!cell.canPlace || !cell.type) {
                                 return null;
                             }
                             return {
@@ -198,7 +196,7 @@ export default function createGameScene(k: KAPLAYCtx) {
 
                             if (targetCell && !targetCell.obj && targetCell.canPlace) {
                                 clearCell(fromCell);
-                                placeWire(targetCell, wireTypeMoved, rotMoved, true);
+                                placeWire(targetCell, wireTypeMoved, rotMoved);
                                 logWinState();
                                 return;
                             }
@@ -218,7 +216,7 @@ export default function createGameScene(k: KAPLAYCtx) {
 
             cell.obj = centerPanel.add(comps as GameObj[]);
 
-            if (fromInventory) {
+            if (cell.canPlace) {
                 cell.obj.onClick((button: MouseButton) => {
                     if (button !== "left") return;
                     if (cell.obj?.isDragging()) return;
@@ -241,12 +239,11 @@ export default function createGameScene(k: KAPLAYCtx) {
             const rot = (cellDef.rot ?? 0) % 4;
 
             cell.canRotate = cellDef.canRotate ?? true;
-            cell.canClear = cellDef.canClear ?? true;
             cell.canPlace = cellDef.canPlace ?? true;
             cell.x = x;
             cell.y = y;
 
-            placeWire(cell, cellDef.type, rot, false);
+            placeWire(cell, cellDef.type, rot);
 
             if (cellDef.type == 'wire-gate-start') {
                 grid.setStartCell(cell);
