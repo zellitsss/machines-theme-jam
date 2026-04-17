@@ -3,7 +3,7 @@ import Grid from "../grid";
 import {wireDictionary} from "../wire-dictionary";
 import {LevelData} from "../LevelData";
 import {Cell} from "../cell";
-import {calculateCellVisualSize, canIn, getOppositeSide, getRotatedConnections} from "../utils";
+import {calculateCellVisualSize} from "../utils";
 import {
     CENTER_PANEL_RATIO,
     LEFT_PANEL_RATIO, MAIN_PANEL_PADDING,
