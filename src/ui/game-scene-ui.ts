@@ -11,7 +11,7 @@ const SLOT_PADDING = 10;
 const COUNT_TEXT_SIZE = 22;
 const CONTAINER_PADDING = 14;
 
-export type Inventory = {
+export type InventoryOld = {
     add(type: string, n: number): void;
 };
 
@@ -24,7 +24,7 @@ export function createInventorySlots(
     container: GameObj,
     inventory: Map<string, number>,
     tryPlaceFromInventory: (wireType: string, worldPos: Vec2) => boolean
-): Inventory {
+): InventoryOld {
     const counts = new Map<string, number>(inventory);
     const countLabels = new Map<string, GameObj>();
 

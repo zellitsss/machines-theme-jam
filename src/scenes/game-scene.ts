@@ -5,7 +5,7 @@ import {LevelData} from "../LevelData";
 import {Cell} from "../cell";
 import {calculateCellVisualSize} from "../utils";
 import * as Constants from "../constants";
-import {createInventorySlots, Inventory, LAYER_UI, setupLayers} from "../ui/game-scene-ui";
+import {createInventorySlots, InventoryOld, LAYER_UI, setupLayers} from "../ui/game-scene-ui";
 import {panel} from "../components/panel";
 import {drag} from "../components/drag";
 
@@ -119,7 +119,7 @@ export default function createGameScene(k: KAPLAYCtx) {
             k.debug.log(grid.checkWinCondition() ? "Win" : "Lose");
         }
 
-        let inventory: Inventory;
+        let inventory: InventoryOld;
 
         function clearCell(cell: Cell) {
             if (cell.obj) {
