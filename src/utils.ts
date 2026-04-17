@@ -1,4 +1,5 @@
 ﻿import {CellConnections, ConnectionType} from "./types";
+import {Vec2} from "kaplay";
 
 export function canConnect(type: ConnectionType): boolean {
     return type > ConnectionType.None;
@@ -30,4 +31,8 @@ export function calculateCellVisualSize(width: number, height: number, cols: num
     const cellWidth = width / cols;
     const cellHeight = height / rows;
     return Math.min(cellWidth, cellHeight);
+}
+
+export function getPosKey(gridPos: Vec2): string {
+    return `${gridPos.x},${gridPos.y}`;
 }

@@ -8,6 +8,7 @@ import * as Constants from "../constants";
 import {createInventorySlots, InventoryOld, LAYER_UI, setupLayers} from "../ui/game-scene-ui";
 import {panel} from "../components/panel";
 import {drag} from "../components/drag";
+import {dropWire} from "../core/gameplay";
 
 const activeTweenByCell = new WeakMap<Cell, TweenController>();
 

@@ -13,3 +13,12 @@ export enum ConnectionType {
 }
 
 export type CellConnections = [ConnectionType, ConnectionType, ConnectionType, ConnectionType];
+
+export interface CellConstraint {
+    canPlace: boolean;
+    canRotate: boolean;
+    prePlacedType?: string;
+    prePlacedRot?: number;
+}
+
+export type GridConstraints = Record<string, CellConstraint>;
