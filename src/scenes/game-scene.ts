@@ -1,6 +1,6 @@
 import {GameObj, KAPLAYCtx, MouseButton, TweenController, Vec2} from "kaplay";
 import Grid from "../grid";
-import {PipeDictionary} from "../pipe-dictionary";
+import {wireDictionary} from "../wire-dictionary";
 import {LevelData} from "../LevelData";
 import {Cell} from "../cell";
 import {ConnectionType} from "../types";
@@ -19,9 +19,9 @@ import {drag} from "../components/drag";
 
 const activeTweenByCell = new WeakMap<Cell, TweenController>();
 
-function initializePipeDictionary() {
-    PipeDictionary.add("pipe-i", {
-        sprite: "pipe-i",
+function initializewireDictionary() {
+    wireDictionary.add("wire-i", {
+        sprite: "wire-i",
         flow: [
             ConnectionType.Both,
             ConnectionType.None,
@@ -29,8 +29,8 @@ function initializePipeDictionary() {
             ConnectionType.None
         ]
     });
-    PipeDictionary.add("pipe-l", {
-        sprite: "pipe-l",
+    wireDictionary.add("wire-l", {
+        sprite: "wire-l",
         flow: [
             ConnectionType.None,
             ConnectionType.None,
@@ -38,8 +38,8 @@ function initializePipeDictionary() {
             ConnectionType.Both
         ]
     });
-    PipeDictionary.add("pipe-gate-start", {
-        sprite: "pipe-gate",
+    wireDictionary.add("wire-gate-start", {
+        sprite: "wire-gate",
         flow: [
             ConnectionType.Outlet,
             ConnectionType.None,
@@ -47,8 +47,8 @@ function initializePipeDictionary() {
             ConnectionType.None
         ]
     });
-    PipeDictionary.add("pipe-gate-end", {
-        sprite: "pipe-gate",
+    wireDictionary.add("wire-gate-end", {
+        sprite: "wire-gate",
         flow: [
             ConnectionType.Inlet,
             ConnectionType.None,
@@ -56,8 +56,8 @@ function initializePipeDictionary() {
             ConnectionType.None
         ]
     });
-    PipeDictionary.add("pipe-blocked", {
-        sprite: "pipe-blocked",
+    wireDictionary.add("wire-blocked", {
+        sprite: "wire-blocked",
         flow: [
             ConnectionType.None,
             ConnectionType.None,
@@ -65,8 +65,8 @@ function initializePipeDictionary() {
             ConnectionType.None
         ]
     });
-    PipeDictionary.add("pipe-i-1w", {
-        sprite: "pipe-i-1w",
+    wireDictionary.add("wire-i-1w", {
+        sprite: "wire-i-1w",
         flow: [
             ConnectionType.Outlet,
             ConnectionType.None,
@@ -74,8 +74,8 @@ function initializePipeDictionary() {
             ConnectionType.None
         ]
     });
-    PipeDictionary.add("pipe-l-1w1", {
-        sprite: "pipe-l-1w1",
+    wireDictionary.add("wire-l-1w1", {
+        sprite: "wire-l-1w1",
         flow: [
             ConnectionType.None,
             ConnectionType.None,
@@ -83,8 +83,8 @@ function initializePipeDictionary() {
             ConnectionType.Outlet
         ]
     });
-    PipeDictionary.add("pipe-l-1w2", {
-        sprite: "pipe-l-1w2",
+    wireDictionary.add("wire-l-1w2", {
+        sprite: "wire-l-1w2",
         flow: [
             ConnectionType.None,
             ConnectionType.None,
@@ -92,8 +92,8 @@ function initializePipeDictionary() {
             ConnectionType.Inlet
         ]
     });
-    PipeDictionary.add("pipe-modifier", {
-        sprite: "pipe-modifier",
+    wireDictionary.add("wire-modifier", {
+        sprite: "wire-modifier",
         flow: [
             ConnectionType.Both,
             ConnectionType.None,
@@ -119,7 +119,7 @@ function checkWinCondition(grid: Grid): boolean {
         }
         visited.add(posKey);
 
-        if (current.type === "pipe-gate-end") {
+        if (current.type === "wire-gate-end") {
             return true;
         }
 
@@ -135,7 +135,7 @@ function checkWinCondition(grid: Grid): boolean {
 
         // Check if next cell is connected to the current cell
         const nextEntrySide = getOppositeSide(exitSide);
-        const nextRotatedConnections = getRotatedConnections(PipeDictionary.get(next.type)?.flow ?? [0, 0, 0, 0], next.rot);
+        const nextRotatedConnections = getRotatedConnections(wireDictionary.get(next.type)?.flow ?? [0, 0, 0, 0], next.rot);
         if (!canIn(nextRotatedConnections[nextEntrySide])) {
             break;
         }
@@ -149,33 +149,33 @@ function checkWinCondition(grid: Grid): boolean {
 
 async function loadAssets(k: KAPLAYCtx) {
     await Promise.all([
-        k.loadSprite("pipe-i", "sprites/pipe-straight.png"),
-        k.loadSprite("pipe-l", "sprites/pipe-l.png"),
-        k.loadSprite("pipe-gate", "sprites/pipe-gate.png"),
-        k.loadSprite("pipe-blocked", "sprites/pipe-blocked.png"),
-        k.loadSprite("pipe-i-1w", "sprites/pipe-i-1w.png"),
-        k.loadSprite("pipe-l-1w1", "sprites/pipe-l-1w1.png"),
-        k.loadSprite("pipe-l-1w2", "sprites/pipe-l-1w2.png"),
-        k.loadSprite("pipe-modifier", "sprites/pipe-modifier.png")
+        k.loadSprite("wire-i", "sprites/wire-i.png"),
+        k.loadSprite("wire-l", "sprites/wire-l.png"),
+        k.loadSprite("wire-gate", "sprites/wire-gate.png"),
+        k.loadSprite("wire-blocked", "sprites/wire-blocked.png"),
+        k.loadSprite("wire-i-1w", "sprites/wire-i-1w.png"),
+        k.loadSprite("wire-l-1w1", "sprites/wire-l-1w1.png"),
+        k.loadSprite("wire-l-1w2", "sprites/wire-l-1w2.png"),
+        k.loadSprite("wire-modifier", "sprites/wire-modifier.png")
     ]);
 }
 
-function tryRotatePipe(k: KAPLAYCtx, cell: Cell, isClockwise: boolean): boolean {
+function tryRotatewire(k: KAPLAYCtx, cell: Cell, isClockwise: boolean): boolean {
     if (!cell.obj || !cell.type || !cell.canRotate) {
         return false;
     }
-    if (!PipeDictionary.has(cell.type)) {
+    if (!wireDictionary.has(cell.type)) {
         return false;
     }
     if (activeTweenByCell.get(cell)) {
         return false;
     }
     cell.rot = ((cell.rot + (isClockwise ? 1 : -1)) % 4 + 4) % 4;
-    animatePipeRotation(k, cell, isClockwise);
+    animatewireRotation(k, cell, isClockwise);
     return true;
 }
 
-function animatePipeRotation(k: KAPLAYCtx, cell: Cell, isClockwise: boolean) {
+function animatewireRotation(k: KAPLAYCtx, cell: Cell, isClockwise: boolean) {
     const obj = cell.obj!;
     const from = obj.angle;
     let bias = isClockwise ? 1 : -1;
@@ -218,10 +218,10 @@ export default function createGameScene(k: KAPLAYCtx) {
         const levelData = await k.loadJSON("levelData", "data/level-02.json");
         const level = levelData as LevelData;
 
-        initializePipeDictionary();
+        initializewireDictionary();
 
         const inventoryData: Map<string, number> = new Map(
-            Object.entries(level.inventory ?? {}).filter(([id, count]) => count > 0 && PipeDictionary.has(id))
+            Object.entries(level.inventory ?? {}).filter(([id, count]) => count > 0 && wireDictionary.has(id))
         );
 
         // Layout
@@ -275,25 +275,25 @@ export default function createGameScene(k: KAPLAYCtx) {
             cell.placedFromInventory = false;
         }
 
-        function tryPlaceFromInventory(pipeType: string, worldPos: Vec2): boolean {
+        function tryPlaceFromInventory(wireType: string, worldPos: Vec2): boolean {
             const cell = grid.cellAtWorld(worldPos.x, worldPos.y);
             if (!cell || cell.obj || !cell.canPlace) {
                 return false;
             }
-            if (!PipeDictionary.has(pipeType)) {
+            if (!wireDictionary.has(wireType)) {
                 return false;
             }
-            placePipe(cell, pipeType, 0, true);
+            placeWire(cell, wireType, 0, true);
             logWinState();
             return true;
         }
 
         inventory = createInventorySlots(k, leftPanel, inventoryData, tryPlaceFromInventory);
 
-        function placePipe(cell: Cell, pipeType: string, rot: number, fromInventory: boolean) {
-            const sprite = PipeDictionary.get(pipeType)?.sprite;
+        function placeWire(cell: Cell, wireType: string, rot: number, fromInventory: boolean) {
+            const sprite = wireDictionary.get(wireType)?.sprite;
             cell.placedFromInventory = fromInventory;
-            cell.type = pipeType;
+            cell.type = wireType;
             cell.rot = rot % 4;
 
             const comps: unknown[] = [
@@ -322,7 +322,7 @@ export default function createGameScene(k: KAPLAYCtx) {
                                 return null;
                             }
                             return {
-                                pipeType: cell.type,
+                                wireType: cell.type,
                                 source: "grid" as const,
                                 fromCell: cell,
                             };
@@ -332,7 +332,7 @@ export default function createGameScene(k: KAPLAYCtx) {
                                 return;
                             }
                             const fromCell = cell;
-                            const pipeTypeMoved = fromCell.type;
+                            const wireTypeMoved = fromCell.type;
                             const rotMoved = fromCell.rot;
                             const targetCell = grid.cellAtWorld(worldPos.x, worldPos.y);
 
@@ -342,17 +342,17 @@ export default function createGameScene(k: KAPLAYCtx) {
 
                             if (targetCell && !targetCell.obj && targetCell.canPlace) {
                                 clearCell(fromCell);
-                                placePipe(targetCell, pipeTypeMoved, rotMoved, true);
+                                placeWire(targetCell, wireTypeMoved, rotMoved, true);
                                 logWinState();
                                 return;
                             }
 
                             clearCell(fromCell);
-                            inventory.add(pipeTypeMoved, 1);
+                            inventory.add(wireTypeMoved, 1);
                             logWinState();
                         },
                         onTap: () => {
-                            if (tryRotatePipe(k, cell, true)) {
+                            if (tryRotatewire(k, cell, true)) {
                                 logWinState();
                             }
                         },
@@ -371,7 +371,7 @@ export default function createGameScene(k: KAPLAYCtx) {
             } else {
                 cell.obj.onClick((button: MouseButton) => {
                     if (button !== "left") return;
-                    if (tryRotatePipe(k, cell, true)) {
+                    if (tryRotatewire(k, cell, true)) {
                         logWinState();
                     }
                 });
@@ -390,12 +390,12 @@ export default function createGameScene(k: KAPLAYCtx) {
             cell.x = x;
             cell.y = y;
 
-            placePipe(cell, cellDef.type, rot, false);
+            placeWire(cell, cellDef.type, rot, false);
 
-            if (cellDef.type == 'pipe-gate-start') {
+            if (cellDef.type == 'wire-gate-start') {
                 grid.setStartCell(cell);
             }
-            if (cellDef.type == 'pipe-gate-end') {
+            if (cellDef.type == 'wire-gate-end') {
                 grid.setEndCell(cell);
             }
         });

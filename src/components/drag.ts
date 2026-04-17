@@ -1,10 +1,10 @@
 import { GameObj, KAPLAYCtx, KEventController, MouseButton, Vec2 } from "kaplay";
 import { Cell } from "../cell";
-import { PipeDictionary } from "../pipe-dictionary";
+import { wireDictionary } from "../wire-dictionary";
 import { CELL_SIZE } from "../constants";
 
 export type DragPayload = {
-    pipeType: string;
+    wireType: string;
     source: "inventory" | "grid";
     fromCell?: Cell;
 };
@@ -48,7 +48,7 @@ export function drag(opts: DragOpts) {
     }
 
     function beginDrag(p: DragPayload) {
-        const def = PipeDictionary.get(p.pipeType);
+        const def = wireDictionary.get(p.wireType);
         if (!def) return;
         payload = p;
         const mouse = k.mousePos();

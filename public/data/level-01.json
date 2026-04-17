@@ -5,43 +5,43 @@
         {
             "x": 0,
             "y": 0,
-            "type": "pipe-l",
+            "type": "wire-l",
             "rot": 3
         },
         {
             "x": 1,
             "y": 0,
-            "type": "pipe-i",
+            "type": "wire-i",
             "rot": 1
         },
         {
             "x": 2,
             "y": 0,
-            "type": "pipe-gate-end",
+            "type": "wire-gate-end",
             "rot": 3,
             "canRotate": false
         },
         {
             "x": 0,
             "y": 1,
-            "type": "pipe-l",
+            "type": "wire-l",
             "rot": 2
         },
         {
             "x": 1,
             "y": 1,
-            "type": "pipe-i-1w",
+            "type": "wire-i-1w",
             "rot": 1
         },
         {
             "x": 2,
             "y": 1,
-            "type": "pipe-l"
+            "type": "wire-l"
         },
         {
             "x": 0,
             "y": 2,
-            "type": "pipe-blocked",
+            "type": "wire-blocked",
             "rot": 0,
             "canRotate": false,
             "canPlace": false,
@@ -50,7 +50,7 @@
         {
             "x": 1,
             "y": 2,
-            "type": "pipe-blocked",
+            "type": "wire-blocked",
             "rot": 0,
             "canRotate": false,
             "canPlace": false,
@@ -59,35 +59,35 @@
         {
             "x": 2,
             "y": 2,
-            "type": "pipe-i"
+            "type": "wire-i"
         },
         {
             "x": 0,
             "y": 3,
-            "type": "pipe-l",
+            "type": "wire-l",
             "rot": 3
         },
         {
             "x": 1,
             "y": 3,
-            "type": "pipe-i",
+            "type": "wire-i",
             "rot": 1
         },
         {
             "x": 2,
             "y": 3,
-            "type": "pipe-l",
+            "type": "wire-l",
             "rot": 1
         },
         {
             "x": 0,
             "y": 4,
-            "type": "pipe-gate-start",
+            "type": "wire-gate-start",
             "canRotate": false
         }
     ],
     "inventory": {
-        "pipe-i": 3,
-        "pipe-l": 2
+        "wire-i": 3,
+        "wire-l": 2
     }
 }

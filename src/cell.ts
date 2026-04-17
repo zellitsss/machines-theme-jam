@@ -1,5 +1,5 @@
 import {GameObj} from "kaplay";
-import {PipeDictionary} from "./pipe-dictionary";
+import {wireDictionary} from "./wire-dictionary";
 import {canOut, getRotatedConnections} from "./utils";
 
 export interface CellData {
@@ -38,7 +38,7 @@ export class Cell implements CellData {
 
     getExitSide(enteredSide: number): number | null
     {
-        const rotatedConnections = getRotatedConnections(PipeDictionary.get(this.type)?.flow ?? [0, 0, 0, 0], this.rot);
+        const rotatedConnections = getRotatedConnections(wireDictionary.get(this.type)?.flow ?? [0, 0, 0, 0], this.rot);
         for (let side = 0; side < 4; side++) {
             if (side === enteredSide)
             {

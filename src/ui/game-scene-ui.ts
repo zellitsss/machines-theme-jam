@@ -1,6 +1,6 @@
 import { GameObj, KAPLAYCtx, MouseButton, Vec2 } from "kaplay";
 import { CELL_SIZE } from "../constants";
-import { PipeDictionary } from "../pipe-dictionary";
+import { wireDictionary } from "../wire-dictionary";
 import { drag } from "../components/drag";
 
 export const LAYER_BACKGROUND = "background";
@@ -23,21 +23,21 @@ export function createInventorySlots(
     k: KAPLAYCtx,
     container: GameObj,
     inventory: Map<string, number>,
-    tryPlaceFromInventory: (pipeType: string, worldPos: Vec2) => boolean
+    tryPlaceFromInventory: (wireType: string, worldPos: Vec2) => boolean
 ): Inventory {
     const counts = new Map<string, number>(inventory);
     const countLabels = new Map<string, GameObj>();
 
-    function refreshLabel(pipeType: string) {
-        const label = countLabels.get(pipeType);
+    function refreshLabel(wireType: string) {
+        const label = countLabels.get(wireType);
         if (label) {
-            label.text = String(counts.get(pipeType) ?? 0);
+            label.text = String(counts.get(wireType) ?? 0);
         }
     }
 
     const entries = Array.from(counts.entries());
-    entries.forEach(([pipeType], index) => {
-        const def = PipeDictionary.get(pipeType)!;
+    entries.forEach(([wireType], index) => {
+        const def = wireDictionary.get(wireType)!;
         const slotTop = CONTAINER_PADDING + index * (CELL_SIZE + SLOT_PADDING);
 
         const slot = container.add([
@@ -51,16 +51,16 @@ export function createInventorySlots(
                 k,
                 layer: LAYER_UI,
                 getPayload: () => {
-                    const c = counts.get(pipeType) ?? 0;
+                    const c = counts.get(wireType) ?? 0;
                     if (c <= 0) return null;
-                    return { pipeType, source: "inventory" as const };
+                    return { wireType, source: "inventory" as const };
                 },
                 onDrop(worldPos, payload) {
-                    if (payload.source !== "inventory" || payload.pipeType !== pipeType) return;
-                    if (tryPlaceFromInventory(pipeType, worldPos)) {
-                        const next = (counts.get(pipeType) ?? 0) - 1;
-                        counts.set(pipeType, Math.max(0, next));
-                        refreshLabel(pipeType);
+                    if (payload.source !== "inventory" || payload.wireType !== wireType) return;
+                    if (tryPlaceFromInventory(wireType, worldPos)) {
+                        const next = (counts.get(wireType) ?? 0) - 1;
+                        counts.set(wireType, Math.max(0, next));
+                        refreshLabel(wireType);
                     }
                 },
             }),
@@ -78,13 +78,13 @@ export function createInventorySlots(
         const countLabel = slot.add([
             k.pos(CELL_SIZE - 4, CELL_SIZE - 2),
             k.anchor("botright"),
-            k.text(String(counts.get(pipeType) ?? 0), {
+            k.text(String(counts.get(wireType) ?? 0), {
                 size: COUNT_TEXT_SIZE,
                 align: "right",
             }),
             k.color(0, 0, 0),
         ]);
-        countLabels.set(pipeType, countLabel);
+        countLabels.set(wireType, countLabel);
 
         slot.onClick((button: MouseButton) => {
             if (button !== "left") return;

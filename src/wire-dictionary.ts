@@ -1,20 +1,20 @@
 import {CellConnections} from "./types";
 
-export interface PipeDef {
+export interface wireDef {
     sprite: string;
     // [Top, Right, Bottom, Left]
     flow: CellConnections;
 }
-export const PipeDictionary = {
-    _definitions: new Map<string, PipeDef>(),
+export const wireDictionary = {
+    _definitions: new Map<string, wireDef>(),
 
-    add(type: string, pipeDef: PipeDef) {
+    add(type: string, wireDef: wireDef) {
         if (!this._definitions.has(type)) {
-            this._definitions.set(type, pipeDef);
+            this._definitions.set(type, wireDef);
         }
     },
 
-    get(type: string): PipeDef | undefined {
+    get(type: string): wireDef | undefined {
         return this._definitions.get(type);
     },
 
