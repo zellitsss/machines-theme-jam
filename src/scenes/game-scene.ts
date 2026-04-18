@@ -4,11 +4,10 @@ import {calculateCellVisualSize, getPosKey} from "../utils";
 import * as Constants from "../constants";
 import {InventoryOld, LAYER_UI, setupLayers} from "../ui/game-scene-ui";
 import {panel} from "../components/panel";
-import {drag} from "../components/drag";
 import {CellConstraint, LevelData} from "../types";
 import {createWire} from "../entities/wire";
 import {isWiresConnected} from "../core/gameplay";
-import {CellState} from "../components/cellState";
+import {WireState} from "../components/wireState";
 
 // const activeTweenByCell = new WeakMap<Cell, TweenController>();
 
@@ -126,9 +125,9 @@ export default function createGameScene(k: KAPLAYCtx) {
             }
         }
         
-        let startWire: GameObj<CellState>;
-        let endWire: GameObj<CellState>;
-        let wires: GameObj<CellState>[] = [];
+        let startWire: GameObj<WireState>;
+        let endWire: GameObj<WireState>;
+        let wires: GameObj<WireState>[] = [];
         
         level.cells.forEach((cellData) => {
             let config = gridConstraints.get(getPosKey(cellData.x, cellData.y));
