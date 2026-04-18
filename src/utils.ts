@@ -1,5 +1,4 @@
-﻿import {CellConnections, ConnectionType} from "./types";
-import {Vec2} from "kaplay";
+﻿import {CellConnections, CellData, ConnectionType, ItemData, WireData} from "./types";
 
 export function canConnect(type: ConnectionType): boolean {
     return type > ConnectionType.None;
@@ -39,4 +38,24 @@ export function getPosKey(x: number, y: number): string {
 
 export function getRotationFromStep(step: number): number {
     return ((step % 4 + 4) % 4) * 90;
+}
+
+export const fromCellToWireData = (cellData: CellData): WireData => {
+    return {
+        type: cellData.type,
+        modifier: cellData.modifier,
+        rot: cellData.rot,
+        x: cellData.x,
+        y: cellData.y
+    };
+}
+
+export const fromItemToWireData = (itemData: ItemData): WireData => {
+    return {
+        type: itemData.type,
+        modifier: itemData.count,
+        rot: itemData.rot,
+        x: itemData.x,
+        y: itemData.y
+    };
 }

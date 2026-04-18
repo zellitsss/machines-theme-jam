@@ -1,24 +1,25 @@
 import {KAPLAYCtx} from "kaplay";
 import {wireDictionary} from "../wire-dictionary";
-import {CellData} from "../types";
+import {CellData, WireData} from "../types";
 import {getRotationFromStep} from "../utils";
 import {wireState} from "../components/wireState";
 import {wireInteraction} from "../components/wireInteraction";
 
-export const createWire = (k: KAPLAYCtx, x: number, y: number, size: number, cellData: CellData) => [
-    k.pos(x, y),
+export const createWire = (k: KAPLAYCtx, posX: number, posY: number, size: number, wireData: WireData, tags: string[] = []) => [
+    k.pos(posX, posY),
     k.rotate(0),
     k.anchor("center"),
-    k.sprite(wireDictionary.get(cellData.type)?.sprite ?? "", {
+    k.sprite(wireDictionary.get(wireData.type)?.sprite ?? "", {
         width: size,
         height: size,
     }),
     k.color(176, 187, 180),
-    k.rotate(getRotationFromStep(cellData.rot)),
+    k.rotate(getRotationFromStep(wireData.rot)),
     k.area(),
     wireInteraction(),
-    wireState(cellData),
+    wireState(wireData),
     k.scale(1),
     k.timer(),
-    "wire"
+    "wire",
+    ...tags,
 ];

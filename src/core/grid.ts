@@ -6,7 +6,7 @@ import {WireState} from "../components/wireState";
 export const gridConstraints: GridConstraints = new Map<string, CellConstraint>();
 
 export const canRotateAt = (x: number, y: number): boolean => {
-    return gridConstraints.get(getPosKey(x, y))?.canRotate ?? true;
+    return gridConstraints.get(getPosKey(x, y))?.canRotate ?? false;
 }
 
 export const canPlaceAt = (x: number, y: number): boolean => {

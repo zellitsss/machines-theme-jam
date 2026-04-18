@@ -1,5 +1,5 @@
 ﻿import {Comp} from "kaplay";
-import {CellData} from "../types";
+import {WireData} from "../types";
 
 export interface WireState extends Comp {
     x: number;
@@ -10,14 +10,14 @@ export interface WireState extends Comp {
     rotateCW: () => void;
 }
 
-export const wireState = (cellData: CellData): WireState => (
+export const wireState = (wireData: WireData): WireState => (
     {
         id: "wireState",
-        x: cellData.x,
-        y: cellData.y,
-        modifier: cellData.modifier,
-        rot: cellData.rot ?? 0,
-        type: cellData.type,
+        x: wireData.x,
+        y: wireData.y,
+        modifier: wireData.modifier,
+        rot: wireData.rot ?? 0,
+        type: wireData.type,
         rotateCW() {
             this.rot = ((this.rot + 1) % 4 + 4) % 4;
             this.trigger("rotationStepUpdated", this.rot);

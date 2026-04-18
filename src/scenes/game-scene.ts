@@ -1,6 +1,6 @@
 import {GameObj, KAPLAYCtx, MouseButton, RotateComp, TweenController} from "kaplay";
 import {wireDictionary} from "../wire-dictionary";
-import {calculateCellVisualSize, getPosKey} from "../utils";
+import {calculateCellVisualSize, fromCellToWireData, fromItemToWireData, getPosKey} from "../utils";
 import * as Constants from "../constants";
 import {InventoryOld, LAYER_UI, setupLayers} from "../ui/game-scene-ui";
 import {panel} from "../components/panel";
@@ -9,6 +9,8 @@ import {createWire} from "../entities/wire";
 import {activeTweenByCell, animateWireRotation, handleRotatingWire, isWiresConnected} from "../core/gameplay";
 import {WireState} from "../components/wireState";
 import {gridConstraints} from "../core/grid";
+import {inventory} from "../ui/inventory";
+import {TOP_PANEL_HEIGHT} from "../constants";
 
 async function loadAssets(k: KAPLAYCtx) {
     await Promise.all([
@@ -22,7 +24,8 @@ async function loadAssets(k: KAPLAYCtx) {
         k.loadSprite("wire-modifier", "sprites/wire-modifier.png"),
         k.loadSprite("atlas", "sprites/atlas.png", {
             sliceX: 6,
-            sliceY: 3
+            sliceY: 3,
+            filter: "linear"
         }),
     ]);
 }
@@ -31,6 +34,7 @@ function resetContainers()
 {
     gridConstraints.clear();
     activeTweenByCell.clear();
+    inventory.clear();
 }
 
 export default function createGameScene(k: KAPLAYCtx) {
@@ -67,10 +71,11 @@ export default function createGameScene(k: KAPLAYCtx) {
         });
         /********** EVENTS **********/
         
-        // const inventoryData: Map<string, number> = new Map(
-        //     Object.entries(level.inventory ?? {}).filter(([id, count]) => count > 0 && wireDictionary.has(id))
-        // );
+        level.inventory.forEach((itemData) => {
+           inventory.set(itemData.type, itemData); 
+        });
             
+        // Background
         k.add([
             k.pos(),
             k.anchor("topleft"),
@@ -141,7 +146,7 @@ export default function createGameScene(k: KAPLAYCtx) {
                 gridOffsetX + (cellData.x + 0.5) * cellVisualSize,
                 girdOffsetY + (cellData.y + 0.5) * cellVisualSize,
                 cellVisualSize,
-                cellData
+                fromCellToWireData(cellData)
             ));
             
             wires.push(wire as GameObj<WireState>);
@@ -150,123 +155,20 @@ export default function createGameScene(k: KAPLAYCtx) {
             } else if (cellData.type === "wire-gate-end") {
                 endWire = wire as GameObj<WireState>;
             }
-        });        
+        });       
+        
+        Array.from(inventory.values()).forEach((item, index) => {
+            const wire = leftPanel.add(createWire(
+                k,
+                leftPanel.pos.x + leftPanel.width/2,
+                leftPanel.pos.y + TOP_PANEL_HEIGHT + index * cellVisualSize,
+                cellVisualSize,
+                fromItemToWireData(item)
+            ))
+        });
         
         function checkWinCondition() {
             k.debug.log(isWiresConnected(wires, startWire, endWire) ? "Win" : "Lose");
         }
-
-        let inventory: InventoryOld;
-
-        // function clearCell(cell: Cell) {
-        //     if (cell.obj) {
-        //         cell.obj.destroy();
-        //     }
-        //     cell.obj = null;
-        //     cell.type = "";
-        //     cell.rot = 0;
-        // }
-
-        // function tryPlaceFromInventory(wireType: string, worldPos: Vec2): boolean {
-        //     const cell = grid.cellAtWorld(worldPos.x, worldPos.y);
-        //     if (!cell || cell.obj || !cell.canPlace) {
-        //         return false;
-        //     }
-        //     if (!wireDictionary.has(wireType)) {
-        //         return false;
-        //     }
-        //     placeWire(cell, wireType, 0);
-        //     logWinState();
-        //     return true;
-        // }
-
-        // inventory = createInventorySlots(k, leftPanel, inventoryData, tryPlaceFromInventory);
-
-        // function placeWire(cell: Cell, wireType: string, rot: number) {
-        //     const sprite = wireDictionary.get(wireType)?.sprite;
-        //     cell.type = wireType;
-        //     cell.rot = rot % 4;
-        //
-        //     const comps: unknown[] = [
-        //         k.pos(
-        //             gridOffsetX + (cell.x + 0.5) * cellVisualSize,
-        //             girdOffsetY + (cell.y + 0.5) * cellVisualSize
-        //         ),
-        //         k.sprite(sprite ? sprite : "", {
-        //             width: cellVisualSize,
-        //             height: cellVisualSize,
-        //         }),
-        //         k.rotate(cell.rot * 90),
-        //         k.scale(1),
-        //         k.anchor("center"),
-        //         k.timer(),
-        //         k.area(),
-        //     ];
-        //
-        //     if (cell.canPlace) {
-        //         comps.push(
-        //             drag({
-        //                 k,
-        //                 layer: LAYER_UI,
-        //                 getPayload: () => {
-        //                     if (!cell.canPlace || !cell.type) {
-        //                         return null;
-        //                     }
-        //                     return {
-        //                         wireType: cell.type,
-        //                         source: "grid" as const,
-        //                         fromCell: cell,
-        //                     };
-        //                 },
-        //                 onDrop(worldPos, payload) {
-        //                     if (payload.source !== "grid" || !payload.fromCell || payload.fromCell !== cell) {
-        //                         return;
-        //                     }
-        //                     const fromCell = cell;
-        //                     const wireTypeMoved = fromCell.type;
-        //                     const rotMoved = fromCell.rot;
-        //                     const targetCell = null; //grid.cellAtWorld(worldPos.x, worldPos.y);
-        //
-        //                     if (targetCell === fromCell) {
-        //                         return;
-        //                     }
-        //
-        //                     if (targetCell && !targetCell.obj && targetCell.canPlace) {
-        //                         clearCell(fromCell);
-        //                         placeWire(targetCell, wireTypeMoved, rotMoved);
-        //                         logWinState();
-        //                         return;
-        //                     }
-        //
-        //                     clearCell(fromCell);
-        //                     inventory.add(wireTypeMoved, 1);
-        //                     logWinState();
-        //                 },
-        //                 onTap: () => {
-        //                     if (tryRotateWire(k, cell, true)) {
-        //                         logWinState();
-        //                     }
-        //                 },
-        //             })
-        //         );
-        //     }
-        //
-        //     cell.obj = centerPanel.add(comps as GameObj[]);
-        //
-        //     if (cell.canPlace) {
-        //         cell.obj.onClick((button: MouseButton) => {
-        //             if (button !== "left") return;
-        //             if (cell.obj?.isDragging()) return;
-        //             cell.obj!.pick();
-        //         });
-        //     } else {
-        //         cell.obj.onClick((button: MouseButton) => {
-        //             if (button !== "left") return;
-        //             if (tryRotateWire(k, cell, true)) {
-        //                 logWinState();
-        //             }
-        //         });
-        //     }
-        // }
     };
 }

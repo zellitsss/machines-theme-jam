@@ -25,6 +25,8 @@ export interface WireData {
     type: string;
     modifier?: number;
     rot?: number;
+    x?: number;
+    y?: number;
 }
 
 export interface ItemData extends WireData {
