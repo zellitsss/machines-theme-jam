@@ -18,7 +18,7 @@
             "x": 2,
             "y": 0,
             "type": "wire-gate-end",
-            "rot": 3,
+            "rot": 2,
             "canRotate": false,
             "canPlace": false
         },
@@ -32,7 +32,7 @@
             "x": 1,
             "y": 1,
             "type": "wire-i-1w",
-            "rot": 1
+            "rot": 3
         },
         {
             "x": 2,
@@ -82,12 +82,31 @@
             "x": 0,
             "y": 4,
             "type": "wire-gate-start",
+            "rot": 3,
             "canRotate": false,
             "canPlace": false
         }
     ],
-    "inventory": {
-        "wire-i": 3,
-        "wire-l": 2
-    }
+    "inventory": [
+        {
+            "type": "wire-i",
+            "count": 1
+        },
+        {
+            "type": "wire-l",
+            "count": 1
+        },
+        {
+            "type": "wire-i-1w",
+            "count": 1
+        },
+        {
+            "type": "wire-l-1w1",
+            "count": 1
+        },
+        {
+            "type": "wire-l-1w2",
+            "count": 1
+        }
+    ]
 }

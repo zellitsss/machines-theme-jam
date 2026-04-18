@@ -1,20 +1,15 @@
-import {CellConnections} from "./types";
+import {WireDefinition} from "./types";
 
-export interface wireDef {
-    sprite: string;
-    // [Top, Right, Bottom, Left]
-    flow: CellConnections;
-}
 export const wireDictionary = {
-    _definitions: new Map<string, wireDef>(),
+    _definitions: new Map<string, WireDefinition>(),
 
-    add(type: string, wireDef: wireDef) {
+    add(type: string, wireDef: WireDefinition) {
         if (!this._definitions.has(type)) {
             this._definitions.set(type, wireDef);
         }
     },
 
-    get(type: string): wireDef | undefined {
+    get(type: string): WireDefinition | undefined {
         return this._definitions.get(type);
     },
 

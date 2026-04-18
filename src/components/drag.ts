@@ -1,12 +1,11 @@
 import { GameObj, KAPLAYCtx, KEventController, MouseButton, Vec2 } from "kaplay";
-import { Cell } from "../cell";
 import { wireDictionary } from "../wire-dictionary";
 import { CELL_SIZE } from "../constants";
 
 export type DragPayload = {
     wireType: string;
     source: "inventory" | "grid";
-    fromCell?: Cell;
+    fromCell?: any;
 };
 
 export type DragOpts = {

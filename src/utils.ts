@@ -1,4 +1,7 @@
-﻿import {CellConnections, ConnectionType} from "./types";
+﻿import {CellConnections, CellData, ConnectionType, ItemData, WireData} from "./types";
+import {GameObj} from "kaplay";
+import {WireState} from "./components/wireState";
+import {gridConstraints} from "./core/grid";
 
 export function canConnect(type: ConnectionType): boolean {
     return type > ConnectionType.None;
@@ -30,4 +33,36 @@ export function calculateCellVisualSize(width: number, height: number, cols: num
     const cellWidth = width / cols;
     const cellHeight = height / rows;
     return Math.min(cellWidth, cellHeight);
+}
+
+export function getPosKey(x: number, y: number): string {
+    return `${x},${y}`;
+}
+
+export function getRotationFromStep(step: number): number {
+    return ((step % 4 + 4) % 4) * 90;
+}
+
+export const fromCellToWireData = (cellData: CellData): WireData => {
+    return {
+        type: cellData.type,
+        modifier: cellData.modifier,
+        rot: cellData.rot,
+        x: cellData.x,
+        y: cellData.y
+    };
+}
+
+export const fromItemToWireData = (itemData: ItemData): WireData => {
+    return {
+        type: itemData.type,
+        modifier: itemData.count,
+        rot: itemData.rot,
+        x: itemData.x,
+        y: itemData.y
+    };
+}
+
+export const isFromGrid = (wire: GameObj<WireState>): boolean => {
+    return gridConstraints.has(getPosKey(wire.x, wire.y));
 }

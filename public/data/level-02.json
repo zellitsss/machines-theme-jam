@@ -58,10 +58,26 @@
             "canPlace": false
         }
     ],
-    "inventory": {
-        "wire-i": 1,
-        "wire-l": 2,
-        "wire-i-1w": 1,
-        "wire-modifier": 1
-    }
+    "inventory": [
+        {
+            "type": "wire-i",
+            "count": 1
+        },
+        {
+            "type": "wire-l",
+            "count": 1
+        },
+        {
+            "type": "wire-i-1w",
+            "count": 1
+        },
+        {
+            "type": "wire-l-1w1",
+            "count": 1
+        },
+        {
+            "type": "wire-l-1w2",
+            "count": 1
+        }
+    ]
 }

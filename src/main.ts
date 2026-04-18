@@ -6,8 +6,8 @@ import {wireDictionary} from "./wire-dictionary";
 import {ConnectionType} from "./types";
 
 const k = kaplay({
-    width: 960,
-    height: 640,
+    width: 1280,
+    height: 720,
     scale: 1,
     debug: true,
     debugKey: "`"
@@ -15,7 +15,8 @@ const k = kaplay({
 
 function initializeWireDictionary() {
     wireDictionary.add("wire-i", {
-        sprite: "wire-i",
+        sprite: "atlas",
+        frame: 1,
         flow: [
             ConnectionType.Both,
             ConnectionType.None,
@@ -24,7 +25,8 @@ function initializeWireDictionary() {
         ]
     });
     wireDictionary.add("wire-l", {
-        sprite: "wire-l",
+        sprite: "atlas",
+        frame: 3,
         flow: [
             ConnectionType.None,
             ConnectionType.None,
@@ -33,25 +35,28 @@ function initializeWireDictionary() {
         ]
     });
     wireDictionary.add("wire-gate-start", {
-        sprite: "wire-gate",
+        sprite: "atlas",
+        frame: 0,
         flow: [
-            ConnectionType.Outlet,
             ConnectionType.None,
+            ConnectionType.Outlet,
             ConnectionType.None,
             ConnectionType.None
         ]
     });
     wireDictionary.add("wire-gate-end", {
-        sprite: "wire-gate",
+        sprite: "atlas",
+        frame: 0,
         flow: [
-            ConnectionType.Inlet,
             ConnectionType.None,
+            ConnectionType.Inlet,
             ConnectionType.None,
             ConnectionType.None
         ]
     });
     wireDictionary.add("wire-blocked", {
-        sprite: "wire-blocked",
+        sprite: "atlas",
+        frame: 7,
         flow: [
             ConnectionType.None,
             ConnectionType.None,
@@ -60,16 +65,18 @@ function initializeWireDictionary() {
         ]
     });
     wireDictionary.add("wire-i-1w", {
-        sprite: "wire-i-1w",
+        sprite: "atlas",
+        frame: 4,
         flow: [
-            ConnectionType.Outlet,
-            ConnectionType.None,
             ConnectionType.Inlet,
+            ConnectionType.None,
+            ConnectionType.Outlet,
             ConnectionType.None
         ]
     });
     wireDictionary.add("wire-l-1w1", {
-        sprite: "wire-l-1w1",
+        sprite: "atlas",
+        frame: 5,
         flow: [
             ConnectionType.None,
             ConnectionType.None,
@@ -78,7 +85,8 @@ function initializeWireDictionary() {
         ]
     });
     wireDictionary.add("wire-l-1w2", {
-        sprite: "wire-l-1w2",
+        sprite: "atlas",
+        frame: 2,
         flow: [
             ConnectionType.None,
             ConnectionType.None,
@@ -86,8 +94,19 @@ function initializeWireDictionary() {
             ConnectionType.Inlet
         ]
     });
-    wireDictionary.add("wire-modifier", {
-        sprite: "wire-modifier",
+    wireDictionary.add("wire-modifier-minus", {
+        sprite: "atlas",
+        frame: 8,
+        flow: [
+            ConnectionType.Both,
+            ConnectionType.None,
+            ConnectionType.Both,
+            ConnectionType.None
+        ]
+    });
+    wireDictionary.add("wire-modifier-plus", {
+        sprite: "atlas",
+        frame: 9,
         flow: [
             ConnectionType.Both,
             ConnectionType.None,
