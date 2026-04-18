@@ -1,4 +1,4 @@
-import {GameObj, KAPLAYCtx, MouseButton, TweenController} from "kaplay";
+import {GameObj, KAPLAYCtx, MouseButton, RotateComp, TweenController} from "kaplay";
 import {wireDictionary} from "../wire-dictionary";
 import {calculateCellVisualSize, getPosKey} from "../utils";
 import * as Constants from "../constants";
@@ -130,6 +130,7 @@ export default function createGameScene(k: KAPLAYCtx) {
         let wires: GameObj<WireState>[] = [];
         
         level.cells.forEach((cellData) => {
+            
             let config = gridConstraints.get(getPosKey(cellData.x, cellData.y));
             if (config) {
                 config.canRotate = cellData.canRotate ?? true;
@@ -146,16 +147,32 @@ export default function createGameScene(k: KAPLAYCtx) {
                 cellData
             ));
             
-            wire.onClick((() => {
-               logWinState(); 
-            }));
-            
-            wires.push(wire);
+            wires.push(wire as GameObj<WireState>);
             if (cellData.type === "wire-gate-start") {
-                startWire = wire;
+                startWire = wire as GameObj<WireState>;
             } else if (cellData.type === "wire-gate-end") {
-                endWire = wire;
+                endWire = wire as GameObj<WireState>;
             }
+        });
+        
+        k.on("rotationStepUpdated", "wire", (wire: GameObj<WireState | RotateComp>) => {
+            wire.rotateTo(wire.rot * Constants.ROTATION_ANGLE_PER_STEP);
+        });
+        
+        k.on("wireClicked", "wire", (wire: GameObj<WireState>) => {
+            wire.rotateCW();
+        });
+        
+        k.on("wireStartDragging", "wire", (wire: GameObj<WireState>) => {
+            
+        });
+        
+        k.on("wireEndDragging", "wire", (wire: GameObj<WireState>) => {
+            
+        });
+        
+        k.on("wireDraggingUpdate", "wire", (wire: GameObj<WireState>) => {
+            
         });
         
         

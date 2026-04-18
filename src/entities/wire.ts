@@ -3,6 +3,7 @@ import {wireDictionary} from "../wire-dictionary";
 import {CellData} from "../types";
 import {getRotationFromStep} from "../utils";
 import {wireState} from "../components/wireState";
+import {wireInteraction} from "../components/wireInteraction";
 
 export const createWire = (k: KAPLAYCtx, x: number, y: number, size: number, cellData: CellData) => [
     k.pos(x, y),
@@ -14,6 +15,7 @@ export const createWire = (k: KAPLAYCtx, x: number, y: number, size: number, cel
     }),
     k.rotate(getRotationFromStep(cellData.rot)),
     k.area(),
+    wireInteraction(),
     wireState(cellData),
     "wire"
 ];

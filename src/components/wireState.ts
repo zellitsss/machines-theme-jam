@@ -7,7 +7,7 @@ export interface WireState extends Comp {
     modifier: number;
     rot: number;
     type: string;
-    updateRotation: (value: number) => void;
+    rotateCW: () => void;
 }
 
 export const wireState = (cellData: CellData): WireState => (
@@ -16,10 +16,10 @@ export const wireState = (cellData: CellData): WireState => (
         x: cellData.x,
         y: cellData.y,
         modifier: cellData.modifier,
-        rot: cellData.rot,
+        rot: cellData.rot ?? 0,
         type: cellData.type,
-        updateRotation(value: number) {
-            this.rot = (value % 4 + 4) % 4;
+        rotateCW() {
+            this.rot = ((this.rot + 1) % 4 + 4) % 4;
             this.trigger("rotationStepUpdated", this.rot);
         }
     }
