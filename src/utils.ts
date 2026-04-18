@@ -1,4 +1,7 @@
 ﻿import {CellConnections, CellData, ConnectionType, ItemData, WireData} from "./types";
+import {GameObj} from "kaplay";
+import {WireState} from "./components/wireState";
+import {gridConstraints} from "./core/grid";
 
 export function canConnect(type: ConnectionType): boolean {
     return type > ConnectionType.None;
@@ -58,4 +61,8 @@ export const fromItemToWireData = (itemData: ItemData): WireData => {
         x: itemData.x,
         y: itemData.y
     };
+}
+
+export const isFromGrid = (wire: GameObj<WireState>): boolean => {
+    return gridConstraints.has(getPosKey(wire.x, wire.y));
 }

@@ -1,4 +1,4 @@
-﻿import {Comp, Vec2} from "kaplay";
+﻿import {Comp} from "kaplay";
 
 export interface PanelComp extends Comp {
     width: number;

@@ -1,9 +1,10 @@
 import {GameObj, KAPLAYCtx, RotateComp, ScaleComp, TimerComp, TweenController} from "kaplay";
 import {canIn, canOut, getOppositeSide, getPosKey, getRotatedConnections} from "../utils";
 import {wireDictionary} from "../wire-dictionary";
-import {canRotateAt, getNextConnectedCell, gridConstraints} from "./grid";
+import {canRotateAt, getNextConnectedCell} from "./grid";
 import {WireState} from "../components/wireState";
 import * as Constants from "../constants";
+import {CellData} from "../types";
 
 export const activeTweenByCell = new Map<string, TweenController>();
 
@@ -98,4 +99,8 @@ export const animateWireRotation = (k: KAPLAYCtx, wire: GameObj<WireState>, onRo
         obj.scaleTo(1);
         onRotationCompleted();
     });
+}
+
+export const needWireBg = (cellData: CellData): boolean => {
+    return (cellData.canPlace ?? true) || cellData.type === "wire-gate-start" || cellData.type === "wire-gate-end";
 }
