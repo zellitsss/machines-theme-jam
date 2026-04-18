@@ -19,7 +19,11 @@ async function loadAssets(k: KAPLAYCtx) {
         k.loadSprite("wire-i-1w", "sprites/wire-i-1w.png"),
         k.loadSprite("wire-l-1w1", "sprites/wire-l-1w1.png"),
         k.loadSprite("wire-l-1w2", "sprites/wire-l-1w2.png"),
-        k.loadSprite("wire-modifier", "sprites/wire-modifier.png")
+        k.loadSprite("wire-modifier", "sprites/wire-modifier.png"),
+        k.loadSprite("atlas", "sprites/atlas.png", {
+            sliceX: 6,
+            sliceY: 3
+        }),
     ]);
 }
 
@@ -66,6 +70,13 @@ export default function createGameScene(k: KAPLAYCtx) {
         // const inventoryData: Map<string, number> = new Map(
         //     Object.entries(level.inventory ?? {}).filter(([id, count]) => count > 0 && wireDictionary.has(id))
         // );
+            
+        k.add([
+            k.pos(),
+            k.anchor("topleft"),
+            k.rect(k.width(), k.height(), {fill: true}),
+            k.color(239, 235, 228),
+        ])
 
         // Layout
         const leftPanel = k.add([

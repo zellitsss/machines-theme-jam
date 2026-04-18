@@ -14,6 +14,7 @@ export enum ConnectionType {
 
 export interface WireDefinition {
     sprite: string;
+    frame?: number;
     // [Top, Right, Bottom, Left]
     flow: CellConnections;
 }

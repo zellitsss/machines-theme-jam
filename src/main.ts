@@ -6,8 +6,8 @@ import {wireDictionary} from "./wire-dictionary";
 import {ConnectionType} from "./types";
 
 const k = kaplay({
-    width: 960,
-    height: 640,
+    width: 1280,
+    height: 720,
     scale: 1,
     debug: true,
     debugKey: "`"
@@ -33,7 +33,8 @@ function initializeWireDictionary() {
         ]
     });
     wireDictionary.add("wire-gate-start", {
-        sprite: "wire-gate",
+        sprite: "atlas",
+        frame: 0,
         flow: [
             ConnectionType.Outlet,
             ConnectionType.None,

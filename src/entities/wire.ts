@@ -13,6 +13,7 @@ export const createWire = (k: KAPLAYCtx, x: number, y: number, size: number, cel
         width: size,
         height: size,
     }),
+    k.color(176, 187, 180),
     k.rotate(getRotationFromStep(cellData.rot)),
     k.area(),
     wireInteraction(),
