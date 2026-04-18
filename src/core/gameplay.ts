@@ -84,18 +84,18 @@ export const animateWireRotation = (k: KAPLAYCtx, wire: GameObj<WireState>, onRo
     const scaleNormal = k.vec2(1, 1);
     const scaleSmall = k.vec2(Constants.ROTATE_SCALE_PEAK, Constants.ROTATE_SCALE_PEAK);
     // Scale tween
-    // obj
-    //     .tween(scaleNormal, scaleSmall, half, (v) => obj.scaleTo(v), k.easings.easeOutQuad)
-    //     .then(() =>
-    //         obj.tween(scaleSmall, scaleNormal, half, (v) => obj.scaleTo(v), k.easings.easeOutQuad)
-    //     );
+    obj
+        .tween(scaleNormal, scaleSmall, half, (v) => obj.scaleTo(v), k.easings.easeOutQuad)
+        .then(() =>
+            obj.tween(scaleSmall, scaleNormal, half, (v) => obj.scaleTo(v), k.easings.easeOutQuad)
+        );
 
     const posKey = getPosKey(obj.x, obj.y);
     activeTweenByCell.set(posKey, tween);
     tween.onEnd(() => {
         activeTweenByCell.delete(posKey);
         obj.angle = obj.rot * Constants.ROTATION_ANGLE_PER_STEP;
-        // obj.scaleTo(1);
+        obj.scaleTo(1);
         onRotationCompleted();
     });
 }

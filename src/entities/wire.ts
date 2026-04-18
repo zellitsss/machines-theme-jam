@@ -17,6 +17,7 @@ export const createWire = (k: KAPLAYCtx, x: number, y: number, size: number, cel
     k.area(),
     wireInteraction(),
     wireState(cellData),
+    k.scale(1),
     k.timer(),
     "wire"
 ];
