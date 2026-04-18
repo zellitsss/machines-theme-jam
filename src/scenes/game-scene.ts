@@ -6,10 +6,9 @@ import {InventoryOld, LAYER_UI, setupLayers} from "../ui/game-scene-ui";
 import {panel} from "../components/panel";
 import {CellConstraint, LevelData} from "../types";
 import {createWire} from "../entities/wire";
-import {isWiresConnected} from "../core/gameplay";
+import {activeTweenByCell, animateWireRotation, handleRotatingWire, isWiresConnected} from "../core/gameplay";
 import {WireState} from "../components/wireState";
-
-// const activeTweenByCell = new WeakMap<Cell, TweenController>();
+import {gridConstraints} from "../core/grid";
 
 async function loadAssets(k: KAPLAYCtx) {
     await Promise.all([
@@ -24,51 +23,15 @@ async function loadAssets(k: KAPLAYCtx) {
     ]);
 }
 
-// function tryRotateWire(k: KAPLAYCtx, cell: Cell, isClockwise: boolean): boolean {
-//     if (!cell.obj || !cell.type || !cell.canRotate) {
-//         return false;
-//     }
-//     if (!wireDictionary.has(cell.type)) {
-//         return false;
-//     }
-//     if (activeTweenByCell.get(cell)) {
-//         return false;
-//     }
-//     cell.rot = ((cell.rot + (isClockwise ? 1 : -1)) % 4 + 4) % 4;
-//     animateWireRotation(k, cell, isClockwise);
-//     return true;
-// }
-
-// function animateWireRotation(k: KAPLAYCtx, cell: Cell, isClockwise: boolean) {
-//     const obj = cell.obj!;
-//     const from = obj.angle;
-//     let bias = isClockwise ? 1 : -1;
-//     const to = from + bias * Constants.ROTATION_ANGLE_PER_STEP;
-//     // Rotate tween
-//     const tween = obj.tween(from, to, Constants.ROTATE_TWEEN_SEC, (a) => {
-//         obj.angle = a;
-//     }, k.easings.easeInOutQuad);
-//
-//     const half = Constants.ROTATE_TWEEN_SEC / 2;
-//     const scaleNormal = k.vec2(1, 1);
-//     const scaleSmall = k.vec2(Constants.ROTATE_SCALE_PEAK, Constants.ROTATE_SCALE_PEAK);
-//     // Scale tween
-//     obj
-//         .tween(scaleNormal, scaleSmall, half, (v) => obj.scaleTo(v), k.easings.easeOutQuad)
-//         .then(() =>
-//             obj.tween(scaleSmall, scaleNormal, half, (v) => obj.scaleTo(v), k.easings.easeOutQuad)
-//         );
-//
-//     activeTweenByCell.set(cell, tween);
-//     tween.onEnd(() => {
-//         activeTweenByCell.delete(cell);
-//         obj.angle = cell.rot * 90;
-//         obj.scaleTo(1);
-//     });
-// }
+function resetContainers()
+{
+    gridConstraints.clear();
+    activeTweenByCell.clear();
+}
 
 export default function createGameScene(k: KAPLAYCtx) {
     return async () => {
+        resetContainers();
         setupLayers(k);
 
         await loadAssets(k);
@@ -76,6 +39,30 @@ export default function createGameScene(k: KAPLAYCtx) {
         const levelData = await k.loadJSON("levelData", "data/level-01.json");
         const level = levelData as LevelData;
 
+        /********** EVENTS **********/
+        k.on("rotationStepUpdated", "wire", (wire: GameObj<WireState | RotateComp>) => {
+            animateWireRotation(k, wire, () => {
+                checkWinCondition()
+            });
+        });
+
+        k.on("wireClicked", "wire", (wire: GameObj<WireState>) => {
+            handleRotatingWire(wire);
+        });
+
+        k.on("wireStartDragging", "wire", (wire: GameObj<WireState>) => {
+            // clear cell -> create ghost wire
+        });
+
+        k.on("wireEndDragging", "wire", (wire: GameObj<WireState>) => {
+            // check drop area
+        });
+
+        k.on("wireDraggingUpdate", "wire", (wire: GameObj<WireState>) => {
+            // move ghost wire along with mouse cursor 
+        });
+        /********** EVENTS **********/
+        
         const inventoryData: Map<string, number> = new Map(
             Object.entries(level.inventory ?? {}).filter(([id, count]) => count > 0 && wireDictionary.has(id))
         );
@@ -115,7 +102,6 @@ export default function createGameScene(k: KAPLAYCtx) {
         const girdOffsetY = centerPanel.pos.y + ((centerPanel.height - Constants.MAIN_PANEL_PADDING * 2) - level.rows * cellVisualSize) / 2 + Constants.MAIN_PANEL_PADDING;
         
         // Create default grid constraints
-        const gridConstraints = new Map<string, CellConstraint>();
         for (let c = 0; c < level.cols; c++) {
             for (let r = 0; r < level.rows; r++) {
                 gridConstraints.set(getPosKey(c, r), {
@@ -153,30 +139,9 @@ export default function createGameScene(k: KAPLAYCtx) {
             } else if (cellData.type === "wire-gate-end") {
                 endWire = wire as GameObj<WireState>;
             }
-        });
+        });        
         
-        k.on("rotationStepUpdated", "wire", (wire: GameObj<WireState | RotateComp>) => {
-            wire.rotateTo(wire.rot * Constants.ROTATION_ANGLE_PER_STEP);
-        });
-        
-        k.on("wireClicked", "wire", (wire: GameObj<WireState>) => {
-            wire.rotateCW();
-        });
-        
-        k.on("wireStartDragging", "wire", (wire: GameObj<WireState>) => {
-            
-        });
-        
-        k.on("wireEndDragging", "wire", (wire: GameObj<WireState>) => {
-            
-        });
-        
-        k.on("wireDraggingUpdate", "wire", (wire: GameObj<WireState>) => {
-            
-        });
-        
-        
-        function logWinState() {
+        function checkWinCondition() {
             k.debug.log(isWiresConnected(wires, startWire, endWire) ? "Win" : "Lose");
         }
 

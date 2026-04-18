@@ -22,7 +22,7 @@ export interface CellConstraint {
     modifier?: number;
 }
 
-export type GridConstraints = Record<string, CellConstraint>;
+export type GridConstraints = Map<string, CellConstraint>;
 
 export interface CellData extends CellConstraint {
     x: number;

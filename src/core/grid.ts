@@ -1,14 +1,16 @@
 import {GameObj} from "kaplay";
 import {getPosKey} from "../utils";
-import {GridConstraints, TRAVEL_OFFSET} from "../types";
+import {CellConstraint, GridConstraints, TRAVEL_OFFSET} from "../types";
 import {WireState} from "../components/wireState";
 
-export const canRotateAt = (gridConstraints: GridConstraints, x: number, y: number): boolean => {
-    return gridConstraints[getPosKey(x, y)].canRotate ?? true;
+export const gridConstraints: GridConstraints = new Map<string, CellConstraint>();
+
+export const canRotateAt = (x: number, y: number): boolean => {
+    return gridConstraints.get(getPosKey(x, y))?.canRotate ?? true;
 }
 
-export const canPlaceAt = (gridConstraints: GridConstraints, x: number, y: number): boolean => {
-    return gridConstraints[getPosKey(x, y)]?.canPlace ?? true;
+export const canPlaceAt = (x: number, y: number): boolean => {
+    return gridConstraints.get(getPosKey(x, y))?.canPlace ?? true;
 }
 
 export const getNextConnectedCell = (wires: GameObj<WireState>[], currentWire: GameObj<WireState>, side: number): GameObj<WireState> => {
