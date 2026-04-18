@@ -12,11 +12,27 @@ export enum ConnectionType {
     Both
 }
 
+export interface WireDefinition {
+    sprite: string;
+    // [Top, Right, Bottom, Left]
+    flow: CellConnections;
+}
+
 export type CellConnections = [ConnectionType, ConnectionType, ConnectionType, ConnectionType];
 
+export interface WireData {
+    type: string;
+    modifier?: number;
+    rot?: number;
+}
+
+export interface ItemData extends WireData {
+    count: number;
+}
+
 export interface CellConstraint {
-    canPlace: boolean;
-    canRotate: boolean;
+    canPlace?: boolean;
+    canRotate?: boolean;
     rot?: number;
     type?: string;
     modifier?: number;
@@ -33,5 +49,5 @@ export interface LevelData {
     cols: number;
     rows: number;
     cells: CellData[];
-    inventory: Record<string, number>;
+    inventory: ItemData[];
 }

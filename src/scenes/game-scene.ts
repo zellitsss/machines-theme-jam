@@ -63,9 +63,9 @@ export default function createGameScene(k: KAPLAYCtx) {
         });
         /********** EVENTS **********/
         
-        const inventoryData: Map<string, number> = new Map(
-            Object.entries(level.inventory ?? {}).filter(([id, count]) => count > 0 && wireDictionary.has(id))
-        );
+        // const inventoryData: Map<string, number> = new Map(
+        //     Object.entries(level.inventory ?? {}).filter(([id, count]) => count > 0 && wireDictionary.has(id))
+        // );
 
         // Layout
         const leftPanel = k.add([
