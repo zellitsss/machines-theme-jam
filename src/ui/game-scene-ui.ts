@@ -1,5 +1,5 @@
 import { GameObj, KAPLAYCtx, MouseButton, Vec2 } from "kaplay";
-import { CELL_SIZE } from "../constants";
+import {CELL_SIZE, k} from "../constants";
 import { wireDictionary } from "../wire-dictionary";
 import { drag } from "../components/drag";
 
@@ -15,12 +15,11 @@ export type InventoryOld = {
     add(type: string, n: number): void;
 };
 
-export function setupLayers(k: KAPLAYCtx): void {
+export function setupLayers(): void {
     k.setLayers([LAYER_BACKGROUND, LAYER_GAME, LAYER_UI], LAYER_GAME);
 }
 
 export function createInventorySlots(
-    k: KAPLAYCtx,
     container: GameObj,
     inventory: Map<string, number>,
     tryPlaceFromInventory: (wireType: string, worldPos: Vec2) => boolean

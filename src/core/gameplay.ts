@@ -1,10 +1,11 @@
-import {GameObj, KAPLAYCtx, RotateComp, ScaleComp, TimerComp, TweenController} from "kaplay";
+import {GameObj, RotateComp, ScaleComp, TimerComp, TweenController} from "kaplay";
 import {canIn, canOut, getOppositeSide, getPosKey, getRotatedConnections} from "../utils";
 import {wireDictionary} from "../wire-dictionary";
 import {canRotateAt, getNextConnectedCell} from "./grid";
 import {WireState} from "../components/wireState";
 import * as Constants from "../constants";
 import {CellData} from "../types";
+import {k} from "../constants";
 
 export const activeTweenByCell = new Map<string, TweenController>();
 
@@ -71,7 +72,7 @@ export const handleRotatingWire = (wire: GameObj<WireState>) => {
     }
 }
 
-export const animateWireRotation = (k: KAPLAYCtx, wire: GameObj<WireState>, onRotationCompleted: () => void) => {
+export const animateWireRotation = (wire: GameObj<WireState>, onRotationCompleted: () => void) => {
     const obj = wire as GameObj<WireState | RotateComp | TimerComp | ScaleComp>;
 
     const from = obj.angle;

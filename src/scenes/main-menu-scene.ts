@@ -1,8 +1,8 @@
-import {GameObj, KAPLAYCtx, MouseButton, Vec2} from 'kaplay';
+import {GameObj, KAPLAYCtx, Vec2} from 'kaplay';
 import {panel} from "../components/panel";
-import {NAME_Game} from "../constants";
+import {k, NAME_Game} from "../constants";
 
-function createButton(k: KAPLAYCtx, parent: GameObj, text: string, pos: Vec2, onClick: () => void) {
+function createButton(parent: GameObj, text: string, pos: Vec2, onClick: () => void) {
     const btn = parent.add([
         k.rect(240, 60, {radius: 4}),
         k.pos(pos),
@@ -42,7 +42,7 @@ function createButton(k: KAPLAYCtx, parent: GameObj, text: string, pos: Vec2, on
     return btn;
 }
 
-export default function createMainMenuScene(k: KAPLAYCtx) {
+export default function createMainMenuScene() {
     const LAYOUT_PANEL_WIDTH = 480;
     return () => {
         const layoutPanel = k.add([
@@ -51,13 +51,13 @@ export default function createMainMenuScene(k: KAPLAYCtx) {
             panel(LAYOUT_PANEL_WIDTH, k.height())
         ]);
 
-        const startButton = createButton(k, layoutPanel, "Start", layoutPanel.pos.add(0, 256), () => {
+        const startButton = createButton(layoutPanel, "Start", layoutPanel.pos.add(0, 256), () => {
             if (levelSelectionMenu.hidden) {
                 toggleLevelSelection();
             }
         });
 
-        const creditButton = createButton(k, layoutPanel, "Credit", startButton.pos.add(0, 72), () => {
+        const creditButton = createButton(layoutPanel, "Credit", startButton.pos.add(0, 72), () => {
             if (levelSelectionMenu.hidden) {
                 console.log("Credit");
             }
@@ -90,7 +90,7 @@ export default function createMainMenuScene(k: KAPLAYCtx) {
             ["Close", toggleLevelSelection],
         ];
         buttons.map(([text, onClick], index) => {
-            createButton(k, levelSelectionMenu, text.toString(), k.vec2(0, (index + 1) * 72 - levelSelectionMenu.height / 2), onClick);
+            createButton(levelSelectionMenu, text.toString(), k.vec2(0, (index + 1) * 72 - levelSelectionMenu.height / 2), onClick);
         });
     }
 }

@@ -1,4 +1,4 @@
-import {GameObj, KAPLAYCtx, PosComp, RotateComp} from "kaplay";
+import {GameObj, PosComp, RotateComp} from "kaplay";
 import {calculateWireVisualSize, fromCellToWireData, fromItemToWireData, getPosKey} from "../utils";
 import * as Constants from "../constants";
 import {LAYER_UI, setupLayers} from "../ui/game-scene-ui";
@@ -15,9 +15,9 @@ import {
 import {WireState} from "../components/wireState";
 import {calculateCellPos, canPlaceAt, gridConstraints, isValidCell, worldToGrid} from "../core/grid";
 import {inventory} from "../ui/inventory";
-import {CELL_SIZE, EVENT_WireClicked, TOP_PANEL_HEIGHT} from "../constants";
+import {CELL_SIZE, k, TOP_PANEL_HEIGHT} from "../constants";
 
-async function loadAssets(k: KAPLAYCtx) {
+async function loadAssets() {
     await Promise.all([
         // k.loadSprite("wire-i", "sprites/wire-i.png"),
         // k.loadSprite("wire-l", "sprites/wire-l.png"),
@@ -41,22 +41,22 @@ function resetContainers() {
     inventory.clear();
 }
 
-export default function createGameScene(k: KAPLAYCtx) {
+export default function createGameScene() {
     let gridOffsetX = 0;
     let gridOffsetY = 0;
     let wireVisualSize = CELL_SIZE;
     return async () => {
         resetContainers();
-        setupLayers(k);
+        setupLayers();
 
-        await loadAssets(k);
+        await loadAssets();
         // Load Level data
         const levelData = await k.loadJSON("levelData", "data/level-01.json");
         const level = levelData as LevelData;
 
         /********** EVENTS **********/
         k.on("rotationStepUpdated", "wire", (wire: GameObj<WireState | RotateComp>) => {
-            animateWireRotation(k, wire, () => {
+            animateWireRotation(wire, () => {
                 checkWinCondition()
             });
         });
@@ -73,7 +73,7 @@ export default function createGameScene(k: KAPLAYCtx) {
         k.on(Constants.EVENT_WireEndDragging, "wire", (wire: GameObj<WireState | PosComp>) => {
             const dropPos = k.mousePos();
             const gridPos = worldToGrid(dropPos.x, dropPos.y, wireVisualSize, gridOffsetX, gridOffsetY);
-            if (canPlaceAt(k, ...gridPos)) {
+            if (canPlaceAt(...gridPos)) {
                 wire.pos = k.vec2(...calculateCellPos(gridPos[0], gridPos[1], wireVisualSize, gridOffsetX, gridOffsetY));
                 // update wire state
             } else {
@@ -191,7 +191,6 @@ export default function createGameScene(k: KAPLAYCtx) {
             }
 
             const wire = k.add(createWire(
-                k,
                 cellPos[0],
                 cellPos[1],
                 wireVisualSize,
@@ -214,7 +213,6 @@ export default function createGameScene(k: KAPLAYCtx) {
 
         Array.from(inventory.values()).forEach((item, index) => {
             const wire = leftPanel.add(createWire(
-                k,
                 leftPanel.pos.x + leftPanel.width / 2,
                 leftPanel.pos.y + TOP_PANEL_HEIGHT + index * wireVisualSize + index * 8,
                 wireVisualSize,

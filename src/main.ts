@@ -1,18 +1,10 @@
-import kaplay from "kaplay";
 import createGameScene from './scenes/game-scene';
 import createMainMenuScene from './scenes/main-menu-scene';
 import {NAME_Game, NAME_MainMenu} from "./constants";
 import {wireDictionary} from "./wire-dictionary";
 import {ConnectionType} from "./types";
 
-const k = kaplay({
-    width: 1280,
-    height: 720,
-    scale: 1,
-    letterbox: true,
-    debug: true,
-    debugKey: "`"
-});
+import {k} from './constants'
 
 function initializeWireDictionary() {
     wireDictionary.add("wire-i", {

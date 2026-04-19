@@ -4,19 +4,18 @@ import {
     EVENT_WireClicked,
     EVENT_WireDraggingUpdate,
     EVENT_WireEndDragging,
-    EVENT_WireStartDragging
+    EVENT_WireStartDragging, k
 } from "../constants";
 
 export interface WireInteraction extends Comp {
 }
 
 export interface WireInteractionOpt {
-    k: KAPLAYCtx
 }
 
 export const wireInteraction = (opt: WireInteractionOpt): WireInteraction => {
 
-    let clickStartPos = opt.k.mousePos();
+    let clickStartPos = k.mousePos();
     let isClickRegistered = false;
     let isDragging = false;
     return {
@@ -24,13 +23,13 @@ export const wireInteraction = (opt: WireInteractionOpt): WireInteraction => {
         require: ["pos", "area"],
         update() {
             // Start clicking
-            if (this.isHovering() && opt.k.isMousePressed("left")) {
-                clickStartPos = opt.k.mousePos();
+            if (this.isHovering() && k.isMousePressed("left")) {
+                clickStartPos = k.mousePos();
                 isClickRegistered = true;
             }
             
             // Check for drag
-            if (isClickRegistered && opt.k.mousePos().dist(clickStartPos) > DRAG_THRESHOLD) {
+            if (isClickRegistered && k.mousePos().dist(clickStartPos) > DRAG_THRESHOLD) {
                 isClickRegistered = false;
                 isDragging = true;
                 this.trigger(EVENT_WireStartDragging, this);
@@ -42,7 +41,7 @@ export const wireInteraction = (opt: WireInteractionOpt): WireInteraction => {
             }
 
             // Trigger Clicked or End Dragging
-            if (this.isHovering() && opt.k.isMouseReleased("left")) {
+            if (this.isHovering() && k.isMouseReleased("left")) {
                 if (isClickRegistered)
                 {
                     isClickRegistered = false;
@@ -54,7 +53,7 @@ export const wireInteraction = (opt: WireInteractionOpt): WireInteraction => {
             }
             
             // Safe reset
-            if (opt.k.isMouseReleased("left")) {
+            if (k.isMouseReleased("left")) {
                 isClickRegistered = false;
                 isDragging = false;
             }

@@ -1,7 +1,8 @@
-import {GameObj, KAPLAYCtx} from "kaplay";
+import {GameObj} from "kaplay";
 import {getPosKey} from "../utils";
 import {CellConstraint, GridConstraints, TRAVEL_OFFSET} from "../types";
 import {WireState} from "../components/wireState";
+import {k} from "../constants";
 
 export const gridConstraints: GridConstraints = new Map<string, CellConstraint>();
 
@@ -13,7 +14,7 @@ export const isValidCell = (x: number, y: number): boolean => {
     return gridConstraints.has(getPosKey(x, y));
 }
 
-export const canPlaceAt = (k: KAPLAYCtx, x: number, y: number): boolean => {
+export const canPlaceAt = (x: number, y: number): boolean => {
     const existed = k.query({
         include: ["wire", getPosKey(x, y)],
     })

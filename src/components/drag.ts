@@ -1,6 +1,6 @@
-import { GameObj, KAPLAYCtx, KEventController, MouseButton, Vec2 } from "kaplay";
+import { GameObj, KEventController, MouseButton, Vec2 } from "kaplay";
 import { wireDictionary } from "../wire-dictionary";
-import { CELL_SIZE } from "../constants";
+import {CELL_SIZE, k} from "../constants";
 
 export type DragPayload = {
     wireType: string;
@@ -9,7 +9,6 @@ export type DragPayload = {
 };
 
 export type DragOpts = {
-    k: KAPLAYCtx;
     layer: string; // Layer name for the drag ghost (e.g. ui).
     getPayload: () => DragPayload | null;
     onDrop: (worldPos: Vec2, payload: DragPayload) => void;
@@ -20,7 +19,6 @@ export type DragOpts = {
 const DEFAULT_THRESHOLD = 4;
 
 export function drag(opts: DragOpts) {
-    const k = opts.k;
     const threshold = opts.dragThreshold ?? DEFAULT_THRESHOLD;
 
     let ghost: GameObj | null = null;

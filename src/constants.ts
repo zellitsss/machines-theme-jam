@@ -1,4 +1,6 @@
-﻿export const CELL_SIZE = 128;
+﻿import kaplay from "kaplay";
+
+export const CELL_SIZE = 128;
 export const ROTATE_TWEEN_SEC = 0.25;
 export const ROTATE_SCALE_PEAK = 0.9;
 export const ROTATION_ANGLE_PER_STEP = 90;
@@ -17,3 +19,12 @@ export const EVENT_WireClicked = "wireClicked";
 export const EVENT_WireStartDragging = "wireStartDragging";
 export const EVENT_WireEndDragging = "wireEndDragging";
 export const EVENT_WireDraggingUpdate = "wireDraggingUpdate";
+
+export const k = kaplay({
+    width: 1280,
+    height: 720,
+    scale: 1,
+    letterbox: true,
+    debug: true,
+    debugKey: "`"
+});
