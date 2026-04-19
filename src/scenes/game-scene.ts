@@ -15,7 +15,7 @@ import {
 import {WireState} from "../components/wireState";
 import {gridConstraints} from "../core/grid";
 import {inventory} from "../ui/inventory";
-import {TOP_PANEL_HEIGHT} from "../constants";
+import {EVENT_WireClicked, TOP_PANEL_HEIGHT} from "../constants";
 
 async function loadAssets(k: KAPLAYCtx) {
     await Promise.all([
@@ -59,20 +59,23 @@ export default function createGameScene(k: KAPLAYCtx) {
             });
         });
 
-        k.on("wireClicked", "wire", (wire: GameObj<WireState>) => {
+        k.on(Constants.EVENT_WireClicked, "wire", (wire: GameObj<WireState>) => {
             handleRotatingWire(wire);
         });
 
-        k.on("wireStartDragging", "wire", (wire: GameObj<WireState>) => {
+        k.on(Constants.EVENT_WireStartDragging, "wire", (wire: GameObj<WireState>) => {
             // clear cell -> create ghost wire
+            console.log("start dragging ", getPosKey(wire.x, wire.y));
         });
 
-        k.on("wireEndDragging", "wire", (wire: GameObj<WireState>) => {
+        k.on(Constants.EVENT_WireEndDragging, "wire", (wire: GameObj<WireState>) => {
             // check drop area
+            console.log("end dragging ", getPosKey(wire.x, wire.y));
         });
 
-        k.on("wireDraggingUpdate", "wire", (wire: GameObj<WireState>) => {
+        k.on(Constants.EVENT_WireDraggingUpdate, "wire", (wire: GameObj<WireState>) => {
             // move ghost wire along with mouse cursor 
+            console.log("dragging ", getPosKey(wire.x, wire.y));
         });
         /********** EVENTS **********/
         

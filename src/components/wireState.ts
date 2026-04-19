@@ -13,9 +13,9 @@ export interface WireState extends Comp {
 export const wireState = (wireData: WireData): WireState => (
     {
         id: "wireState",
-        x: wireData.x,
-        y: wireData.y,
-        modifier: wireData.modifier,
+        x: wireData.x ?? -1,
+        y: wireData.y ?? -1,
+        modifier: wireData.modifier ?? 0,
         rot: wireData.rot ?? 0,
         type: wireData.type,
         rotateCW() {

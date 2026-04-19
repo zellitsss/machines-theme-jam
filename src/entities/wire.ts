@@ -19,7 +19,9 @@ export const createWire = (k: KAPLAYCtx, posX: number, posY: number, size: numbe
     k.color(176, 187, 212),
     k.rotate(getRotationFromStep(wireData.rot)),
     k.area(),
-    wireInteraction(),
+    wireInteraction({
+        k
+    }),
     wireState(wireData),
     k.scale(1),
     k.timer(),

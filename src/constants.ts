@@ -10,3 +10,8 @@ export const RIGHT_PANEL_RATIO = 1/4;
 export const CENTER_PANEL_RATIO = 1/2;
 export const TOP_PANEL_HEIGHT = 120;
 export const MAIN_PANEL_PADDING = 20;
+
+export const EVENT_WireClicked = "wireClicked";
+export const EVENT_WireStartDragging = "wireStartDragging";
+export const EVENT_WireEndDragging = "wireEndDragging";
+export const EVENT_WireDraggingUpdate = "wireDraggingUpdate";
