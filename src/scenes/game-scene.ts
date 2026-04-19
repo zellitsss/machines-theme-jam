@@ -1,7 +1,7 @@
 import {GameObj, PosComp, RotateComp} from "kaplay";
 import {calculateWireVisualSize, fromCellToWireData, fromItemToWireData, getPosKey} from "../utils";
 import * as Constants from "../constants";
-import {LAYER_UI, setupLayers} from "../ui/game-scene-ui";
+import {LAYER_BACKGROUND, LAYER_UI, setupLayers} from "../ui/game-scene-ui";
 import {panel} from "../components/panel";
 import {LevelData} from "../types";
 import {createGhostWire, createWire} from "../entities/wire";
@@ -24,6 +24,7 @@ async function loadAssets() {
             sliceY: 3,
             filter: "linear"
         }),
+        k.loadSprite("background", "sprites/Background.png"),
     ]);
 }
 
@@ -105,8 +106,11 @@ export default function createGameScene() {
         k.add([
             k.pos(),
             k.anchor("topleft"),
-            k.rect(k.width(), k.height(), {fill: true}),
-            k.color(239, 235, 228),
+            k.layer(LAYER_BACKGROUND),
+            k.sprite("background", {
+                width: 1280,
+                height: 720
+            })
         ])
 
         // Layout
