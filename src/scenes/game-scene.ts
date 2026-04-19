@@ -8,7 +8,7 @@ import {createGhostWire, createWire} from "../entities/wire";
 import {
     activeTweenByCell,
     animateWireRotation,
-    handleRotatingWire,
+    handleRotatingWire, isInPanels,
     isWiresConnected,
     needWireBg
 } from "../core/gameplay";
@@ -71,6 +71,7 @@ export default function createGameScene() {
             const gridPos = worldToGrid(dropPos.x, dropPos.y, wireVisualSize, gridOffsetX, gridOffsetY);
             if (canPlaceAt(...gridPos)) {
                 // Place in the empty cell
+                // TODO: be aware of inventory
                 wire.hidden = false;
                 wire.pos = k.vec2(...calculateCellPos(gridPos[0], gridPos[1], wireVisualSize, gridOffsetX, gridOffsetY));
                 wire.untag(getPosKey(wire.wireData.x, wire.wireData.y));
@@ -80,10 +81,15 @@ export default function createGameScene() {
                 // TODO: Handle the placeholder dot
             } else {
                 if (isValidCell(wire.wireData.x, wire.wireData.y)) {
-                    // The cell is dragged from the grid, currently return to the original cell
-                    // TODO: check if outside the grid -> move to inventory
-                    wire.hidden = false;
-                    wire.pos = k.vec2(...calculateCellPos(wire.wireData.x, wire.wireData.y, wireVisualSize, gridOffsetX, gridOffsetY));
+                    if (isInPanels(k.get("inventory_panel"), dropPos)) {
+                        wire.destroy();
+                        // move to inventory
+                        console.log("move to inventory");
+                    } else {
+                        // return to the original cell
+                        wire.hidden = false;
+                        wire.pos = k.vec2(...calculateCellPos(wire.wireData.x, wire.wireData.y, wireVisualSize, gridOffsetX, gridOffsetY));
+                    }
                 } else {
                     // Dragged from inventory
                 }
@@ -118,7 +124,8 @@ export default function createGameScene() {
             k.layer(LAYER_UI),
             k.pos(),
             k.anchor("topleft"),
-            panel(k.width() * Constants.LEFT_PANEL_RATIO, k.height())
+            panel(k.width() * Constants.LEFT_PANEL_RATIO, k.height()),
+            "inventory_panel"
         ]);
         const topPanel = k.add([
             k.anchor("top"),
@@ -134,7 +141,8 @@ export default function createGameScene() {
             k.layer(LAYER_UI),
             k.pos(centerPanel.pos.x + centerPanel.width, 0),
             k.anchor("topleft"),
-            panel(k.width() * Constants.RIGHT_PANEL_RATIO, k.height())
+            panel(k.width() * Constants.RIGHT_PANEL_RATIO, k.height()),
+            "inventory_panel"
         ]);
 
         wireVisualSize = calculateWireVisualSize(

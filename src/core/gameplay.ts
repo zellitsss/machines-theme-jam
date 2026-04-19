@@ -1,4 +1,4 @@
-import {GameObj, RotateComp, ScaleComp, TimerComp, TweenController} from "kaplay";
+import {AreaComp, GameObj, RotateComp, ScaleComp, TimerComp, TweenController, Vec2} from "kaplay";
 import {canIn, canOut, getOppositeSide, getPosKey, getRotatedConnections} from "../utils";
 import {wireDictionary} from "../wire-dictionary";
 import {canRotateAt, getNextConnectedCell} from "./grid";
@@ -6,6 +6,7 @@ import {WireState} from "../components/wireState";
 import * as Constants from "../constants";
 import {CellData} from "../types";
 import {k} from "../constants";
+import {PanelComp} from "../components/panel";
 
 export const activeTweenByCell = new Map<string, TweenController>();
 
@@ -102,4 +103,12 @@ export const animateWireRotation = (wire: GameObj<WireState>, onRotationComplete
 
 export const needWireBg = (cellData: CellData): boolean => {
     return (cellData.canPlace ?? true) || cellData.type === "wire-gate-start" || cellData.type === "wire-gate-end";
+}
+
+export const isInPanels = (objs: GameObj[], pos: Vec2): boolean => {
+    let isIn = false;
+    objs.forEach((obj) => {
+        isIn = isIn || (new k.Rect(obj.pos, obj.width, obj.height)).contains(pos);
+    });
+    return isIn;
 }
