@@ -25,6 +25,7 @@ export const createWire = (k: KAPLAYCtx, posX: number, posY: number, size: numbe
     wireState(wireData),
     k.scale(1),
     k.timer(),
+    k.opacity(1),
     "wire",
     ...tags,
 ]};

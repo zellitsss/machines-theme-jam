@@ -1,5 +1,5 @@
-import {GameObj, KAPLAYCtx, RotateComp} from "kaplay";
-import {calculateCellVisualSize, fromCellToWireData, fromItemToWireData, getPosKey} from "../utils";
+import {GameObj, KAPLAYCtx, PosComp, RotateComp} from "kaplay";
+import {calculateWireVisualSize, fromCellToWireData, fromItemToWireData, getPosKey} from "../utils";
 import * as Constants from "../constants";
 import {LAYER_UI, setupLayers} from "../ui/game-scene-ui";
 import {panel} from "../components/panel";
@@ -13,9 +13,9 @@ import {
     needWireBg
 } from "../core/gameplay";
 import {WireState} from "../components/wireState";
-import {gridConstraints} from "../core/grid";
+import {calculateCellPos, canPlaceAt, gridConstraints, worldToGrid} from "../core/grid";
 import {inventory} from "../ui/inventory";
-import {EVENT_WireClicked, TOP_PANEL_HEIGHT} from "../constants";
+import {CELL_SIZE, EVENT_WireClicked, TOP_PANEL_HEIGHT} from "../constants";
 
 async function loadAssets(k: KAPLAYCtx) {
     await Promise.all([
@@ -35,14 +35,16 @@ async function loadAssets(k: KAPLAYCtx) {
     ]);
 }
 
-function resetContainers()
-{
+function resetContainers() {
     gridConstraints.clear();
     activeTweenByCell.clear();
     inventory.clear();
 }
 
 export default function createGameScene(k: KAPLAYCtx) {
+    let gridOffsetX = 0;
+    let gridOffsetY = 0;
+    let wireVisualSize = CELL_SIZE;
     return async () => {
         resetContainers();
         setupLayers(k);
@@ -63,23 +65,32 @@ export default function createGameScene(k: KAPLAYCtx) {
             handleRotatingWire(wire);
         });
 
+        let ghostWire: GameObj | null = null;
         k.on(Constants.EVENT_WireStartDragging, "wire", (wire: GameObj<WireState>) => {
-            // clear cell -> create ghost wire
+
         });
 
-        k.on(Constants.EVENT_WireEndDragging, "wire", (wire: GameObj<WireState>) => {
-            // check drop area
+        k.on(Constants.EVENT_WireEndDragging, "wire", (wire: GameObj<WireState | PosComp>) => {
+            const dropPos = k.mousePos();
+            const gridPos = worldToGrid(dropPos.x, dropPos.y, wireVisualSize, gridOffsetX, gridOffsetY);
+            if (canPlaceAt(k, ...gridPos)) {
+                wire.pos = k.vec2(...calculateCellPos(gridPos[0], gridPos[1], wireVisualSize, gridOffsetX, gridOffsetY));
+            } else {
+                // Return to original place
+                wire.pos = k.vec2(...calculateCellPos(wire.x, wire.y, wireVisualSize, gridOffsetX, gridOffsetY));
+            }
+            checkWinCondition();
         });
 
-        k.on(Constants.EVENT_WireDraggingUpdate, "wire", (wire: GameObj<WireState>) => {
-            // move ghost wire along with mouse cursor 
+        k.on(Constants.EVENT_WireDraggingUpdate, "wire", (wire: GameObj<WireState | PosComp>) => {
+            wire.pos = k.mousePos();
         });
         /********** EVENTS **********/
-        
+
         level.inventory.forEach((itemData) => {
-           inventory.set(itemData.type, itemData); 
+            inventory.set(itemData.type, itemData);
         });
-            
+
         // Background
         k.add([
             k.pos(),
@@ -111,17 +122,17 @@ export default function createGameScene(k: KAPLAYCtx) {
             k.anchor("topleft"),
             panel(k.width() * Constants.RIGHT_PANEL_RATIO, k.height())
         ]);
-        
-        const cellVisualSize = calculateCellVisualSize(
+
+        wireVisualSize = calculateWireVisualSize(
             centerPanel.width - Constants.MAIN_PANEL_PADDING * 2,
             centerPanel.height - Constants.MAIN_PANEL_PADDING * 2,
             level.cols,
             level.rows);
-        
+
         //Create grid
-        const gridOffsetX = centerPanel.pos.x + ((centerPanel.width - Constants.MAIN_PANEL_PADDING * 2) - level.cols * cellVisualSize) / 2 + Constants.MAIN_PANEL_PADDING;
-        const girdOffsetY = centerPanel.pos.y + ((centerPanel.height - Constants.MAIN_PANEL_PADDING * 2) - level.rows * cellVisualSize) / 2 + Constants.MAIN_PANEL_PADDING;
-        
+        gridOffsetX = centerPanel.pos.x + ((centerPanel.width - Constants.MAIN_PANEL_PADDING * 2) - level.cols * wireVisualSize) / 2 + Constants.MAIN_PANEL_PADDING;
+        gridOffsetY = centerPanel.pos.y + ((centerPanel.height - Constants.MAIN_PANEL_PADDING * 2) - level.rows * wireVisualSize) / 2 + Constants.MAIN_PANEL_PADDING;
+
         // Create default grid constraints
         for (let c = 0; c < level.cols; c++) {
             for (let r = 0; r < level.rows; r++) {
@@ -129,13 +140,13 @@ export default function createGameScene(k: KAPLAYCtx) {
                     canRotate: true,
                     canPlace: true,
                 });
-                
+
                 k.add([
-                    k.pos(gridOffsetX + (c + 0.5) * cellVisualSize, girdOffsetY + (r + 0.5) * cellVisualSize),
+                    k.pos(gridOffsetX + (c + 0.5) * wireVisualSize, gridOffsetY + (r + 0.5) * wireVisualSize),
                     k.anchor("center"),
                     k.sprite("atlas", {
-                        width: cellVisualSize,
-                        height: cellVisualSize,
+                        width: wireVisualSize,
+                        height: wireVisualSize,
                         frame: 13
                     }),
                     k.color(199, 199, 199),
@@ -143,13 +154,13 @@ export default function createGameScene(k: KAPLAYCtx) {
                 ])
             }
         }
-        
+
         let startWire: GameObj<WireState>;
         let endWire: GameObj<WireState>;
         let wires: GameObj<WireState>[] = [];
-        
+
         level.cells.forEach((cellData) => {
-            
+
             let config = gridConstraints.get(getPosKey(cellData.x, cellData.y));
             if (config) {
                 config.canRotate = cellData.canRotate ?? true;
@@ -158,51 +169,53 @@ export default function createGameScene(k: KAPLAYCtx) {
                 config.type = cellData.type ?? "";
                 config.modifier = cellData.modifier ?? 0;
             }
-            if (needWireBg(cellData))
-            {
+
+            const cellPos = calculateCellPos(cellData.x, cellData.y, wireVisualSize, gridOffsetX, gridOffsetY);
+            if (needWireBg(cellData)) {
                 const wireBg = k.add([
-                    k.pos(gridOffsetX + (cellData.x + 0.5) * cellVisualSize, girdOffsetY + (cellData.y + 0.5) * cellVisualSize),
+                    k.pos(...cellPos),
                     k.anchor("center"),
                     k.sprite("atlas", {
-                        width: cellVisualSize,
-                        height: cellVisualSize,
+                        width: wireVisualSize,
+                        height: wireVisualSize,
                         frame: 6
                     }),
                     `wireBg_${getPosKey(cellData.x, cellData.y)}`
                 ]);
             }
-            
+
             const wire = k.add(createWire(
                 k,
-                gridOffsetX + (cellData.x + 0.5) * cellVisualSize,
-                girdOffsetY + (cellData.y + 0.5) * cellVisualSize,
-                cellVisualSize,
-                fromCellToWireData(cellData)
+                cellPos[0],
+                cellPos[1],
+                wireVisualSize,
+                fromCellToWireData(cellData),
+                [getPosKey(cellData.x, cellData.y)]
             ));
-            
+
             // Remove placeholder
             k.get(`placeholder_${getPosKey(cellData.x, cellData.y)}`).forEach((obj) => {
                 obj.destroy();
             })
-            
+
             wires.push(wire as GameObj<WireState>);
             if (cellData.type === "wire-gate-start") {
                 startWire = wire as GameObj<WireState>;
             } else if (cellData.type === "wire-gate-end") {
                 endWire = wire as GameObj<WireState>;
             }
-        });       
-        
+        });
+
         Array.from(inventory.values()).forEach((item, index) => {
             const wire = leftPanel.add(createWire(
                 k,
-                leftPanel.pos.x + leftPanel.width/2,
-                leftPanel.pos.y + TOP_PANEL_HEIGHT + index * cellVisualSize + index * 8,
-                cellVisualSize,
+                leftPanel.pos.x + leftPanel.width / 2,
+                leftPanel.pos.y + TOP_PANEL_HEIGHT + index * wireVisualSize + index * 8,
+                wireVisualSize,
                 fromItemToWireData(item)
             ))
         });
-        
+
         function checkWinCondition() {
             k.debug.log(isWiresConnected(wires, startWire, endWire) ? "Win" : "Lose");
         }

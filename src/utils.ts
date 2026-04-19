@@ -29,7 +29,7 @@ export function getRotatedConnections(base: CellConnections, rotationStep: numbe
     return connections as CellConnections;
 }
 
-export function calculateCellVisualSize(width: number, height: number, cols: number, rows: number): number {
+export function calculateWireVisualSize(width: number, height: number, cols: number, rows: number): number {
     const cellWidth = width / cols;
     const cellHeight = height / rows;
     return Math.min(cellWidth, cellHeight);
