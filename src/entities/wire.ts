@@ -4,8 +4,7 @@ import {getRotationFromStep} from "../utils";
 import {wireState} from "../components/wireState";
 import {wireInteraction} from "../components/wireInteraction";
 import {k} from "../constants";
-import {GameObj, PosComp, Rect} from "kaplay";
-import {needWireBg} from "../core/gameplay";
+import {GameObj} from "kaplay";
 
 export const createWireVisual = (wireDef: WireDefinition, size: number) => {
     return [

@@ -12,12 +12,10 @@ export const activeTweenByCell = new Map<string, TweenController>();
 export const getExitSide = (wire: GameObj<WireState>, enteredSide: number): number | null => {
     const rotatedConnections = getRotatedConnections(wireDictionary.get(wire.type)?.flow ?? [0, 0, 0, 0], wire.rot);
     for (let side = 0; side < 4; side++) {
-        if (side === enteredSide)
-        {
+        if (side === enteredSide) {
             continue;
         }
-        if (canOut(rotatedConnections[side]))
-        {
+        if (canOut(rotatedConnections[side])) {
             return side;
         }
     }
@@ -31,7 +29,7 @@ export const isWiresConnected = (wires: GameObj<WireState>[], startWire: GameObj
     let current = startWire;
     let visited = new Set<string>();
     let incomingSide = -1;
-    
+
     while (current) {
         const posKey = getPosKey(current.x, current.y);
         if (visited.has(posKey)) {
