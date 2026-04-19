@@ -22,13 +22,6 @@ export const wireInteraction = (opt: WireInteractionOpt): WireInteraction => {
     return {
         id: "wireInteraction",
         require: ["pos", "area"],
-
-        // add() {
-        //     this.onClick(() => {
-        //         this.trigger("wireClicked", this);
-        //     });
-        // },
-
         update() {
             // Start clicking
             if (this.isHovering() && opt.k.isMousePressed("left")) {
