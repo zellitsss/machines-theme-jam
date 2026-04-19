@@ -75,7 +75,10 @@ export default function createGameScene() {
             const gridPos = worldToGrid(dropPos.x, dropPos.y, wireVisualSize, gridOffsetX, gridOffsetY);
             if (canPlaceAt(...gridPos)) {
                 wire.pos = k.vec2(...calculateCellPos(gridPos[0], gridPos[1], wireVisualSize, gridOffsetX, gridOffsetY));
-                // update wire state
+                wire.untag(getPosKey(wire.x, wire.y));
+                wire.x = gridPos[0];
+                wire.y = gridPos[1];
+                wire.tag(getPosKey(wire.x, wire.y));
             } else {
                 if (isValidCell(wire.x, wire.y)) {
                     // The cell is dragged from the grid
