@@ -77,8 +77,7 @@ export default function createGameScene() {
                 wire.pos = k.vec2(...calculateCellPos(gridPos[0], gridPos[1], wireVisualSize, gridOffsetX, gridOffsetY));
                 // update wire state
             } else {
-                if (isValidCell(wire.x, wire.y))
-                {
+                if (isValidCell(wire.x, wire.y)) {
                     // The cell is dragged from the grid
                     wire.pos = k.vec2(...calculateCellPos(wire.x, wire.y, wireVisualSize, gridOffsetX, gridOffsetY));
                 } else {
@@ -166,7 +165,6 @@ export default function createGameScene() {
         let wires: GameObj<WireState>[] = [];
 
         level.cells.forEach((cellData) => {
-
             let config = gridConstraints.get(getPosKey(cellData.x, cellData.y));
             if (config) {
                 config.canRotate = cellData.canRotate ?? true;
@@ -177,26 +175,15 @@ export default function createGameScene() {
             }
 
             const cellPos = calculateCellPos(cellData.x, cellData.y, wireVisualSize, gridOffsetX, gridOffsetY);
-            if (needWireBg(cellData)) {
-                const wireBg = k.add([
-                    k.pos(...cellPos),
-                    k.anchor("center"),
-                    k.sprite("atlas", {
-                        width: wireVisualSize,
-                        height: wireVisualSize,
-                        frame: 6
-                    }),
-                    `wireBg_${getPosKey(cellData.x, cellData.y)}`
-                ]);
-            }
 
-            const wire = k.add(createWire(
+            const wire = createWire(
                 cellPos[0],
                 cellPos[1],
                 wireVisualSize,
                 fromCellToWireData(cellData),
+                needWireBg(cellData),
                 [getPosKey(cellData.x, cellData.y)]
-            ));
+            );
 
             // Remove placeholder
             k.get(`placeholder_${getPosKey(cellData.x, cellData.y)}`).forEach((obj) => {
@@ -212,12 +199,15 @@ export default function createGameScene() {
         });
 
         Array.from(inventory.values()).forEach((item, index) => {
-            const wire = leftPanel.add(createWire(
+            const wire = createWire(
                 leftPanel.pos.x + leftPanel.width / 2,
                 leftPanel.pos.y + TOP_PANEL_HEIGHT + index * wireVisualSize + index * 8,
                 wireVisualSize,
-                fromItemToWireData(item)
-            ))
+                fromItemToWireData(item),
+                true,
+                [],
+                leftPanel
+            );
         });
 
         function checkWinCondition() {

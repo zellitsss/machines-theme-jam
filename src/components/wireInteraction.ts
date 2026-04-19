@@ -1,4 +1,4 @@
-﻿import {Comp, KAPLAYCtx} from "kaplay";
+﻿import {Comp} from "kaplay";
 import {
     DRAG_THRESHOLD,
     EVENT_WireClicked,
@@ -13,7 +13,7 @@ export interface WireInteraction extends Comp {
 export interface WireInteractionOpt {
 }
 
-export const wireInteraction = (opt: WireInteractionOpt): WireInteraction => {
+export const wireInteraction = (opt: WireInteractionOpt = {}): WireInteraction => {
 
     let clickStartPos = k.mousePos();
     let isClickRegistered = false;
