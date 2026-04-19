@@ -27,22 +27,22 @@ export const wireInteraction = (opt: WireInteractionOpt = {}): WireInteraction =
                 clickStartPos = k.mousePos();
                 isClickRegistered = true;
             }
-            
+
             // Check for drag
             if (isClickRegistered && k.mousePos().dist(clickStartPos) > DRAG_THRESHOLD) {
                 isClickRegistered = false;
                 isDragging = true;
                 this.trigger(EVENT_WireStartDragging, this);
             }
-            
+
             // Dragging update
             if (isDragging) {
                 this.trigger(EVENT_WireDraggingUpdate, this);
             }
 
             // Trigger Clicked or End Dragging
-            if (this.isHovering() && k.isMouseReleased("left")) {
-                if (isClickRegistered)
+            if (k.isMouseReleased("left")) {
+                if (this.isHovering() && isClickRegistered)
                 {
                     isClickRegistered = false;
                     this.trigger(EVENT_WireClicked, this);
@@ -50,12 +50,6 @@ export const wireInteraction = (opt: WireInteractionOpt = {}): WireInteraction =
                     isDragging = false;
                     this.trigger(EVENT_WireEndDragging, this);
                 }
-            }
-            
-            // Safe reset
-            if (k.isMouseReleased("left")) {
-                isClickRegistered = false;
-                isDragging = false;
             }
         }
     }

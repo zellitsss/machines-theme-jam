@@ -64,5 +64,5 @@ export const fromItemToWireData = (itemData: ItemData): WireData => {
 }
 
 export const isFromGrid = (wire: GameObj<WireState>): boolean => {
-    return gridConstraints.has(getPosKey(wire.x, wire.y));
+    return gridConstraints.has(getPosKey(wire.wireData.x, wire.wireData.y));
 }

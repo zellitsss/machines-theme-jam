@@ -10,7 +10,7 @@ import {k} from "../constants";
 export const activeTweenByCell = new Map<string, TweenController>();
 
 export const getExitSide = (wire: GameObj<WireState>, enteredSide: number): number | null => {
-    const rotatedConnections = getRotatedConnections(wireDictionary.get(wire.type)?.flow ?? [0, 0, 0, 0], wire.rot);
+    const rotatedConnections = getRotatedConnections(wireDictionary.get(wire.wireData.type)?.flow ?? [0, 0, 0, 0], wire.wireData.rot);
     for (let side = 0; side < 4; side++) {
         if (side === enteredSide) {
             continue;
@@ -31,7 +31,7 @@ export const isWiresConnected = (wires: GameObj<WireState>[], startWire: GameObj
     let incomingSide = -1;
 
     while (current) {
-        const posKey = getPosKey(current.x, current.y);
+        const posKey = getPosKey(current.wireData.x, current.wireData.y);
         if (visited.has(posKey)) {
             return false;
         }
@@ -52,7 +52,7 @@ export const isWiresConnected = (wires: GameObj<WireState>[], startWire: GameObj
 
         // Check if next cell is connected to the current cell
         const nextEntrySide = getOppositeSide(exitSide);
-        const nextRotatedConnections = getRotatedConnections(wireDictionary.get(next.type)?.flow ?? [0, 0, 0, 0], next.rot);
+        const nextRotatedConnections = getRotatedConnections(wireDictionary.get(next.wireData.type)?.flow ?? [0, 0, 0, 0], next.wireData.rot);
         if (!canIn(nextRotatedConnections[nextEntrySide])) {
             break;
         }
@@ -65,7 +65,7 @@ export const isWiresConnected = (wires: GameObj<WireState>[], startWire: GameObj
 }
 
 export const handleRotatingWire = (wire: GameObj<WireState>) => {
-    if (canRotateAt(wire.x, wire.y)) {
+    if (canRotateAt(wire.wireData.x, wire.wireData.y)) {
         wire.rotateCW();
     }
 }
@@ -74,7 +74,7 @@ export const animateWireRotation = (wire: GameObj<WireState>, onRotationComplete
     const obj = wire as GameObj<WireState | RotateComp | TimerComp | ScaleComp>;
 
     const from = obj.angle;
-    const to = obj.rot * Constants.ROTATION_ANGLE_PER_STEP;
+    const to = obj.wireData.rot * Constants.ROTATION_ANGLE_PER_STEP;
     // Rotate tween
     const tween = obj.tween(from, to, Constants.ROTATE_TWEEN_SEC, (a) => {
         obj.angle = a;
@@ -90,11 +90,11 @@ export const animateWireRotation = (wire: GameObj<WireState>, onRotationComplete
             obj.tween(scaleSmall, scaleNormal, half, (v) => obj.scaleTo(v), k.easings.easeOutQuad)
         );
 
-    const posKey = getPosKey(obj.x, obj.y);
+    const posKey = getPosKey(obj.wireData.x, obj.wireData.y);
     activeTweenByCell.set(posKey, tween);
     tween.onEnd(() => {
         activeTweenByCell.delete(posKey);
-        obj.angle = obj.rot * Constants.ROTATION_ANGLE_PER_STEP;
+        obj.angle = obj.wireData.rot * Constants.ROTATION_ANGLE_PER_STEP;
         obj.scaleTo(1);
         onRotationCompleted();
     });

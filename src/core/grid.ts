@@ -23,9 +23,9 @@ export const canPlaceAt = (x: number, y: number): boolean => {
 
 export const getNextConnectedCell = (wires: GameObj<WireState>[], currentWire: GameObj<WireState>, side: number): GameObj<WireState> => {
     const offset = TRAVEL_OFFSET[side];
-    const nextX = currentWire.x + offset.x;
-    const nextY = currentWire.y + offset.y;
-    return wires.find((w) => w.x == nextX && w.y == nextY);
+    const nextX = currentWire.wireData.x + offset.x;
+    const nextY = currentWire.wireData.y + offset.y;
+    return wires.find((w) => w.wireData.x == nextX && w.wireData.y == nextY);
 }
 
 export const worldToGrid = (worldX: number, worldY: number, size: number, offsetX = 0, offsetY = 0): [number, number] => {

@@ -1,10 +1,10 @@
 import {wireDictionary} from "../wire-dictionary";
 import {WireData, WireDefinition} from "../types";
 import {getRotationFromStep} from "../utils";
-import {wireState} from "../components/wireState";
+import {WireState, wireState} from "../components/wireState";
 import {wireInteraction} from "../components/wireInteraction";
 import {k} from "../constants";
-import {GameObj} from "kaplay";
+import {AreaComp, GameObj, PosComp, Rect} from "kaplay";
 
 export const createWireVisual = (wireDef: WireDefinition, size: number) => {
     return [
@@ -60,4 +60,16 @@ export const createWire = (posX: number, posY: number, size: number, wireData: W
     }
     wire.add(createWireVisual(wireDef, size))
     return wire;
+}
+
+export const createGhostWire = (original: GameObj) => {
+    const wire = original as GameObj<WireState | PosComp | AreaComp>;
+    return createWire(
+        wire.pos.x,
+        wire.pos.y,
+        (wire.area.shape as Rect).width,
+        wire.wireData,
+        true,
+        ["ghost"]
+    );
 }

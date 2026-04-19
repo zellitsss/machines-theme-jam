@@ -4,7 +4,7 @@ import * as Constants from "../constants";
 import {LAYER_UI, setupLayers} from "../ui/game-scene-ui";
 import {panel} from "../components/panel";
 import {LevelData} from "../types";
-import {createWire} from "../entities/wire";
+import {createGhostWire, createWire} from "../entities/wire";
 import {
     activeTweenByCell,
     animateWireRotation,
@@ -19,14 +19,6 @@ import {CELL_SIZE, k, TOP_PANEL_HEIGHT} from "../constants";
 
 async function loadAssets() {
     await Promise.all([
-        // k.loadSprite("wire-i", "sprites/wire-i.png"),
-        // k.loadSprite("wire-l", "sprites/wire-l.png"),
-        // k.loadSprite("wire-gate", "sprites/wire-gate.png"),
-        // k.loadSprite("wire-blocked", "sprites/wire-blocked.png"),
-        // k.loadSprite("wire-i-1w", "sprites/wire-i-1w.png"),
-        // k.loadSprite("wire-l-1w1", "sprites/wire-l-1w1.png"),
-        // k.loadSprite("wire-l-1w2", "sprites/wire-l-1w2.png"),
-        // k.loadSprite("wire-modifier", "sprites/wire-modifier.png"),
         k.loadSprite("atlas", "sprites/atlas.png", {
             sliceX: 6,
             sliceY: 3,
@@ -67,22 +59,30 @@ export default function createGameScene() {
 
         let ghostWire: GameObj | null = null;
         k.on(Constants.EVENT_WireStartDragging, "wire", (wire: GameObj<WireState>) => {
-
+            wire.hidden = true;
+            ghostWire = createGhostWire(wire);
         });
 
         k.on(Constants.EVENT_WireEndDragging, "wire", (wire: GameObj<WireState | PosComp>) => {
+            ghostWire?.destroy();
+
             const dropPos = k.mousePos();
             const gridPos = worldToGrid(dropPos.x, dropPos.y, wireVisualSize, gridOffsetX, gridOffsetY);
             if (canPlaceAt(...gridPos)) {
+                // Place in the empty cell
+                wire.hidden = false;
                 wire.pos = k.vec2(...calculateCellPos(gridPos[0], gridPos[1], wireVisualSize, gridOffsetX, gridOffsetY));
-                wire.untag(getPosKey(wire.x, wire.y));
-                wire.x = gridPos[0];
-                wire.y = gridPos[1];
-                wire.tag(getPosKey(wire.x, wire.y));
+                wire.untag(getPosKey(wire.wireData.x, wire.wireData.y));
+                wire.wireData.x = gridPos[0];
+                wire.wireData.y = gridPos[1];
+                wire.tag(getPosKey(wire.wireData.x, wire.wireData.y));
+                // TODO: Handle the placeholder dot
             } else {
-                if (isValidCell(wire.x, wire.y)) {
-                    // The cell is dragged from the grid
-                    wire.pos = k.vec2(...calculateCellPos(wire.x, wire.y, wireVisualSize, gridOffsetX, gridOffsetY));
+                if (isValidCell(wire.wireData.x, wire.wireData.y)) {
+                    // The cell is dragged from the grid, currently return to the original cell
+                    // TODO: check if outside the grid -> move to inventory
+                    wire.hidden = false;
+                    wire.pos = k.vec2(...calculateCellPos(wire.wireData.x, wire.wireData.y, wireVisualSize, gridOffsetX, gridOffsetY));
                 } else {
                     // Dragged from inventory
                 }
@@ -91,7 +91,9 @@ export default function createGameScene() {
         });
 
         k.on(Constants.EVENT_WireDraggingUpdate, "wire", (wire: GameObj<WireState | PosComp>) => {
-            wire.pos = k.mousePos();
+            if (ghostWire) {
+                ghostWire.pos = k.mousePos();
+            }
         });
         /********** EVENTS **********/
 

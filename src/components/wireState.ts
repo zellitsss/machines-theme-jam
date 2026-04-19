@@ -2,25 +2,23 @@
 import {WireData} from "../types";
 
 export interface WireState extends Comp {
-    x: number;
-    y: number;
-    modifier: number;
-    rot: number;
-    type: string;
+    wireData: WireData;
     rotateCW: () => void;
 }
 
-export const wireState = (wireData: WireData): WireState => (
+export const wireState = (inWireData: WireData): WireState => (
     {
         id: "wireState",
-        x: wireData.x ?? -1,
-        y: wireData.y ?? -1,
-        modifier: wireData.modifier ?? 0,
-        rot: wireData.rot ?? 0,
-        type: wireData.type,
+        wireData: {
+            x: inWireData.x ?? -1,
+            y: inWireData.y ?? -1,
+            modifier: inWireData.modifier ?? 0,
+            rot: inWireData.rot ?? 0,
+            type: inWireData.type
+        },
         rotateCW() {
-            this.rot = ((this.rot + 1) % 4 + 4) % 4;
-            this.trigger("rotationStepUpdated", this.rot);
+            this.wireData.rot = ((this.wireData.rot + 1) % 4 + 4) % 4;
+            this.trigger("rotationStepUpdated", this.wireData.rot);
         }
     }
 );
