@@ -13,7 +13,7 @@ import {
     needWireBg
 } from "../core/gameplay";
 import {WireState} from "../components/wireState";
-import {calculateCellPos, canPlaceAt, gridConstraints, worldToGrid} from "../core/grid";
+import {calculateCellPos, canPlaceAt, gridConstraints, isValidCell, worldToGrid} from "../core/grid";
 import {inventory} from "../ui/inventory";
 import {CELL_SIZE, EVENT_WireClicked, TOP_PANEL_HEIGHT} from "../constants";
 
@@ -75,9 +75,15 @@ export default function createGameScene(k: KAPLAYCtx) {
             const gridPos = worldToGrid(dropPos.x, dropPos.y, wireVisualSize, gridOffsetX, gridOffsetY);
             if (canPlaceAt(k, ...gridPos)) {
                 wire.pos = k.vec2(...calculateCellPos(gridPos[0], gridPos[1], wireVisualSize, gridOffsetX, gridOffsetY));
+                // update wire state
             } else {
-                // Return to original place
-                wire.pos = k.vec2(...calculateCellPos(wire.x, wire.y, wireVisualSize, gridOffsetX, gridOffsetY));
+                if (isValidCell(wire.x, wire.y))
+                {
+                    // The cell is dragged from the grid
+                    wire.pos = k.vec2(...calculateCellPos(wire.x, wire.y, wireVisualSize, gridOffsetX, gridOffsetY));
+                } else {
+                    // Dragged from inventory
+                }
             }
             checkWinCondition();
         });

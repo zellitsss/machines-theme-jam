@@ -6,15 +6,18 @@ import {WireState} from "../components/wireState";
 export const gridConstraints: GridConstraints = new Map<string, CellConstraint>();
 
 export const canRotateAt = (x: number, y: number): boolean => {
-    return gridConstraints.get(getPosKey(x, y))?.canRotate ?? false;
+return gridConstraints.get(getPosKey(x, y))?.canRotate ?? false;
+}
+
+export const isValidCell = (x: number, y: number): boolean => {
+    return gridConstraints.has(getPosKey(x, y));
 }
 
 export const canPlaceAt = (k: KAPLAYCtx, x: number, y: number): boolean => {
-
     const existed = k.query({
         include: ["wire", getPosKey(x, y)],
     })
-    return (gridConstraints.get(getPosKey(x, y))?.canPlace ?? false) && existed.length == 0;
+    return (gridConstraints.get(getPosKey(x, y))?.canPlace ?? false) && existed.length == 0 && isValidCell(x, y);
 }
 
 export const getNextConnectedCell = (wires: GameObj<WireState>[], currentWire: GameObj<WireState>, side: number): GameObj<WireState> => {
