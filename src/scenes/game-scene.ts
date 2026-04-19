@@ -65,17 +65,14 @@ export default function createGameScene(k: KAPLAYCtx) {
 
         k.on(Constants.EVENT_WireStartDragging, "wire", (wire: GameObj<WireState>) => {
             // clear cell -> create ghost wire
-            console.log("start dragging ", getPosKey(wire.x, wire.y));
         });
 
         k.on(Constants.EVENT_WireEndDragging, "wire", (wire: GameObj<WireState>) => {
             // check drop area
-            console.log("end dragging ", getPosKey(wire.x, wire.y));
         });
 
         k.on(Constants.EVENT_WireDraggingUpdate, "wire", (wire: GameObj<WireState>) => {
             // move ghost wire along with mouse cursor 
-            console.log("dragging ", getPosKey(wire.x, wire.y));
         });
         /********** EVENTS **********/
         
