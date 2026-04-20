@@ -47,7 +47,6 @@ export const isWiresConnected = (): boolean => {
 
     while (current) {
         const posKey = getPosKey(current.wireData.x, current.wireData.y);
-        console.log(posKey);
         if (visited.has(posKey)) {
             return false;
         }
@@ -60,10 +59,8 @@ export const isWiresConnected = (): boolean => {
         if (exitSide === null) {
             break;
         }
-        console.log("exit side ", exitSide);
 
         const next = getNextConnectedCell(wires, current, exitSide);
-        console.log("next ", next);
         if (!next) {
             break;
         }

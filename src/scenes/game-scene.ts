@@ -14,7 +14,7 @@ import {
 import {WireState} from "../components/wireState";
 import {calculateCellPos, canPlaceAt, gridConstraints, isValidCell, worldToGrid} from "../core/grid";
 import {CELL_SIZE, k, TOP_PANEL_HEIGHT} from "../constants";
-import {createInventorySlot, inventory} from "../core/inventory";
+import {createInventorySlot, inventory, inventorySlot, updateItem} from "../core/inventory";
 
 async function loadAssets() {
     await Promise.all([
@@ -31,6 +31,7 @@ function resetContainers() {
     gridConstraints.clear();
     activeTweenByCell.clear();
     inventory.clear();
+    inventorySlot.length = 0;
 }
 
 function setupLayers(): void {
@@ -96,6 +97,7 @@ export default function createGameScene() {
                     ) as GameObj<WireState>;
                     newWire.wireData.x = gridPos[0];
                     newWire.wireData.y = gridPos[1];
+                    updateItem(wire.wireData.type, -1);
                 } else {
                     wire.hidden = false;
                     wire.pos = k.vec2(...calculateCellPos(gridPos[0], gridPos[1], wireVisualSize, gridOffsetX, gridOffsetY));
@@ -112,6 +114,7 @@ export default function createGameScene() {
                     if (isInPanels(k.get("inventory_panel"), dropPos)) {
                         // Move to inventory
                         wire.destroy();
+                        updateItem(wire.wireData.type, 1);
                     } else {
                         // Return to the original cell
                         wire.hidden = false;
@@ -235,6 +238,7 @@ export default function createGameScene() {
             })
         });
 
+        // Inventory
         Array.from(inventory.values()).forEach((item, index) => {
             const wire = createInventorySlot(
                 leftPanel.pos.x + leftPanel.width / 2,

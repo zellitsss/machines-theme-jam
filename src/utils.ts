@@ -2,6 +2,7 @@
 import {GameObj} from "kaplay";
 import {WireState} from "./components/wireState";
 import {gridConstraints} from "./core/grid";
+import {inventory} from "./core/inventory";
 
 export function canConnect(type: ConnectionType): boolean {
     return type > ConnectionType.None;
@@ -17,7 +18,9 @@ export function canIn(type: ConnectionType): boolean {
 
 export const canDrag = (wire: GameObj<WireState>): boolean => {
     const constraint = gridConstraints.get(getPosKey(wire.wireData.x, wire.wireData.y));
-    return constraint && constraint.canPlace;
+    const isDraggableGridCell = constraint && constraint.canPlace;
+    const isDraggableInventoryItem = wire.tags.includes("inventory_item") && inventory.get(wire.wireData.type)?.count > 0;
+    return isDraggableGridCell || isDraggableInventoryItem;
 };
 
 export function getOppositeSide(side: number): number {
