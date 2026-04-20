@@ -14,12 +14,14 @@ export const isValidCell = (x: number, y: number): boolean => {
     return gridConstraints.has(getPosKey(x, y));
 }
 
-export const canPlaceAt = (x: number, y: number): boolean => {
+export const canPlaceAt = (x: number, y: number, modifier: number): boolean => {
     const existed = k.query({
         include: ["wire", getPosKey(x, y)],
         includeOp: "and"
     });
-    return (gridConstraints.get(getPosKey(x, y))?.canPlace ?? false) && existed.length == 0 && isValidCell(x, y);
+    const constraint = gridConstraints.get(getPosKey(x, y));
+    const constraintMatched = (constraint?.modifier ?? 0) === modifier && (constraint?.canPlace ?? false);
+    return constraintMatched && existed.length == 0 && isValidCell(x, y);
 }
 
 export const getNextConnectedCell = (wires: GameObj<WireState>[], currentWire: GameObj<WireState>, side: number): GameObj<WireState> => {

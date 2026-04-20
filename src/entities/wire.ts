@@ -4,8 +4,9 @@ import {getPosKey, getRotationFromStep} from "../utils";
 import {WireState, wireState} from "../components/wireState";
 import {wireInteraction} from "../components/wireInteraction";
 import {k} from "../constants";
-import {AreaComp, GameObj, PosComp, Rect} from "kaplay";
+import {AreaComp, GameObj, PosComp, Rect, RotateComp} from "kaplay";
 import {fixedRotation} from "../components/fixedRotation";
+import {gridConstraints} from "../core/grid";
 
 export const createWireVisual = (wireDef: WireDefinition, size: number) => {
     return [
@@ -41,7 +42,6 @@ export const createWire = (posX: number, posY: number, size: number, wireData: W
     const wireDef = wireDictionary.get(wireData.type);
     const comps = [
         k.pos(posX, posY),
-        k.rotate(0),
         k.anchor("center"),
         k.rotate(getRotationFromStep(wireData.rot)),
         k.area({
@@ -77,7 +77,7 @@ export const createPlaceholderWire = (posX: number, posY: number, size: number, 
     const wireDef = wireDictionary.get(wireData.type);
     const comps = [
         k.pos(posX, posY),
-        k.rotate(getRotationFromStep(wireData.rot)),
+        k.rotate(),
         k.anchor("center"),
         k.area({
             shape: new k.Rect(k.vec2(), size, size)
@@ -104,6 +104,7 @@ export const createPlaceholderWire = (posX: number, posY: number, size: number, 
             "wire_modifier_label",
         ]);
     }
+    placeholder.angle = getRotationFromStep(wireData.rot);
     return placeholder;
 }
 

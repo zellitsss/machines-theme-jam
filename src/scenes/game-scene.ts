@@ -98,14 +98,19 @@ export default function createGameScene() {
 
             const dropPos = k.mousePos();
             const gridPos = worldToGrid(dropPos.x, dropPos.y, wireVisualSize, gridOffsetX, gridOffsetY);
-            if (canPlaceAt(...gridPos)) {
+            if (canPlaceAt(...gridPos, wire.wireData.modifier)) {
                 // Place in the empty cell
                 const isFromInventory = wire.is("inventory_item");
                 if (isFromInventory) {
+                    const wireData = wire.wireData;
+                    const constraint = gridConstraints.get(getPosKey(gridPos[0], gridPos[1]));
+                    if (constraint && (constraint.placeholder ?? false)) {
+                        wireData.rot = constraint.rot ?? 0;
+                    }
                     const newWire = createWire(
                         ...calculateCellPos(gridPos[0], gridPos[1], wireVisualSize, gridOffsetX, gridOffsetY),
                         wireVisualSize,
-                        wire.wireData,
+                        wireData,
                         true,
                         [
                             getPosKey(gridPos[0], gridPos[1]),
@@ -239,7 +244,6 @@ export default function createGameScene() {
             const cellPos = calculateCellPos(cellData.x, cellData.y, wireVisualSize, gridOffsetX, gridOffsetY);
 
             if (config.placeholder) {
-                console.log("create placeholder");
                 createPlaceholderWire(
                     cellPos[0],
                     cellPos[1],
