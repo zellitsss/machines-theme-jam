@@ -22,7 +22,7 @@ export const createInventorySlot = (size: number, itemData: ItemData, panels: Ga
     panels.forEach((panel: GameObj<PanelComp>) => {
         const existedSlots = panel.children.filter((child) => child.is("inventory_slot"));
         if (existedSlots.length < 4 && itemSlot === null) {
-            comps.push(k.pos(panel.width / 2, (size + 8) * existedSlots.length + size));
+            comps.push(k.pos(panel.panelWidth / 2, (size + 8) * existedSlots.length + size));
             itemSlot = panel.add(comps);
         }
     });

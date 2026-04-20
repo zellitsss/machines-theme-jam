@@ -13,6 +13,7 @@ export const RIGHT_PANEL_RATIO = 1/4;
 export const CENTER_PANEL_RATIO = 1/2;
 export const TOP_PANEL_HEIGHT = 120;
 export const MAIN_PANEL_PADDING = 20;
+export const FOOTER_HEIGHT = 60;
 
 export const DRAG_THRESHOLD = 16;
 

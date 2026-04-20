@@ -17,7 +17,7 @@ import {
     CELL_SIZE, CENTER_PANEL_RATIO,
     EVENT_WireClicked, EVENT_WireDraggingUpdate,
     EVENT_WireEndDragging,
-    EVENT_WireStartDragging, INVENTORY_CELL_SIZE,
+    EVENT_WireStartDragging, FOOTER_HEIGHT, INVENTORY_CELL_SIZE,
     k, LEFT_PANEL_RATIO, MAIN_PANEL_PADDING, RIGHT_PANEL_RATIO,
     TOP_PANEL_HEIGHT
 } from "../constants";
@@ -181,33 +181,33 @@ export default function createGameScene() {
         ]);
         const leftPanel = k.add([
             k.layer(LAYER_UI),
-            k.pos(0, topPanel.height),
+            k.pos(0, topPanel.panelHeight),
             k.anchor("topleft"),
             panel(k.width() * LEFT_PANEL_RATIO, k.height() - TOP_PANEL_HEIGHT),
             "inventory_panel"
         ]);
         const centerPanel = k.add([
-            k.pos(leftPanel.pos.x + leftPanel.width, TOP_PANEL_HEIGHT),
+            k.pos(leftPanel.pos.x + leftPanel.panelWidth, TOP_PANEL_HEIGHT),
             k.anchor("top"),
-            panel(k.width() * CENTER_PANEL_RATIO, k.height() - TOP_PANEL_HEIGHT)
+            panel(k.width() * CENTER_PANEL_RATIO, k.height() - TOP_PANEL_HEIGHT - FOOTER_HEIGHT)
         ]);
         const rightPanel = k.add([
             k.layer(LAYER_UI),
-            k.pos(centerPanel.pos.x + centerPanel.width, topPanel.height),
+            k.pos(centerPanel.pos.x + centerPanel.panelWidth, topPanel.panelHeight),
             k.anchor("topleft"),
             panel(k.width() * RIGHT_PANEL_RATIO, k.height()),
             "inventory_panel"
         ]);
 
         wireVisualSize = calculateWireVisualSize(
-            centerPanel.width - MAIN_PANEL_PADDING * 2,
-            centerPanel.height - MAIN_PANEL_PADDING * 2,
+            centerPanel.panelWidth - MAIN_PANEL_PADDING * 2,
+            centerPanel.panelHeight - MAIN_PANEL_PADDING * 2,
             level.cols,
             level.rows);
 
         //Create grid
-        gridOffsetX = centerPanel.pos.x + ((centerPanel.width - MAIN_PANEL_PADDING * 2) - level.cols * wireVisualSize) / 2 + MAIN_PANEL_PADDING;
-        gridOffsetY = centerPanel.pos.y + ((centerPanel.height - MAIN_PANEL_PADDING * 2) - level.rows * wireVisualSize) / 2 + MAIN_PANEL_PADDING;
+        gridOffsetX = centerPanel.pos.x + ((centerPanel.panelWidth - MAIN_PANEL_PADDING * 2) - level.cols * wireVisualSize) / 2 + MAIN_PANEL_PADDING;
+        gridOffsetY = centerPanel.pos.y + ((centerPanel.panelHeight - MAIN_PANEL_PADDING * 2) - level.rows * wireVisualSize) / 2 + MAIN_PANEL_PADDING;
 
         // Create default grid constraints
         for (let c = 0; c < level.cols; c++) {
