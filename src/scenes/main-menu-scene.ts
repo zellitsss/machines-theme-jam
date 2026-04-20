@@ -38,6 +38,7 @@ function createButton(parent: GameObj, text: string, pos: Vec2, onClick: () => v
     // --- CLICK LOGIC ---
     btn.onClick(() => {
         onClick();
+        audio.playSfx("sfx-button-click");
     });
 
     return btn;

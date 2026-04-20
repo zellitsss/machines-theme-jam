@@ -118,6 +118,7 @@ function registerSounds() {
     audio.register("sfx-rotate", "sounds/sfx-rotate.mp3", { channel: "sfx" });
     audio.register("sfx-pickup", "sounds/sfx-pickup.mp3", { channel: "sfx" });
     audio.register("sfx-place", "sounds/sfx-place.mp3", { channel: "sfx" });
+    audio.register("sfx-button-click", "sounds/sfx-button-click.mp3", { channel: "sfx" });
 }
 
 k.loadRoot("./"); // A good idea for Itch.io publishing later
