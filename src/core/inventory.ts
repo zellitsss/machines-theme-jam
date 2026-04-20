@@ -20,7 +20,7 @@ export const createInventorySlot = (size: number, itemData: ItemData, panels: Ga
     ];
     let itemSlot: GameObj | null = null;
     panels.forEach((panel: GameObj<PanelComp>) => {
-        const existedSlots = panel.children.filter((child) => child.tags.includes("inventory_slot"));
+        const existedSlots = panel.children.filter((child) => child.is("inventory_slot"));
         if (existedSlots.length < 4 && itemSlot === null) {
             comps.push(k.pos(panel.width / 2, (size + 8) * existedSlots.length + size));
             itemSlot = panel.add(comps);
@@ -70,7 +70,7 @@ export const updateItem = (inType: string, amount: number) => {
 export const updateItemCountLabel = (type: string) => {
     inventorySlots.forEach((slot) => {
         slot.children.forEach((child) => {
-            if (child.tags.includes(type) && child.tags.includes("inventory_label")) {
+            if (child.is([type, "inventory_label"])) {
                 (child as GameObj<TextComp>).text = inventory.get(type)?.count.toString() ?? "0";
             }
         });
