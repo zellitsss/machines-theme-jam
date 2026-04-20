@@ -21,6 +21,13 @@ export const EVENT_WireStartDragging = "wireStartDragging";
 export const EVENT_WireEndDragging = "wireEndDragging";
 export const EVENT_WireDraggingUpdate = "wireDraggingUpdate";
 
+export const COLOR_Background = 0xefebe4;
+export const COLOR_Active = 0x3858e5;
+export const COLOR_Inactive = 0xb0bbd4;
+export const COLOR_Negative = 0xf46926;
+export const COLOR_Positive = 0x1aa482;
+export const COLOR_Neutral = 0xc7c7c7;
+
 export const k = kaplay({
     width: 1280,
     height: 720,
