@@ -46,18 +46,18 @@ export default function createMainMenuScene() {
     const LAYOUT_PANEL_WIDTH = 480;
     return () => {
         const layoutPanel = k.add([
-            k.pos((k.width() - LAYOUT_PANEL_WIDTH) / 2, 0),
-            k.anchor("top"),
+            k.pos(k.center()),
+            k.anchor("center"),
             panel(LAYOUT_PANEL_WIDTH, k.height())
         ]);
 
-        const startButton = createButton(layoutPanel, "Start", layoutPanel.pos.add(0, 256), () => {
+        const startButton = createButton(layoutPanel, "Start", k.vec2(), () => {
             if (levelSelectionMenu.hidden) {
                 toggleLevelSelection();
             }
         });
 
-        const creditButton = createButton(layoutPanel, "Credit", startButton.pos.add(0, 72), () => {
+        const creditButton = createButton(layoutPanel, "Credit", k.vec2(0, 72), () => {
             if (levelSelectionMenu.hidden) {
                 console.log("Credit");
             }
