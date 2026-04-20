@@ -65,7 +65,7 @@ export default function createGameScene() {
 
         await loadAssets();
         // Load Level data
-        const levelData = await k.loadJSON("levelData", "data/level-01.json");
+        const levelData = await k.loadJSON("levelData", "data/level-02.json");
         const level = levelData as LevelData;
 
         /********** EVENTS **********/
@@ -248,11 +248,6 @@ export default function createGameScene() {
                     "in_grid"
                 ]
             );
-
-            // Remove placeholder
-            k.get(`placeholder_${getPosKey(cellData.x, cellData.y)}`).forEach((obj) => {
-                obj.destroy();
-            })
         });
 
         // Inventory
