@@ -4,7 +4,6 @@ import { audio } from "../core/audio";
 
 export interface WireState extends Comp {
     wireData: WireData;
-    rotatingSfxIndex: number;
     rotateCW: () => void;
 }
 
@@ -18,10 +17,8 @@ export const wireState = (inWireData: WireData): WireState => (
             rot: inWireData.rot ?? 0,
             type: inWireData.type
         },
-        rotatingSfxIndex: 0,
         rotateCW() {
-            audio.playSfx("sfx-rotate-" + (this.rotatingSfxIndex + 1));
-            this.rotatingSfxIndex = (this.rotatingSfxIndex + 1) % 2;
+            audio.playSfx("sfx-rotate");
             this.wireData.rot = ((this.wireData.rot + 1) % 4 + 4) % 4;
             this.trigger("rotationStepUpdated", this.wireData.rot);
         }
