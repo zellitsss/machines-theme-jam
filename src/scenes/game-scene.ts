@@ -1,5 +1,5 @@
 import {GameObj, KAPLAYCtx, PosComp, RotateComp} from "kaplay";
-import {calculateWireVisualSize, canDrag, fromCellToWireData, getPosKey} from "../utils";
+import {calculateWireVisualSize, canDrag, fromCellToWireData, getPosKey, getRotationFromStep} from "../utils";
 import {audio} from "../core/audio";
 import {panel} from "../components/panel";
 import {LAYER_BACKGROUND, LAYER_GAME, LAYER_UI, LevelData} from "../types";

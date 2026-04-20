@@ -70,7 +70,7 @@
     "inventory": [
         {
             "type": "wire-i",
-            "count": 1
+            "count": 3
         },
         {
             "type": "wire-l",

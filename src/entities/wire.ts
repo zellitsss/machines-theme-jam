@@ -63,6 +63,7 @@ export const createWire = (posX: number, posY: number, size: number, wireData: W
     if (wireDef?.modifier != null && wireDef.modifier != 0) {
         wire.add([
             k.pos(),
+            k.rotate(-getRotationFromStep(wireData.rot)),
             k.anchor("center"),
             k.text(wireData.modifier.toString(), {size: 24, font: "monospace"}),
             k.color("white"),
