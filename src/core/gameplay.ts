@@ -1,11 +1,11 @@
-import {AreaComp, Color, GameObj, RotateComp, ScaleComp, TimerComp, TweenController, Vec2} from "kaplay";
+import {AreaComp, Color, ColorComp, GameObj, RotateComp, ScaleComp, TimerComp, TweenController, Vec2} from "kaplay";
 import {canIn, canOut, getOppositeSide, getPosKey, getRotatedConnections} from "../utils";
 import {wireDictionary} from "../wire-dictionary";
 import {canRotateAt, getNextConnectedCell} from "./grid";
 import {WireState} from "../components/wireState";
 import * as Constants from "../constants";
 import {CellData, WireDefinition} from "../types";
-import {COLOR_Inactive, k} from "../constants";
+import {COLOR_Active, COLOR_Inactive, k} from "../constants";
 import {PanelComp} from "../components/panel";
 
 export const activeTweenByCell = new Map<string, TweenController>();
@@ -27,11 +27,16 @@ export const getExitSide = (wire: GameObj<WireState>, enteredSide: number): numb
  * Check if the wire line is valid.
  * @returns -1 if the wire line is not valid, otherwise the modifier value of the wire line.
  */
-export const isWireLineValid = (): number => {
+export const checkWireLineValid = (): number => {
     const wires = k.query({
         include: ["wire", "in_grid"],
         includeOp: "and"
     }) as GameObj<WireState>[];
+    wires.forEach((wire) => {
+        setWiresColor(wire, getWireColor(wire.wireData.type, false));
+    });
+    // Reset color
+    
     let startWire: GameObj<WireState> | null = null;
     let endWire: GameObj<WireState> | null = null;
     wires.forEach((wire) => {
@@ -51,6 +56,7 @@ export const isWireLineValid = (): number => {
     let currentModifier = 0;
 
     while (current) {
+        setWiresColor(current, getWireColor(current.wireData.type, true));
         currentModifier += current.wireData.modifier ?? 0;
         const posKey = getPosKey(current.wireData.x, current.wireData.y);
         if (visited.has(posKey)) {
@@ -133,10 +139,19 @@ export const isInPanels = (objs: GameObj[], pos: Vec2): boolean => {
     return isIn;
 }
 
-export const getWireColor = (type: string, wireDef: WireDefinition): number => {
+export const getWireColor = (type: string, connected: boolean): number => {
     if (type === "wire-modifier-minus" || type === "wire-modifier-plus")
     {
         return 0xffffff;
     }
-    return COLOR_Inactive;
+    return connected ? COLOR_Active : COLOR_Inactive;
+}
+
+export const setWiresColor =  (wire: GameObj, color: number) => {
+    wire.children.forEach((child) => {
+        if (child.is("wire_visual"))
+        {
+            (child as GameObj<ColorComp>).color = k.Color.fromHex(color);
+        }
+    })
 }

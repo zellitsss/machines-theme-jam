@@ -19,7 +19,7 @@ export const createWireVisual = (type: string, wireDef: WireDefinition, size: nu
             height: size,
             frame: wireDef?.frame,
         }),
-        k.color(getWireColor(type, wireDef)),
+        k.color(getWireColor(type, false)),
         k.scale(1),
         k.opacity(1),
         "wire_visual",
