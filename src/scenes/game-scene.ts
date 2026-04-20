@@ -87,6 +87,7 @@ export default function createGameScene() {
             }
             wire.hidden = !wire.is("inventory_item");
             ghostWire = createGhostWire(wire);
+            audio.playSfx("sfx-pickup");
         });
 
         k.on(EVENT_WireEndDragging, "wire", (wire: GameObj<WireState | PosComp>) => {
@@ -144,6 +145,9 @@ export default function createGameScene() {
                     }
                 }
             }
+
+            audio.playSfx("sfx-place");
+
             checkWinCondition();
         });
 

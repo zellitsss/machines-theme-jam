@@ -118,6 +118,9 @@ function registerSounds() {
     audio.register("bgm-menu", "sounds/bgm-menu.mp3", { channel: "bgm", loop: true });
     audio.register("bgm-gameplay", "sounds/bgm-gameplay.mp3", { channel: "bgm", loop: true });
     audio.register("sfx-rotate", "sounds/sfx-rotate.mp3", { channel: "sfx" });
+    audio.register("sfx-pickup", "sounds/sfx-pickup.mp3", { channel: "sfx" });
+    audio.register("sfx-place", "sounds/sfx-place.mp3", { channel: "sfx" });
+    audio.register("sfx-button-click", "sounds/sfx-button-click.mp3", { channel: "sfx" });
 }
 
 k.loadRoot("./"); // A good idea for Itch.io publishing later
