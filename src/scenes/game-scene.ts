@@ -81,7 +81,10 @@ export default function createGameScene() {
                         wireVisualSize,
                         wire.wireData,
                         true,
-                        [getPosKey(gridPos[0], gridPos[1])]
+                        [
+                            getPosKey(gridPos[0], gridPos[1]),
+                            "in_grid"
+                        ]
                     ) as GameObj<WireState>;
                     newWire.wireData.x = gridPos[0];
                     newWire.wireData.y = gridPos[1];
@@ -193,7 +196,6 @@ export default function createGameScene() {
 
         let startWire: GameObj<WireState>;
         let endWire: GameObj<WireState>;
-        let wires: GameObj<WireState>[] = [];
 
         level.cells.forEach((cellData) => {
             let config = gridConstraints.get(getPosKey(cellData.x, cellData.y));
@@ -213,20 +215,16 @@ export default function createGameScene() {
                 wireVisualSize,
                 fromCellToWireData(cellData),
                 needWireBg(cellData),
-                [getPosKey(cellData.x, cellData.y)]
+                [
+                    getPosKey(cellData.x, cellData.y),
+                    "in_grid"
+                ]
             );
 
             // Remove placeholder
             k.get(`placeholder_${getPosKey(cellData.x, cellData.y)}`).forEach((obj) => {
                 obj.destroy();
             })
-
-            wires.push(wire as GameObj<WireState>);
-            if (cellData.type === "wire-gate-start") {
-                startWire = wire as GameObj<WireState>;
-            } else if (cellData.type === "wire-gate-end") {
-                endWire = wire as GameObj<WireState>;
-            }
         });
 
         Array.from(inventory.values()).forEach((item, index) => {
@@ -239,7 +237,7 @@ export default function createGameScene() {
         });
 
         function checkWinCondition() {
-            k.debug.log(isWiresConnected(wires, startWire, endWire) ? "Win" : "Lose");
+            k.debug.log(isWiresConnected() ? "Win" : "Lose");
         }
     };
 }

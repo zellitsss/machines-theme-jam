@@ -23,7 +23,21 @@ export const getExitSide = (wire: GameObj<WireState>, enteredSide: number): numb
     return null;
 }
 
-export const isWiresConnected = (wires: GameObj<WireState>[], startWire: GameObj<WireState>, endWire: GameObj<WireState>): boolean => {
+export const isWiresConnected = (): boolean => {
+    const wires = k.query({
+        include: ["wire", "in_grid"],
+        includeOp: "and"
+    }) as GameObj<WireState>[];
+    let startWire: GameObj<WireState> | null = null;
+    let endWire: GameObj<WireState> | null = null;
+    wires.forEach((wire) => {
+        if (wire.wireData.type === "wire-gate-start") {
+            startWire = wire;
+        } else if (wire.wireData.type === "wire-gate-end") {
+            endWire = wire;
+        }
+    })
+
     if (!startWire || !endWire) {
         return false;
     }
@@ -33,6 +47,7 @@ export const isWiresConnected = (wires: GameObj<WireState>[], startWire: GameObj
 
     while (current) {
         const posKey = getPosKey(current.wireData.x, current.wireData.y);
+        console.log(posKey);
         if (visited.has(posKey)) {
             return false;
         }
@@ -45,8 +60,10 @@ export const isWiresConnected = (wires: GameObj<WireState>[], startWire: GameObj
         if (exitSide === null) {
             break;
         }
+        console.log("exit side ", exitSide);
 
         const next = getNextConnectedCell(wires, current, exitSide);
+        console.log("next ", next);
         if (!next) {
             break;
         }
