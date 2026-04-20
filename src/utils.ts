@@ -64,7 +64,7 @@ export const fromCellToWireData = (cellData: CellData): WireData => {
 export const fromItemToWireData = (itemData: ItemData): WireData => {
     return {
         type: itemData.type,
-        modifier: itemData.count,
+        modifier: itemData.modifier,
         rot: itemData.rot,
         x: itemData.x,
         y: itemData.y

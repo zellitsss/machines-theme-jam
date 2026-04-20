@@ -30,7 +30,15 @@ async function loadAssets() {
             sliceY: 3,
             filter: "linear"
         }),
-        k.loadSprite("background", "sprites/Background.png"),
+        k.loadSprite("background", "sprites/Background.png", {
+            slice9: {
+                top: 232,
+                bottom: 232,
+                left: 217,
+                right: 380,
+                tileMode: "none"
+            }
+        }),
     ]);
 }
 
@@ -57,7 +65,7 @@ export default function createGameScene() {
 
         await loadAssets();
         // Load Level data
-        const levelData = await k.loadJSON("levelData", "data/level-01.json");
+        const levelData = await k.loadJSON("levelData", "data/level-02.json");
         const level = levelData as LevelData;
 
         /********** EVENTS **********/
@@ -155,8 +163,8 @@ export default function createGameScene() {
             k.anchor("topleft"),
             k.layer(LAYER_BACKGROUND),
             k.sprite("background", {
-                width: 1280,
-                height: 720
+                width: k.width(),
+                height: k.height(),
             })
         ])
 
@@ -244,11 +252,6 @@ export default function createGameScene() {
                     "in_grid"
                 ]
             );
-
-            // Remove placeholder
-            k.get(`placeholder_${getPosKey(cellData.x, cellData.y)}`).forEach((obj) => {
-                obj.destroy();
-            })
         });
 
         // Inventory

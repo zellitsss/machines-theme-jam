@@ -5,6 +5,7 @@ import {WireState, wireState} from "../components/wireState";
 import {wireInteraction} from "../components/wireInteraction";
 import {k} from "../constants";
 import {AreaComp, GameObj, PosComp, Rect} from "kaplay";
+import {fixedRotation} from "../components/fixedRotation";
 
 export const createWireVisual = (wireDef: WireDefinition, size: number) => {
     return [
@@ -58,7 +59,18 @@ export const createWire = (posX: number, posY: number, size: number, wireData: W
     if (needBg) {
         wire.add(createWireBg(size));
     }
-    wire.add(createWireVisual(wireDef, size))
+    wire.add(createWireVisual(wireDef, size));
+    if (wireDef?.modifier != null && wireDef.modifier != 0) {
+        console.log(wireData);
+        wire.add([
+            k.pos(),
+            k.anchor("center"),
+            k.text(wireData.modifier.toString(), {size: 24, font: "monospace"}),
+            k.color("white"),
+            fixedRotation(),
+            "wire_modifier_label",
+        ]);
+    }
     return wire;
 }
 
