@@ -77,7 +77,7 @@ export default function createGameScene() {
             {
                 return;
             }
-            wire.hidden = !wire.tags.includes("inventory_item");
+            wire.hidden = !wire.is("inventory_item");
             ghostWire = createGhostWire(wire);
         });
 
@@ -92,7 +92,7 @@ export default function createGameScene() {
             const gridPos = worldToGrid(dropPos.x, dropPos.y, wireVisualSize, gridOffsetX, gridOffsetY);
             if (canPlaceAt(...gridPos)) {
                 // Place in the empty cell
-                const isFromInventory = wire.tags.includes("inventory_item");
+                const isFromInventory = wire.is("inventory_item");
                 if (isFromInventory) {
                     const newWire = createWire(
                         ...calculateCellPos(gridPos[0], gridPos[1], wireVisualSize, gridOffsetX, gridOffsetY),
