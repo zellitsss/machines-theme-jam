@@ -3,7 +3,7 @@ import {WireData, WireDefinition} from "../types";
 import {getPosKey, getRotationFromStep} from "../utils";
 import {WireState, wireState} from "../components/wireState";
 import {wireInteraction} from "../components/wireInteraction";
-import {k} from "../constants";
+import {COLOR_Active, COLOR_Negative, COLOR_Positive, k} from "../constants";
 import {AreaComp, GameObj, PosComp, Rect, RotateComp} from "kaplay";
 import {fixedRotation} from "../components/fixedRotation";
 import {gridConstraints} from "../core/grid";
@@ -96,12 +96,12 @@ export const createPlaceholderWire = (posX: number, posY: number, size: number, 
         ...tags
     ];
     const placeholder = parent === null ? k.add(comps) : parent.add(comps);
-    if (wireDef?.modifier != null && wireDef.modifier != 0) {
+    if ((wireDef?.modifier ?? 0) != 0) {
         placeholder.add([
             k.pos(),
             k.anchor("center"),
             k.text(wireData.modifier.toString(), {size: 24, font: "monospace"}),
-            k.color("white"),
+            k.color(wireDef?.modifier > 0 ? COLOR_Positive : COLOR_Negative),
             fixedRotation(),
             "wire_modifier_label",
         ]);
