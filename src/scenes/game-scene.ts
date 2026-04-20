@@ -16,7 +16,7 @@ import {
     CELL_SIZE, CENTER_PANEL_RATIO,
     EVENT_WireClicked, EVENT_WireDraggingUpdate,
     EVENT_WireEndDragging,
-    EVENT_WireStartDragging,
+    EVENT_WireStartDragging, INVENTORY_CELL_SIZE,
     k, LEFT_PANEL_RATIO, MAIN_PANEL_PADDING, RIGHT_PANEL_RATIO,
     TOP_PANEL_HEIGHT
 } from "../constants";
@@ -247,7 +247,7 @@ export default function createGameScene() {
         // Inventory
         Array.from(inventory.values()).forEach((item, index) => {
             const wire = createInventorySlot(
-                wireVisualSize,
+                INVENTORY_CELL_SIZE,
                 item,
                 [leftPanel, rightPanel]
             );

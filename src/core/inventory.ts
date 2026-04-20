@@ -1,6 +1,6 @@
 ﻿import {ItemData} from "../types";
 import {GameObj, TextComp} from "kaplay";
-import {k} from "../constants";
+import {INVENTORY_CELL_SIZE, k} from "../constants";
 import {createWire} from "../entities/wire";
 import {fromItemToWireData} from "../utils";
 import {PanelComp} from "../components/panel";
@@ -54,7 +54,7 @@ export const updateItem = (inType: string, amount: number) => {
             inventory.set(inType, {type: inType, count: amount});
             const itemDef = wireDictionary.get(inType);
             const newSlot = createInventorySlot(
-                100,
+                INVENTORY_CELL_SIZE,
                 {
                     type: inType,
                     modifier: itemDef.modifier ?? 0,
