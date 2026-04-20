@@ -17,7 +17,8 @@ export const isValidCell = (x: number, y: number): boolean => {
 export const canPlaceAt = (x: number, y: number): boolean => {
     const existed = k.query({
         include: ["wire", getPosKey(x, y)],
-    })
+        includeOp: "and"
+    });
     return (gridConstraints.get(getPosKey(x, y))?.canPlace ?? false) && existed.length == 0 && isValidCell(x, y);
 }
 

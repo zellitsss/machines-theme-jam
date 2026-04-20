@@ -14,8 +14,8 @@ import {
 } from "../core/gameplay";
 import {WireState} from "../components/wireState";
 import {calculateCellPos, canPlaceAt, gridConstraints, isValidCell, worldToGrid} from "../core/grid";
-import {inventory} from "../ui/inventory";
 import {CELL_SIZE, k, TOP_PANEL_HEIGHT} from "../constants";
+import {createInventorySlot, inventory} from "../core/inventory";
 
 async function loadAssets() {
     await Promise.all([
@@ -60,7 +60,7 @@ export default function createGameScene() {
 
         let ghostWire: GameObj | null = null;
         k.on(Constants.EVENT_WireStartDragging, "wire", (wire: GameObj<WireState>) => {
-            wire.hidden = true;
+            wire.hidden = !wire.tags.includes("inventory_item");
             ghostWire = createGhostWire(wire);
         });
 
@@ -71,27 +71,38 @@ export default function createGameScene() {
             const gridPos = worldToGrid(dropPos.x, dropPos.y, wireVisualSize, gridOffsetX, gridOffsetY);
             if (canPlaceAt(...gridPos)) {
                 // Place in the empty cell
-                // TODO: be aware of inventory
-                wire.hidden = false;
-                wire.pos = k.vec2(...calculateCellPos(gridPos[0], gridPos[1], wireVisualSize, gridOffsetX, gridOffsetY));
-                wire.untag(getPosKey(wire.wireData.x, wire.wireData.y));
-                wire.wireData.x = gridPos[0];
-                wire.wireData.y = gridPos[1];
-                wire.tag(getPosKey(wire.wireData.x, wire.wireData.y));
-                // TODO: Handle the placeholder dot
+                const isFromInventory = wire.tags.includes("inventory_item");
+                if (isFromInventory) {
+                    const newWire = createWire(
+                        ...calculateCellPos(gridPos[0], gridPos[1], wireVisualSize, gridOffsetX, gridOffsetY),
+                        wireVisualSize,
+                        wire.wireData,
+                        true,
+                        [getPosKey(gridPos[0], gridPos[1])]
+                    ) as GameObj<WireState>;
+                    newWire.wireData.x = gridPos[0];
+                    newWire.wireData.y = gridPos[1];
+                } else {
+                    wire.hidden = false;
+                    wire.pos = k.vec2(...calculateCellPos(gridPos[0], gridPos[1], wireVisualSize, gridOffsetX, gridOffsetY));
+                    wire.untag(getPosKey(wire.wireData.x, wire.wireData.y));
+                    wire.wireData.x = gridPos[0];
+                    wire.wireData.y = gridPos[1];
+                    wire.tag(getPosKey(wire.wireData.x, wire.wireData.y));
+                }
             } else {
+                // The cell is occupied
+                // Check the wire is from grid or inventory
                 if (isValidCell(wire.wireData.x, wire.wireData.y)) {
+                    // The wire is from grid
                     if (isInPanels(k.get("inventory_panel"), dropPos)) {
+                        // Move to inventory
                         wire.destroy();
-                        // move to inventory
-                        console.log("move to inventory");
                     } else {
-                        // return to the original cell
+                        // Return to the original cell
                         wire.hidden = false;
                         wire.pos = k.vec2(...calculateCellPos(wire.wireData.x, wire.wireData.y, wireVisualSize, gridOffsetX, gridOffsetY));
                     }
-                } else {
-                    // Dragged from inventory
                 }
             }
             checkWinCondition();
@@ -216,14 +227,11 @@ export default function createGameScene() {
         });
 
         Array.from(inventory.values()).forEach((item, index) => {
-            const wire = createWire(
+            const wire = createInventorySlot(
                 leftPanel.pos.x + leftPanel.width / 2,
                 leftPanel.pos.y + TOP_PANEL_HEIGHT + index * wireVisualSize + index * 8,
                 wireVisualSize,
-                fromItemToWireData(item),
-                true,
-                [],
-                leftPanel
+                item
             );
         });
 
