@@ -8,7 +8,7 @@ import {
     activeTweenByCell,
     animateWireRotation,
     handleRotatingWire, isInPanels,
-    isWiresConnected,
+    isWireLineValid,
     needWireBg
 } from "../core/gameplay";
 import {WireState} from "../components/wireState";
@@ -280,7 +280,8 @@ export default function createGameScene() {
         });
 
         function checkWinCondition() {
-            k.debug.log(isWiresConnected() ? "Win" : "Lose");
+            const modifier = isWireLineValid();
+            console.log(modifier, modifier == (level.targetModifier ?? 0) ? "Win" : "Unfinished");
         }
     };
 }

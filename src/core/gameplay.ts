@@ -23,7 +23,11 @@ export const getExitSide = (wire: GameObj<WireState>, enteredSide: number): numb
     return null;
 }
 
-export const isWiresConnected = (): boolean => {
+/**
+ * Check if the wire line is valid.
+ * @returns -1 if the wire line is not valid, otherwise the modifier value of the wire line.
+ */
+export const isWireLineValid = (): number => {
     const wires = k.query({
         include: ["wire", "in_grid"],
         includeOp: "and"
@@ -39,21 +43,23 @@ export const isWiresConnected = (): boolean => {
     })
 
     if (!startWire || !endWire) {
-        return false;
+        return -1;
     }
     let current = startWire;
     let visited = new Set<string>();
     let incomingSide = -1;
+    let currentModifier = 0;
 
     while (current) {
+        currentModifier += current.wireData.modifier ?? 0;
         const posKey = getPosKey(current.wireData.x, current.wireData.y);
         if (visited.has(posKey)) {
-            return false;
+            return -1;
         }
         visited.add(posKey);
 
         if (current === endWire) {
-            return true;
+            return currentModifier;
         }
         const exitSide = getExitSide(current, incomingSide);
         if (exitSide === null) {
@@ -76,7 +82,7 @@ export const isWiresConnected = (): boolean => {
         current = next;
     }
 
-    return false;
+    return -1;
 }
 
 export const handleRotatingWire = (wire: GameObj<WireState>) => {

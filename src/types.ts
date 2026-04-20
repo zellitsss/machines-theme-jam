@@ -56,6 +56,7 @@ export interface LevelData {
     rows: number;
     cells: CellData[];
     inventory: ItemData[];
+    targetModifier: number;
 }
 
 export const LAYER_BACKGROUND = "background";
