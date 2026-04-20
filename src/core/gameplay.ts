@@ -1,11 +1,11 @@
-import {AreaComp, GameObj, RotateComp, ScaleComp, TimerComp, TweenController, Vec2} from "kaplay";
+import {AreaComp, Color, GameObj, RotateComp, ScaleComp, TimerComp, TweenController, Vec2} from "kaplay";
 import {canIn, canOut, getOppositeSide, getPosKey, getRotatedConnections} from "../utils";
 import {wireDictionary} from "../wire-dictionary";
 import {canRotateAt, getNextConnectedCell} from "./grid";
 import {WireState} from "../components/wireState";
 import * as Constants from "../constants";
-import {CellData} from "../types";
-import {k} from "../constants";
+import {CellData, WireDefinition} from "../types";
+import {COLOR_Inactive, k} from "../constants";
 import {PanelComp} from "../components/panel";
 
 export const activeTweenByCell = new Map<string, TweenController>();
@@ -131,4 +131,12 @@ export const isInPanels = (objs: GameObj[], pos: Vec2): boolean => {
         isIn = isIn || (new k.Rect(obj.pos, obj.width, obj.height)).contains(pos);
     });
     return isIn;
+}
+
+export const getWireColor = (type: string, wireDef: WireDefinition): number => {
+    if (type === "wire-modifier-minus" || type === "wire-modifier-plus")
+    {
+        return 0xffffff;
+    }
+    return COLOR_Inactive;
 }

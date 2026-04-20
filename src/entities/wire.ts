@@ -7,8 +7,9 @@ import {k} from "../constants";
 import {AreaComp, GameObj, PosComp, Rect, RotateComp} from "kaplay";
 import {fixedRotation} from "../components/fixedRotation";
 import {gridConstraints} from "../core/grid";
+import {getWireColor} from "../core/gameplay";
 
-export const createWireVisual = (wireDef: WireDefinition, size: number) => {
+export const createWireVisual = (type: string, wireDef: WireDefinition, size: number) => {
     return [
         k.pos(),
         k.rotate(0),
@@ -18,7 +19,7 @@ export const createWireVisual = (wireDef: WireDefinition, size: number) => {
             height: size,
             frame: wireDef?.frame,
         }),
-        k.color(176, 187, 212),
+        k.color(getWireColor(type, wireDef)),
         k.scale(1),
         k.opacity(1),
         "wire_visual",
@@ -59,7 +60,7 @@ export const createWire = (posX: number, posY: number, size: number, wireData: W
     if (needBg) {
         wire.add(createWireBg(size));
     }
-    wire.add(createWireVisual(wireDef, size));
+    wire.add(createWireVisual(wireData.type, wireDef, size));
     if (wireDef?.modifier != null && wireDef.modifier != 0) {
         wire.add([
             k.pos(),
