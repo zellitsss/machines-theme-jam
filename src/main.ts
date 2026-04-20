@@ -97,7 +97,8 @@ function initializeWireDictionary() {
             ConnectionType.Both,
             ConnectionType.None
         ],
-        modifier: -1
+        modifier: -1,
+        placeholderFrame: 10
     });
     wireDictionary.add("wire-modifier-plus", {
         sprite: "atlas",
@@ -108,7 +109,8 @@ function initializeWireDictionary() {
             ConnectionType.Both,
             ConnectionType.None
         ],
-        modifier: 1
+        modifier: 1,
+        placeholderFrame: 11
     });
 }
 

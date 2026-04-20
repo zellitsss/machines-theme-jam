@@ -3,7 +3,7 @@ import {calculateWireVisualSize, canDrag, fromCellToWireData, getPosKey} from ".
 import {audio} from "../core/audio";
 import {panel} from "../components/panel";
 import {LAYER_BACKGROUND, LAYER_GAME, LAYER_UI, LevelData} from "../types";
-import {createGhostWire, createWire} from "../entities/wire";
+import {createGhostWire, createPlaceholderWire, createWire} from "../entities/wire";
 import {
     activeTweenByCell,
     animateWireRotation,
@@ -217,7 +217,7 @@ export default function createGameScene() {
                         frame: 13
                     }),
                     k.color(199, 199, 199),
-                    "placeholder_" + getPosKey(c, r),
+                    `grid_dot_${getPosKey(c, r)}`,
                 ])
             }
         }
@@ -233,21 +233,33 @@ export default function createGameScene() {
                 config.rot = cellData.rot ?? 0;
                 config.type = cellData.type ?? "";
                 config.modifier = cellData.modifier ?? 0;
+                config.placeholder = cellData.placeholder ?? false;
             }
 
             const cellPos = calculateCellPos(cellData.x, cellData.y, wireVisualSize, gridOffsetX, gridOffsetY);
 
-            const wire = createWire(
-                cellPos[0],
-                cellPos[1],
-                wireVisualSize,
-                fromCellToWireData(cellData),
-                needWireBg(cellData),
-                [
-                    getPosKey(cellData.x, cellData.y),
-                    "in_grid"
-                ]
-            );
+            if (config.placeholder) {
+                console.log("create placeholder");
+                createPlaceholderWire(
+                    cellPos[0],
+                    cellPos[1],
+                    wireVisualSize,
+                    fromCellToWireData(cellData),
+                    ["placeholder", getPosKey(cellData.x, cellData.y)],
+                );
+            } else {
+                const wire = createWire(
+                    cellPos[0],
+                    cellPos[1],
+                    wireVisualSize,
+                    fromCellToWireData(cellData),
+                    needWireBg(cellData),
+                    [
+                        getPosKey(cellData.x, cellData.y),
+                        "in_grid"
+                    ]
+                );
+            }
         });
 
         // Inventory

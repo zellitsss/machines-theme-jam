@@ -63,7 +63,8 @@
             "type": "wire-modifier-plus",
             "rot": 1,
             "modifier": 1,
-            "canRotate": false
+            "canRotate": false,
+            "placeholder": true
         }
     ],
     "inventory": [
@@ -91,6 +92,11 @@
             "type": "wire-modifier-minus",
             "count": 1,
             "modifier": -2
+        },
+        {
+            "type": "wire-modifier-plus",
+            "count": 1,
+            "modifier": 1
         }
     ]
 }

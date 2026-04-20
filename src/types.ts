@@ -18,6 +18,7 @@ export interface WireDefinition {
     // [Top, Right, Bottom, Left]
     flow: CellConnections;
     modifier?: number;
+    placeholderFrame?: number;
 }
 
 export type CellConnections = [ConnectionType, ConnectionType, ConnectionType, ConnectionType];
@@ -40,6 +41,7 @@ export interface CellConstraint {
     rot?: number;
     type?: string;
     modifier?: number;
+    placeholder?: boolean;
 }
 
 export type GridConstraints = Map<string, CellConstraint>;

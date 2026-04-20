@@ -1,6 +1,6 @@
 import {wireDictionary} from "../wire-dictionary";
 import {WireData, WireDefinition} from "../types";
-import {getRotationFromStep} from "../utils";
+import {getPosKey, getRotationFromStep} from "../utils";
 import {WireState, wireState} from "../components/wireState";
 import {wireInteraction} from "../components/wireInteraction";
 import {k} from "../constants";
@@ -61,7 +61,6 @@ export const createWire = (posX: number, posY: number, size: number, wireData: W
     }
     wire.add(createWireVisual(wireDef, size));
     if (wireDef?.modifier != null && wireDef.modifier != 0) {
-        console.log(wireData);
         wire.add([
             k.pos(),
             k.anchor("center"),
@@ -72,6 +71,40 @@ export const createWire = (posX: number, posY: number, size: number, wireData: W
         ]);
     }
     return wire;
+}
+
+export const createPlaceholderWire = (posX: number, posY: number, size: number, wireData: WireData, tags: string[], parent: GameObj | null = null) => {
+    const wireDef = wireDictionary.get(wireData.type);
+    const comps = [
+        k.pos(posX, posY),
+        k.rotate(getRotationFromStep(wireData.rot)),
+        k.anchor("center"),
+        k.area({
+            shape: new k.Rect(k.vec2(), size, size)
+        }),
+        k.color(199, 199, 199),
+        k.scale(1),
+        k.opacity(1),
+        k.sprite("atlas", {
+            width: size,
+            height: size,
+            frame: wireDef?.placeholderFrame,
+        }),
+        "placeholder_wire",
+        ...tags
+    ];
+    const placeholder = parent === null ? k.add(comps) : parent.add(comps);
+    if (wireDef?.modifier != null && wireDef.modifier != 0) {
+        placeholder.add([
+            k.pos(),
+            k.anchor("center"),
+            k.text(wireData.modifier.toString(), {size: 24, font: "monospace"}),
+            k.color("white"),
+            fixedRotation(),
+            "wire_modifier_label",
+        ]);
+    }
+    return placeholder;
 }
 
 export const createGhostWire = (original: GameObj) => {
