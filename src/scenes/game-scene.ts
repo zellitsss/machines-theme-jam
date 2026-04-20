@@ -1,5 +1,6 @@
 import {GameObj, KAPLAYCtx, PosComp, RotateComp} from "kaplay";
 import {calculateWireVisualSize, canDrag, fromCellToWireData, getPosKey} from "../utils";
+import {audio} from "../core/audio";
 import {panel} from "../components/panel";
 import {LAYER_BACKGROUND, LAYER_GAME, LAYER_UI, LevelData} from "../types";
 import {createGhostWire, createWire} from "../entities/wire";
@@ -49,6 +50,8 @@ export default function createGameScene() {
     let gridOffsetY = 0;
     let wireVisualSize = CELL_SIZE;
     return async () => {
+        audio.playBgm("bgm-gameplay");
+
         resetContainers();
         setupLayers();
 

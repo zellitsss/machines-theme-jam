@@ -3,6 +3,7 @@ import createMainMenuScene from './scenes/main-menu-scene';
 import {NAME_Game, NAME_MainMenu} from "./constants";
 import {wireDictionary} from "./wire-dictionary";
 import {ConnectionType} from "./types";
+import {audio} from "./core/audio";
 
 import {k} from './constants'
 
@@ -111,9 +112,17 @@ function initializeWireDictionary() {
     });
 }
 
+function registerSounds() {
+    audio.register("bgm-menu", "sounds/bgm-menu.mp3", { channel: "bgm", loop: true });
+    audio.register("bgm-gameplay", "sounds/bgm-gameplay.mp3", { channel: "bgm", loop: true });
+}
+
 k.loadRoot("./"); // A good idea for Itch.io publishing later
 initializeWireDictionary();
+
+registerSounds();
+await audio.loadAll();
+
 k.scene(NAME_MainMenu, createMainMenuScene());
 k.scene(NAME_Game, createGameScene());
-
 k.go(NAME_MainMenu);

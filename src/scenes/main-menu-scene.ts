@@ -1,6 +1,7 @@
 import {GameObj, KAPLAYCtx, Vec2} from 'kaplay';
 import {panel} from "../components/panel";
 import {k, NAME_Game} from "../constants";
+import {audio} from "../core/audio";
 
 function createButton(parent: GameObj, text: string, pos: Vec2, onClick: () => void) {
     const btn = parent.add([
@@ -45,6 +46,8 @@ function createButton(parent: GameObj, text: string, pos: Vec2, onClick: () => v
 export default function createMainMenuScene() {
     const LAYOUT_PANEL_WIDTH = 480;
     return () => {
+        audio.playBgm("bgm-menu");
+
         const layoutPanel = k.add([
             k.pos(k.center()),
             k.anchor("center"),
