@@ -95,7 +95,8 @@ function initializeWireDictionary() {
             ConnectionType.None,
             ConnectionType.Both,
             ConnectionType.None
-        ]
+        ],
+        modifier: -1
     });
     wireDictionary.add("wire-modifier-plus", {
         sprite: "atlas",
@@ -105,13 +106,14 @@ function initializeWireDictionary() {
             ConnectionType.None,
             ConnectionType.Both,
             ConnectionType.None
-        ]
+        ],
+        modifier: 1
     });
 }
 
 k.loadRoot("./"); // A good idea for Itch.io publishing later
 initializeWireDictionary();
-k.scene(NAME_MainMenu, createMainMenuScene(k));
-k.scene(NAME_Game, createGameScene(k));
+k.scene(NAME_MainMenu, createMainMenuScene());
+k.scene(NAME_Game, createGameScene());
 
 k.go(NAME_MainMenu);

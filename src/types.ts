@@ -17,6 +17,7 @@ export interface WireDefinition {
     frame?: number;
     // [Top, Right, Bottom, Left]
     flow: CellConnections;
+    modifier?: number;
 }
 
 export type CellConnections = [ConnectionType, ConnectionType, ConnectionType, ConnectionType];

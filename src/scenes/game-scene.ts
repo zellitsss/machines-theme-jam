@@ -1,6 +1,5 @@
-import {GameObj, PosComp, RotateComp} from "kaplay";
+import {GameObj, KAPLAYCtx, PosComp, RotateComp} from "kaplay";
 import {calculateWireVisualSize, canDrag, fromCellToWireData, getPosKey} from "../utils";
-import * as Constants from "../constants";
 import {panel} from "../components/panel";
 import {LAYER_BACKGROUND, LAYER_GAME, LAYER_UI, LevelData} from "../types";
 import {createGhostWire, createWire} from "../entities/wire";
@@ -13,8 +12,15 @@ import {
 } from "../core/gameplay";
 import {WireState} from "../components/wireState";
 import {calculateCellPos, canPlaceAt, gridConstraints, isValidCell, worldToGrid} from "../core/grid";
-import {CELL_SIZE, k, TOP_PANEL_HEIGHT} from "../constants";
-import {createInventorySlot, inventory, inventorySlot, updateItem} from "../core/inventory";
+import {
+    CELL_SIZE, CENTER_PANEL_RATIO,
+    EVENT_WireClicked, EVENT_WireDraggingUpdate,
+    EVENT_WireEndDragging,
+    EVENT_WireStartDragging,
+    k, LEFT_PANEL_RATIO, MAIN_PANEL_PADDING, RIGHT_PANEL_RATIO,
+    TOP_PANEL_HEIGHT
+} from "../constants";
+import {createInventorySlot, inventory, inventorySlots, updateItem} from "../core/inventory";
 
 async function loadAssets() {
     await Promise.all([
@@ -31,7 +37,7 @@ function resetContainers() {
     gridConstraints.clear();
     activeTweenByCell.clear();
     inventory.clear();
-    inventorySlot.length = 0;
+    inventorySlots.length = 0;
 }
 
 function setupLayers(): void {
@@ -58,12 +64,12 @@ export default function createGameScene() {
             });
         });
 
-        k.on(Constants.EVENT_WireClicked, "wire", (wire: GameObj<WireState>) => {
+        k.on(EVENT_WireClicked, "wire", (wire: GameObj<WireState>) => {
             handleRotatingWire(wire);
         });
 
         let ghostWire: GameObj | null = null;
-        k.on(Constants.EVENT_WireStartDragging, "wire", (wire: GameObj<WireState>) => {
+        k.on(EVENT_WireStartDragging, "wire", (wire: GameObj<WireState>) => {
             if (!canDrag(wire))
             {
                 return;
@@ -72,7 +78,7 @@ export default function createGameScene() {
             ghostWire = createGhostWire(wire);
         });
 
-        k.on(Constants.EVENT_WireEndDragging, "wire", (wire: GameObj<WireState | PosComp>) => {
+        k.on(EVENT_WireEndDragging, "wire", (wire: GameObj<WireState | PosComp>) => {
             ghostWire?.destroy();
             
             if (!canDrag(wire)) {
@@ -125,7 +131,7 @@ export default function createGameScene() {
             checkWinCondition();
         });
 
-        k.on(Constants.EVENT_WireDraggingUpdate, "wire", (wire: GameObj<WireState | PosComp>) => {
+        k.on(EVENT_WireDraggingUpdate, "wire", (wire: GameObj<WireState | PosComp>) => {
             if (ghostWire) {
                 ghostWire.pos = k.mousePos();
             }
@@ -148,40 +154,40 @@ export default function createGameScene() {
         ])
 
         // Layout
-        const leftPanel = k.add([
-            k.layer(LAYER_UI),
-            k.pos(),
-            k.anchor("topleft"),
-            panel(k.width() * Constants.LEFT_PANEL_RATIO, k.height()),
-            "inventory_panel"
-        ]);
         const topPanel = k.add([
             k.anchor("top"),
-            k.pos(leftPanel.pos.x + (k.width() * Constants.CENTER_PANEL_RATIO / 2), 0),
-            panel(k.width() * Constants.CENTER_PANEL_RATIO, Constants.TOP_PANEL_HEIGHT)
+            k.pos(),
+            panel(k.width(), TOP_PANEL_HEIGHT)
+        ]);
+        const leftPanel = k.add([
+            k.layer(LAYER_UI),
+            k.pos(0, topPanel.height),
+            k.anchor("topleft"),
+            panel(k.width() * LEFT_PANEL_RATIO, k.height() - TOP_PANEL_HEIGHT),
+            "inventory_panel"
         ]);
         const centerPanel = k.add([
-            k.pos(leftPanel.pos.x + leftPanel.width, Constants.TOP_PANEL_HEIGHT),
+            k.pos(leftPanel.pos.x + leftPanel.width, TOP_PANEL_HEIGHT),
             k.anchor("top"),
-            panel(k.width() * Constants.CENTER_PANEL_RATIO, k.height() - Constants.TOP_PANEL_HEIGHT)
+            panel(k.width() * CENTER_PANEL_RATIO, k.height() - TOP_PANEL_HEIGHT)
         ]);
         const rightPanel = k.add([
             k.layer(LAYER_UI),
-            k.pos(centerPanel.pos.x + centerPanel.width, 0),
+            k.pos(centerPanel.pos.x + centerPanel.width, topPanel.height),
             k.anchor("topleft"),
-            panel(k.width() * Constants.RIGHT_PANEL_RATIO, k.height()),
+            panel(k.width() * RIGHT_PANEL_RATIO, k.height()),
             "inventory_panel"
         ]);
 
         wireVisualSize = calculateWireVisualSize(
-            centerPanel.width - Constants.MAIN_PANEL_PADDING * 2,
-            centerPanel.height - Constants.MAIN_PANEL_PADDING * 2,
+            centerPanel.width - MAIN_PANEL_PADDING * 2,
+            centerPanel.height - MAIN_PANEL_PADDING * 2,
             level.cols,
             level.rows);
 
         //Create grid
-        gridOffsetX = centerPanel.pos.x + ((centerPanel.width - Constants.MAIN_PANEL_PADDING * 2) - level.cols * wireVisualSize) / 2 + Constants.MAIN_PANEL_PADDING;
-        gridOffsetY = centerPanel.pos.y + ((centerPanel.height - Constants.MAIN_PANEL_PADDING * 2) - level.rows * wireVisualSize) / 2 + Constants.MAIN_PANEL_PADDING;
+        gridOffsetX = centerPanel.pos.x + ((centerPanel.width - MAIN_PANEL_PADDING * 2) - level.cols * wireVisualSize) / 2 + MAIN_PANEL_PADDING;
+        gridOffsetY = centerPanel.pos.y + ((centerPanel.height - MAIN_PANEL_PADDING * 2) - level.rows * wireVisualSize) / 2 + MAIN_PANEL_PADDING;
 
         // Create default grid constraints
         for (let c = 0; c < level.cols; c++) {
@@ -241,10 +247,9 @@ export default function createGameScene() {
         // Inventory
         Array.from(inventory.values()).forEach((item, index) => {
             const wire = createInventorySlot(
-                leftPanel.pos.x + leftPanel.width / 2,
-                leftPanel.pos.y + TOP_PANEL_HEIGHT + index * wireVisualSize + index * 8,
                 wireVisualSize,
-                item
+                item,
+                [leftPanel, rightPanel]
             );
         });
 
