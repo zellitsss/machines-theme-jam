@@ -1,5 +1,5 @@
 import {GameObj, PosComp, RotateComp} from "kaplay";
-import {calculateWireVisualSize, fromCellToWireData, getPosKey} from "../utils";
+import {calculateWireVisualSize, canDrag, fromCellToWireData, getPosKey} from "../utils";
 import * as Constants from "../constants";
 import {panel} from "../components/panel";
 import {LAYER_BACKGROUND, LAYER_GAME, LAYER_UI, LevelData} from "../types";
@@ -63,12 +63,20 @@ export default function createGameScene() {
 
         let ghostWire: GameObj | null = null;
         k.on(Constants.EVENT_WireStartDragging, "wire", (wire: GameObj<WireState>) => {
+            if (!canDrag(wire))
+            {
+                return;
+            }
             wire.hidden = !wire.tags.includes("inventory_item");
             ghostWire = createGhostWire(wire);
         });
 
         k.on(Constants.EVENT_WireEndDragging, "wire", (wire: GameObj<WireState | PosComp>) => {
             ghostWire?.destroy();
+            
+            if (!canDrag(wire)) {
+                return;
+            }
 
             const dropPos = k.mousePos();
             const gridPos = worldToGrid(dropPos.x, dropPos.y, wireVisualSize, gridOffsetX, gridOffsetY);

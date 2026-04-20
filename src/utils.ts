@@ -15,6 +15,11 @@ export function canIn(type: ConnectionType): boolean {
     return type == ConnectionType.Inlet || type == ConnectionType.Both;
 }
 
+export const canDrag = (wire: GameObj<WireState>): boolean => {
+    const constraint = gridConstraints.get(getPosKey(wire.wireData.x, wire.wireData.y));
+    return constraint && constraint.canPlace;
+};
+
 export function getOppositeSide(side: number): number {
     return side == null ? null : (side + 2) % 4;
 }
