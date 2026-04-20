@@ -115,6 +115,8 @@ function initializeWireDictionary() {
 function registerSounds() {
     audio.register("bgm-menu", "sounds/bgm-menu.mp3", { channel: "bgm", loop: true });
     audio.register("bgm-gameplay", "sounds/bgm-gameplay.mp3", { channel: "bgm", loop: true });
+    audio.register("sfx-rotate-1", "sounds/sfx-rotating-1.mp3", { channel: "sfx" });
+    audio.register("sfx-rotate-2", "sounds/sfx-rotating-2.mp3", { channel: "sfx" });
 }
 
 k.loadRoot("./"); // A good idea for Itch.io publishing later
