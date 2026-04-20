@@ -54,3 +54,11 @@ export interface LevelData {
     cells: CellData[];
     inventory: ItemData[];
 }
+
+export const LAYER_BACKGROUND = "background";
+export const LAYER_GAME = "game";
+export const LAYER_UI = "ui";
+
+const SLOT_PADDING = 10;
+const COUNT_TEXT_SIZE = 22;
+const CONTAINER_PADDING = 14;

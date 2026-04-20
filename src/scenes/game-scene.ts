@@ -1,9 +1,8 @@
 import {GameObj, PosComp, RotateComp} from "kaplay";
-import {calculateWireVisualSize, fromCellToWireData, fromItemToWireData, getPosKey} from "../utils";
+import {calculateWireVisualSize, fromCellToWireData, getPosKey} from "../utils";
 import * as Constants from "../constants";
-import {LAYER_BACKGROUND, LAYER_UI, setupLayers} from "../ui/game-scene-ui";
 import {panel} from "../components/panel";
-import {LevelData} from "../types";
+import {LAYER_BACKGROUND, LAYER_GAME, LAYER_UI, LevelData} from "../types";
 import {createGhostWire, createWire} from "../entities/wire";
 import {
     activeTweenByCell,
@@ -32,6 +31,10 @@ function resetContainers() {
     gridConstraints.clear();
     activeTweenByCell.clear();
     inventory.clear();
+}
+
+function setupLayers(): void {
+    k.setLayers([LAYER_BACKGROUND, LAYER_GAME, LAYER_UI], LAYER_GAME);
 }
 
 export default function createGameScene() {
