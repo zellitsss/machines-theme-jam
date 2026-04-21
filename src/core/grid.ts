@@ -1,8 +1,8 @@
 import {GameObj, Vec2} from "kaplay";
 import {getPosKey} from "../utils";
-import {CellConstraint, GridConstraints, TRAVEL_OFFSET} from "../types";
+import {CellConstraint, GridConstraints} from "../types";
 import {WireState} from "../components/wireState";
-import {k, Tag_Wire} from "../constants";
+import {k, Tag_Wire, TRAVEL_OFFSET} from "../constants";
 
 export const gridConstraints: GridConstraints = new Map<string, CellConstraint>();
 

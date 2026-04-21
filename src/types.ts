@@ -1,11 +1,4 @@
-﻿export const TRAVEL_OFFSET = [
-    {x: 0, y: -1},     // up
-    {x: 1, y: 0},      // right
-    {x: 0, y: 1},      // down
-    {x: -1, y: 0}      // left
-]
-
-export enum ConnectionType {
+﻿export enum ConnectionType {
     None,
     Inlet,
     Outlet,
@@ -58,11 +51,3 @@ export interface LevelData {
     inventory: ItemData[];
     targetModifier: number;
 }
-
-export const LAYER_BACKGROUND = "background";
-export const LAYER_GAME = "game";
-export const LAYER_UI = "ui";
-
-const SLOT_PADDING = 10;
-const COUNT_TEXT_SIZE = 22;
-const CONTAINER_PADDING = 14;

@@ -51,6 +51,22 @@ export const COLOR_Negative = 0xf46926;
 export const COLOR_Positive = 0x1aa482;
 export const COLOR_Neutral = 0xc7c7c7;
 
+export const TRAVEL_OFFSET = [
+    {x: 0, y: -1},     // up
+    {x: 1, y: 0},      // right
+    {x: 0, y: 1},      // down
+    {x: -1, y: 0}      // left
+]
+
+export const LAYER_BACKGROUND = "background";
+export const LAYER_GAME = "game";
+export const LAYER_UI = "ui";
+
+const SLOT_PADDING = 10;
+const COUNT_TEXT_SIZE = 22;
+const CONTAINER_PADDING = 14;
+
+
 export const k = kaplay({
     width: 1280,
     height: 720,

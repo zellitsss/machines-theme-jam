@@ -2,7 +2,7 @@ import {GameObj, PosComp, RotateComp} from "kaplay";
 import {calculateWireVisualSize, canDrag, fromCellToWireData, getPosKey, getRotationFromStep} from "../utils";
 import {audio} from "../core/audio";
 import {panel} from "../components/panel";
-import {LAYER_BACKGROUND, LAYER_GAME, LAYER_UI, LevelData} from "../types";
+import {LevelData} from "../types";
 import {createGhostWire, createPlaceholderWire, createWire} from "../entities/wire";
 import {
     activeTweenByCell,
@@ -17,7 +17,8 @@ import {
     CELL_SIZE, CENTER_PANEL_RATIO, EVENT_WireClicked, EVENT_WireDraggingUpdate,
     EVENT_WireEndDragging,
     EVENT_WireStartDragging, FOOTER_HEIGHT, INVENTORY_CELL_SIZE,
-    k, LEFT_PANEL_RATIO, MAIN_PANEL_PADDING, RIGHT_PANEL_RATIO, Tag_InventoryItem,
+    k, LAYER_BACKGROUND, LAYER_GAME,
+    LAYER_UI, LEFT_PANEL_RATIO, MAIN_PANEL_PADDING, RIGHT_PANEL_RATIO, Tag_InventoryItem,
     Tag_InventoryPanel, Tag_Placeholder, Tag_Wire, Tag_Wire_InGrid,
     TOP_PANEL_HEIGHT
 } from "../constants";
