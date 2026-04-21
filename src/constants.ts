@@ -85,5 +85,6 @@ export const k = kaplay({
     scale: 1,
     letterbox: true,
     debug: true,
-    debugKey: "`"
+    debugKey: "`",
+    topMostOnlyActivated: true,
 });
