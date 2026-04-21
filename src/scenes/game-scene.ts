@@ -1,4 +1,4 @@
-import {GameObj, KAPLAYCtx, PosComp, RotateComp} from "kaplay";
+import {GameObj, PosComp, RotateComp} from "kaplay";
 import {calculateWireVisualSize, canDrag, fromCellToWireData, getPosKey, getRotationFromStep} from "../utils";
 import {audio} from "../core/audio";
 import {panel} from "../components/panel";
@@ -14,11 +14,11 @@ import {
 import {WireState} from "../components/wireState";
 import {calculateCellPos, canPlaceAt, gridConstraints, isValidCell, worldToGrid} from "../core/grid";
 import {
-    CELL_SIZE, CENTER_PANEL_RATIO, COLOR_Active,
-    EVENT_WireClicked, EVENT_WireDraggingUpdate,
+    CELL_SIZE, CENTER_PANEL_RATIO, EVENT_WireClicked, EVENT_WireDraggingUpdate,
     EVENT_WireEndDragging,
     EVENT_WireStartDragging, FOOTER_HEIGHT, INVENTORY_CELL_SIZE,
-    k, LEFT_PANEL_RATIO, MAIN_PANEL_PADDING, RIGHT_PANEL_RATIO,
+    k, LEFT_PANEL_RATIO, MAIN_PANEL_PADDING, RIGHT_PANEL_RATIO, Tag_InventoryItem,
+    Tag_InventoryPanel, Tag_Placeholder, Tag_Wire, Tag_Wire_InGrid,
     TOP_PANEL_HEIGHT
 } from "../constants";
 import {createInventorySlot, inventory, inventorySlots, updateItem} from "../core/inventory";
@@ -69,28 +69,28 @@ export default function createGameScene() {
         const level = levelData as LevelData;
 
         /********** EVENTS **********/
-        k.on("rotationStepUpdated", "wire", (wire: GameObj<WireState | RotateComp>) => {
+        k.on("rotationStepUpdated", Tag_Wire, (wire: GameObj<WireState | RotateComp>) => {
             animateWireRotation(wire, () => {
                 checkWinCondition()
             });
         });
 
-        k.on(EVENT_WireClicked, "wire", (wire: GameObj<WireState>) => {
+        k.on(EVENT_WireClicked, Tag_Wire, (wire: GameObj<WireState>) => {
             handleRotatingWire(wire);
         });
 
         let ghostWire: GameObj | null = null;
-        k.on(EVENT_WireStartDragging, "wire", (wire: GameObj<WireState>) => {
+        k.on(EVENT_WireStartDragging, Tag_Wire, (wire: GameObj<WireState>) => {
             if (!canDrag(wire))
             {
                 return;
             }
-            wire.hidden = !wire.is("inventory_item");
+            wire.hidden = !wire.is(Tag_InventoryItem);
             ghostWire = createGhostWire(wire);
             audio.playSfx("sfx-pickup");
         });
 
-        k.on(EVENT_WireEndDragging, "wire", (wire: GameObj<WireState | PosComp>) => {
+        k.on(EVENT_WireEndDragging, Tag_Wire, (wire: GameObj<WireState | PosComp>) => {
             ghostWire?.destroy();
             
             if (!canDrag(wire)) {
@@ -101,7 +101,7 @@ export default function createGameScene() {
             const gridPos = worldToGrid(dropPos.x, dropPos.y, wireVisualSize, gridOffsetX, gridOffsetY);
             if (canPlaceAt(gridPos, wire.wireData.modifier)) {
                 // Place in the empty cell
-                const isFromInventory = wire.is("inventory_item");
+                const isFromInventory = wire.is(Tag_InventoryItem);
                 if (isFromInventory) {
                     const wireData = wire.wireData;
                     const constraint = gridConstraints.get(getPosKey(gridPos));
@@ -115,7 +115,7 @@ export default function createGameScene() {
                         true,
                         [
                             getPosKey(gridPos),
-                            "in_grid"
+                            Tag_Wire_InGrid
                         ]
                     ) as GameObj<WireState>;
                     newWire.wireData.x = gridPos[0];
@@ -134,7 +134,7 @@ export default function createGameScene() {
                 // Check the wire is from grid or inventory
                 if (isValidCell(k.vec2(wire.wireData.x, wire.wireData.y))) {
                     // The wire is from grid
-                    if (isInPanels(k.get("inventory_panel"), dropPos)) {
+                    if (isInPanels(k.get(Tag_InventoryPanel), dropPos)) {
                         // Move to inventory
                         wire.destroy();
                         updateItem(wire.wireData.type, 1);
@@ -151,7 +151,7 @@ export default function createGameScene() {
             checkWinCondition();
         });
 
-        k.on(EVENT_WireDraggingUpdate, "wire", (wire: GameObj<WireState | PosComp>) => {
+        k.on(EVENT_WireDraggingUpdate, Tag_Wire, (wire: GameObj<WireState | PosComp>) => {
             if (ghostWire) {
                 ghostWire.pos = k.mousePos();
             }
@@ -184,7 +184,7 @@ export default function createGameScene() {
             k.pos(0, topPanel.panelHeight),
             k.anchor("topleft"),
             panel(k.width() * LEFT_PANEL_RATIO, k.height() - TOP_PANEL_HEIGHT),
-            "inventory_panel"
+            Tag_InventoryPanel
         ]);
         const centerPanel = k.add([
             k.pos(leftPanel.pos.x + leftPanel.panelWidth, TOP_PANEL_HEIGHT),
@@ -196,7 +196,7 @@ export default function createGameScene() {
             k.pos(centerPanel.pos.x + centerPanel.panelWidth, topPanel.panelHeight),
             k.anchor("topleft"),
             panel(k.width() * RIGHT_PANEL_RATIO, k.height()),
-            "inventory_panel"
+            Tag_InventoryPanel
         ]);
 
         wireVisualSize = calculateWireVisualSize(
@@ -252,7 +252,7 @@ export default function createGameScene() {
                     cellPos,
                     wireVisualSize,
                     fromCellToWireData(cellData),
-                    ["placeholder", getPosKey(k.vec2(cellData.x, cellData.y))],
+                    [Tag_Placeholder, getPosKey(k.vec2(cellData.x, cellData.y))],
                 );
             } else {
                 const wire = createWire(
@@ -262,7 +262,7 @@ export default function createGameScene() {
                     needWireBg(cellData),
                     [
                         getPosKey(k.vec2(cellData.x, cellData.y)),
-                        "in_grid"
+                        Tag_Wire_InGrid
                     ]
                 );
             }

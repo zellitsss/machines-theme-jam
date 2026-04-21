@@ -5,7 +5,10 @@ import {canRotateAt, getNextConnectedCell} from "./grid";
 import {WireState} from "../components/wireState";
 import * as Constants from "../constants";
 import {CellData, WireDefinition} from "../types";
-import {COLOR_Active, COLOR_Inactive, k} from "../constants";
+import {
+    COLOR_Active, COLOR_Inactive, k, Tag_Wire, Tag_Wire_InGrid, Tag_Wire_Visual, Tag_WireType_End,
+    Tag_WireType_Modifier_Minus, Tag_WireType_Modifier_Plus, Tag_WireType_Start
+} from "../constants";
 import {PanelComp} from "../components/panel";
 
 export const activeTweenByCell = new Map<string, TweenController>();
@@ -29,7 +32,7 @@ export const getExitSide = (wire: GameObj<WireState>, enteredSide: number): numb
  */
 export const checkWireLineValid = (): number => {
     const wires = k.query({
-        include: ["wire", "in_grid"],
+        include: [Tag_Wire, Tag_Wire_InGrid],
         includeOp: "and"
     }) as GameObj<WireState>[];
     wires.forEach((wire) => {
@@ -40,9 +43,9 @@ export const checkWireLineValid = (): number => {
     let startWire: GameObj<WireState> | null = null;
     let endWire: GameObj<WireState> | null = null;
     wires.forEach((wire) => {
-        if (wire.wireData.type === "wire-gate-start") {
+        if (wire.wireData.type === Tag_WireType_Start) {
             startWire = wire;
-        } else if (wire.wireData.type === "wire-gate-end") {
+        } else if (wire.wireData.type === Tag_WireType_End) {
             endWire = wire;
         }
     })
@@ -128,7 +131,7 @@ export const animateWireRotation = (wire: GameObj<WireState>, onRotationComplete
 }
 
 export const needWireBg = (cellData: CellData): boolean => {
-    return (cellData.canPlace ?? true) || cellData.type === "wire-gate-start" || cellData.type === "wire-gate-end";
+    return (cellData.canPlace ?? true) || cellData.type === Tag_WireType_Start || cellData.type === Tag_WireType_End;
 }
 
 export const isInPanels = (objs: GameObj[], pos: Vec2): boolean => {
@@ -140,7 +143,7 @@ export const isInPanels = (objs: GameObj[], pos: Vec2): boolean => {
 }
 
 export const getWireColor = (type: string, connected: boolean): number => {
-    if (type === "wire-modifier-minus" || type === "wire-modifier-plus")
+    if (type === Tag_WireType_Modifier_Minus || type === Tag_WireType_Modifier_Plus)
     {
         return 0xffffff;
     }
@@ -149,7 +152,7 @@ export const getWireColor = (type: string, connected: boolean): number => {
 
 export const setWiresColor =  (wire: GameObj, color: number) => {
     wire.children.forEach((child) => {
-        if (child.is("wire_visual"))
+        if (child.is(Tag_Wire_Visual))
         {
             (child as GameObj<ColorComp>).color = k.Color.fromHex(color);
         }

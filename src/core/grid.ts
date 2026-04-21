@@ -2,7 +2,7 @@ import {GameObj, Vec2} from "kaplay";
 import {getPosKey} from "../utils";
 import {CellConstraint, GridConstraints, TRAVEL_OFFSET} from "../types";
 import {WireState} from "../components/wireState";
-import {k} from "../constants";
+import {k, Tag_Wire} from "../constants";
 
 export const gridConstraints: GridConstraints = new Map<string, CellConstraint>();
 
@@ -16,7 +16,7 @@ export const isValidCell = (gridPos: Vec2): boolean => {
 
 export const canPlaceAt = (gridPos: Vec2, modifier: number): boolean => {
     const existed = k.query({
-        include: ["wire", getPosKey(gridPos)],
+        include: [Tag_Wire, getPosKey(gridPos)],
         includeOp: "and"
     });
     const constraint = gridConstraints.get(getPosKey(gridPos));

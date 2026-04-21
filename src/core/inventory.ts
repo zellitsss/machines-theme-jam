@@ -1,6 +1,6 @@
 ﻿import {ItemData} from "../types";
 import {GameObj, TextComp} from "kaplay";
-import {INVENTORY_CELL_SIZE, k} from "../constants";
+import {INVENTORY_CELL_SIZE, k, Tag_InventoryItem, Tag_InventoryLabel, Tag_InventoryPanel} from "../constants";
 import {createWire} from "../entities/wire";
 import {fromItemToWireData} from "../utils";
 import {PanelComp} from "../components/panel";
@@ -31,13 +31,13 @@ export const createInventorySlot = (size: number, itemData: ItemData, panels: Ga
         // TODO: handle full inventory
         return null;
     }
-    createWire(k.vec2(), size, fromItemToWireData(itemData), true, ["inventory_item"], itemSlot);
+    createWire(k.vec2(), size, fromItemToWireData(itemData), true, [Tag_InventoryItem], itemSlot);
     const countLabel = itemSlot.add([
         k.text(itemData.count.toString(), {size: 24, font: "monospace"}),
         k.anchor("center"),
         k.pos(size, 0),
         k.color(56, 88, 229),
-        "inventory_label",
+        Tag_InventoryLabel,
         itemData.type
     ]);
     inventorySlots.push(itemSlot);
@@ -60,7 +60,7 @@ export const updateItem = (inType: string, amount: number) => {
                     modifier: itemDef.modifier ?? 0,
                     count: amount
                 },
-                k.get(["inventory_panel"])
+                k.get([Tag_InventoryPanel])
             );
             inventorySlots.push(newSlot);
         }
@@ -70,7 +70,7 @@ export const updateItem = (inType: string, amount: number) => {
 export const updateItemCountLabel = (type: string) => {
     inventorySlots.forEach((slot) => {
         slot.children.forEach((child) => {
-            if (child.is([type, "inventory_label"])) {
+            if (child.is([type, Tag_InventoryLabel])) {
                 (child as GameObj<TextComp>).text = inventory.get(type)?.count.toString() ?? "0";
             }
         });

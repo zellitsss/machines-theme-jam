@@ -3,7 +3,15 @@ import {WireData, WireDefinition} from "../types";
 import {getPosKey, getRotationFromStep} from "../utils";
 import {WireState, wireState} from "../components/wireState";
 import {wireInteraction} from "../components/wireInteraction";
-import {COLOR_Active, COLOR_Negative, COLOR_Positive, k} from "../constants";
+import {
+    COLOR_Active,
+    COLOR_Negative,
+    COLOR_Positive,
+    k,
+    Tag_Wire, Tag_Wire_Bg, Tag_Wire_Ghost,
+    Tag_Wire_Modifier_Label, Tag_Wire_Placeholder,
+    Tag_Wire_Visual
+} from "../constants";
 import {AreaComp, GameObj, PosComp, Rect, RotateComp, Vec2} from "kaplay";
 import {fixedRotation} from "../components/fixedRotation";
 import {gridConstraints} from "../core/grid";
@@ -22,7 +30,7 @@ export const createWireVisual = (type: string, wireDef: WireDefinition, size: nu
         k.color(getWireColor(type, false)),
         k.scale(1),
         k.opacity(1),
-        "wire_visual",
+        Tag_Wire_Visual,
     ]
 };
 
@@ -35,7 +43,7 @@ export const createWireBg = (size: number) => {
             height: size,
             frame: 6
         }),
-        "wire_Bg"
+        Tag_Wire_Bg
     ];
 }
 
@@ -53,7 +61,7 @@ export const createWire = (pos: Vec2, size: number, wireData: WireData, needBg: 
         k.scale(1),
         k.timer(),
         k.opacity(1),
-        "wire",
+        Tag_Wire,
         ...tags,
     ];
     const wire = parent === null ? k.add(comps) : parent.add(comps);
@@ -69,7 +77,7 @@ export const createWire = (pos: Vec2, size: number, wireData: WireData, needBg: 
             k.text(wireData.modifier.toString(), {size: 24, font: "monospace"}),
             k.color("white"),
             fixedRotation(),
-            "wire_modifier_label",
+            Tag_Wire_Modifier_Label,
         ]);
     }
     return wire;
@@ -92,7 +100,7 @@ export const createPlaceholderWire = (pos: Vec2, size: number, wireData: WireDat
             height: size,
             frame: wireDef?.placeholderFrame,
         }),
-        "placeholder_wire",
+        Tag_Wire_Placeholder,
         ...tags
     ];
     const placeholder = parent === null ? k.add(comps) : parent.add(comps);
@@ -103,7 +111,7 @@ export const createPlaceholderWire = (pos: Vec2, size: number, wireData: WireDat
             k.text(wireData.modifier.toString(), {size: 24, font: "monospace"}),
             k.color(wireDef?.modifier > 0 ? COLOR_Positive : COLOR_Negative),
             fixedRotation(),
-            "wire_modifier_label",
+            Tag_Wire_Modifier_Label,
         ]);
     }
     placeholder.angle = getRotationFromStep(wireData.rot);
@@ -117,6 +125,6 @@ export const createGhostWire = (original: GameObj) => {
         (wire.area.shape as Rect).width,
         wire.wireData,
         true,
-        ["ghost"]
+        [Tag_Wire_Ghost]
     );
 }
