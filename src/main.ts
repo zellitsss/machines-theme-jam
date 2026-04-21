@@ -135,7 +135,17 @@ function registerSounds() {
 k.loadRoot("./"); // A good idea for Itch.io publishing later
 
 await k.loadSprite("hexagon", "sprites/hexagon.png");
-
+k.loadSprite("background", "sprites/Background.png", {
+    slice9: {
+        top: 232,
+        bottom: 232,
+        left: 217,
+        right: 380,
+        tileMode: "none"
+    }
+});
+k.loadFont("Audiowide", "fonts/Audiowide-Regular.woff2");
+k.loadFont("ZenDots", "fonts/ZenDots-Regular.woff2");
 initializeWireDictionary();
 
 registerSounds();
