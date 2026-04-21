@@ -45,6 +45,7 @@ export interface CellData extends CellConstraint {
 }
 
 export interface LevelData {
+    name: string;
     cols: number;
     rows: number;
     cells: CellData[];

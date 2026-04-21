@@ -72,6 +72,8 @@ export const COUNT_TEXT_SIZE = 22;
 export const CONTAINER_PADDING = 14;
 export const INVENTORY_TITLE_TEXT = "INVENTORY";
 
+export const TAG_CURRENT_MODIFIER_TEXT = "current_modifier_text";
+export const TAG_TARGET_MODIFIER_TEXT = "target_modifier_text";
 
 export const k = kaplay({
     width: 1280,

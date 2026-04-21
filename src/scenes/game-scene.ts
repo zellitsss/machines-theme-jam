@@ -1,4 +1,4 @@
-import {GameObj, PosComp, RotateComp} from "kaplay";
+import {GameObj, PosComp, RotateComp, TextComp} from "kaplay";
 import {calculateWireVisualSize, canDrag, fromCellToWireData, getPosKey, getRotationFromStep} from "../utils";
 import {audio} from "../core/audio";
 import {panel} from "../components/panel";
@@ -14,16 +14,17 @@ import {
 import {WireState} from "../components/wireState";
 import {calculateCellPos, canPlaceAt, gridConstraints, isValidCell, worldToGrid} from "../core/grid";
 import {
-    CELL_SIZE, CENTER_PANEL_RATIO, EVENT_WireClicked, EVENT_WireDraggingUpdate,
+    CELL_SIZE, CENTER_PANEL_RATIO, COLOR_Active, EVENT_WireClicked, EVENT_WireDraggingUpdate,
     EVENT_WireEndDragging,
     EVENT_WireStartDragging, FOOTER_HEIGHT, INVENTORY_BORDER_HEIGHT, INVENTORY_CELL_SIZE, INVENTORY_TITLE_TEXT,
     k, LAYER_BACKGROUND, LAYER_GAME,
-    LAYER_UI, LEFT_PANEL_RATIO, MAIN_PANEL_PADDING, RIGHT_PANEL_RATIO, Tag_InventoryItem,
-    Tag_InventoryPanel, Tag_Placeholder, Tag_Wire, Tag_Wire_InGrid,
+    LAYER_UI, LEFT_PANEL_RATIO, MAIN_PANEL_PADDING, RIGHT_PANEL_RATIO, TAG_CURRENT_MODIFIER_TEXT, Tag_InventoryItem,
+    Tag_InventoryPanel, Tag_Placeholder, TAG_TARGET_MODIFIER_TEXT, Tag_Wire, Tag_Wire_InGrid,
     TOP_PANEL_HEIGHT
 } from "../constants";
 import {createInventorySlot, inventory, inventorySlots, updateItem} from "../core/inventory";
 import {createBorder} from "../entities/border";
+import {createGameText} from "../entities/gameText";
 
 async function loadAssets() {
     await Promise.all([
@@ -83,8 +84,7 @@ export default function createGameScene() {
 
         let ghostWire: GameObj | null = null;
         k.on(EVENT_WireStartDragging, Tag_Wire, (wire: GameObj<WireState>) => {
-            if (!canDrag(wire))
-            {
+            if (!canDrag(wire)) {
                 return;
             }
             wire.hidden = !wire.is(Tag_InventoryItem);
@@ -94,7 +94,7 @@ export default function createGameScene() {
 
         k.on(EVENT_WireEndDragging, Tag_Wire, (wire: GameObj<WireState | PosComp>) => {
             ghostWire?.destroy();
-            
+
             if (!canDrag(wire)) {
                 return;
             }
@@ -120,8 +120,8 @@ export default function createGameScene() {
                             Tag_Wire_InGrid
                         ]
                     ) as GameObj<WireState>;
-                    newWire.wireData.x = gridPos[0];
-                    newWire.wireData.y = gridPos[1];
+                    newWire.wireData.x = gridPos.x;
+                    newWire.wireData.y = gridPos.y;
                     updateItem(wire.wireData.type, -1);
                 } else {
                     wire.hidden = false;
@@ -216,6 +216,49 @@ export default function createGameScene() {
             rightPanel
         );
 
+        const levelLabel = createGameText(
+            k.vec2(MAIN_PANEL_PADDING, 36),
+            level.name,
+            48,
+            "topleft",
+            "left",
+            [],
+            topPanel);
+        const currentModifierLabel = createGameText(
+            k.vec2(leftPanel.panelWidth + MAIN_PANEL_PADDING, 36),
+            "Current",
+            36,
+            "topleft",
+            "left",
+            [],
+            topPanel);
+        const currentModifierValue = createGameText(
+            k.vec2(leftPanel.panelWidth + MAIN_PANEL_PADDING, 36 * 2),
+            "0",
+            36,
+            "topleft",
+            "left",
+            [TAG_CURRENT_MODIFIER_TEXT],
+            topPanel);
+        
+        console.log(currentModifierValue);
+        const targetModifierLabel = createGameText(
+            k.vec2(k.width() - rightPanel.panelWidth - MAIN_PANEL_PADDING, 36),
+            "Target",
+            36,
+            "topright",
+            "right",
+            [],
+            topPanel);
+        const targetModifierValue = createGameText(
+            k.vec2(k.width() - rightPanel.panelWidth - MAIN_PANEL_PADDING, 36 * 2), 
+            level.targetModifier != null ? level.targetModifier.toString() : "0",
+            36, 
+            "topright", 
+            "right", 
+            [TAG_TARGET_MODIFIER_TEXT], 
+            topPanel);
+
         wireVisualSize = calculateWireVisualSize(
             centerPanel.panelWidth - MAIN_PANEL_PADDING * 2,
             centerPanel.panelHeight - MAIN_PANEL_PADDING * 2,
@@ -296,6 +339,7 @@ export default function createGameScene() {
 
         function checkWinCondition() {
             const modifier = checkWireLineValid();
+            currentModifierValue.text = Math.max(0, modifier).toString();
             console.log(modifier, modifier == (level.targetModifier ?? 0) ? "Win" : "Unfinished");
         }
     };
