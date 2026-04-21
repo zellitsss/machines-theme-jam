@@ -62,9 +62,15 @@ export const LAYER_BACKGROUND = "background";
 export const LAYER_GAME = "game";
 export const LAYER_UI = "ui";
 
-const SLOT_PADDING = 10;
-const COUNT_TEXT_SIZE = 22;
-const CONTAINER_PADDING = 14;
+export const SIDEBAR_PADDING = 50;
+export const ITEM_SLOT_PADDING = 10;
+export const INVENTORY_TITLE_HEIGHT = 36;
+export const INVENTORY_TITLE_PADDING = 10;
+export const INVENTORY_ITEM_COUNT = 4;
+export const INVENTORY_BORDER_HEIGHT = INVENTORY_CELL_SIZE * INVENTORY_ITEM_COUNT + ITEM_SLOT_PADDING * (INVENTORY_ITEM_COUNT + 1) + INVENTORY_TITLE_HEIGHT + INVENTORY_TITLE_PADDING * 2;
+export const COUNT_TEXT_SIZE = 22;
+export const CONTAINER_PADDING = 14;
+export const INVENTORY_TITLE_TEXT = "INVENTORY";
 
 
 export const k = kaplay({

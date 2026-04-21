@@ -1,6 +1,14 @@
 ﻿import {ItemData} from "../types";
 import {GameObj, TextComp} from "kaplay";
-import {INVENTORY_CELL_SIZE, k, Tag_InventoryItem, Tag_InventoryLabel, Tag_InventoryPanel} from "../constants";
+import {
+    COLOR_Active,
+    INVENTORY_CELL_SIZE,
+    INVENTORY_ITEM_COUNT, INVENTORY_TITLE_HEIGHT, INVENTORY_TITLE_PADDING, ITEM_SLOT_PADDING,
+    k, MAIN_PANEL_PADDING,
+    Tag_InventoryItem,
+    Tag_InventoryLabel,
+    Tag_InventoryPanel
+} from "../constants";
 import {createWire} from "../entities/wire";
 import {fromItemToWireData} from "../utils";
 import {PanelComp} from "../components/panel";
@@ -21,8 +29,8 @@ export const createInventorySlot = (size: number, itemData: ItemData, panels: Ga
     let itemSlot: GameObj | null = null;
     panels.forEach((panel: GameObj<PanelComp>) => {
         const existedSlots = panel.children.filter((child) => child.is("inventory_slot"));
-        if (existedSlots.length < 4 && itemSlot === null) {
-            comps.push(k.pos(panel.panelWidth / 2, (size + 8) * existedSlots.length + size));
+        if (existedSlots.length < INVENTORY_ITEM_COUNT && itemSlot === null) {
+            comps.push(k.pos(panel.panelWidth / 2, MAIN_PANEL_PADDING + INVENTORY_TITLE_PADDING * 2 + INVENTORY_TITLE_HEIGHT + (size * (existedSlots.length + 0.5)) ));
             itemSlot = panel.add(comps);
         }
     });
@@ -35,8 +43,8 @@ export const createInventorySlot = (size: number, itemData: ItemData, panels: Ga
     const countLabel = itemSlot.add([
         k.text(itemData.count.toString(), {size: 24, font: "monospace"}),
         k.anchor("center"),
-        k.pos(size, 0),
-        k.color(56, 88, 229),
+        k.pos(size / 2 + 16, 0),
+        k.color(COLOR_Active),
         Tag_InventoryLabel,
         itemData.type
     ]);

@@ -136,6 +136,7 @@ export const needWireBg = (cellData: CellData): boolean => {
 
 export const isInPanels = (objs: GameObj[], pos: Vec2): boolean => {
     let isIn = false;
+    console.log(objs);
     objs.forEach((obj) => {
         isIn = isIn || (new k.Rect(obj.pos, obj.width, obj.height)).contains(pos);
     });

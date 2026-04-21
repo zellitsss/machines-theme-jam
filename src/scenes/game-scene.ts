@@ -16,13 +16,14 @@ import {calculateCellPos, canPlaceAt, gridConstraints, isValidCell, worldToGrid}
 import {
     CELL_SIZE, CENTER_PANEL_RATIO, EVENT_WireClicked, EVENT_WireDraggingUpdate,
     EVENT_WireEndDragging,
-    EVENT_WireStartDragging, FOOTER_HEIGHT, INVENTORY_CELL_SIZE,
+    EVENT_WireStartDragging, FOOTER_HEIGHT, INVENTORY_BORDER_HEIGHT, INVENTORY_CELL_SIZE, INVENTORY_TITLE_TEXT,
     k, LAYER_BACKGROUND, LAYER_GAME,
     LAYER_UI, LEFT_PANEL_RATIO, MAIN_PANEL_PADDING, RIGHT_PANEL_RATIO, Tag_InventoryItem,
     Tag_InventoryPanel, Tag_Placeholder, Tag_Wire, Tag_Wire_InGrid,
     TOP_PANEL_HEIGHT
 } from "../constants";
 import {createInventorySlot, inventory, inventorySlots, updateItem} from "../core/inventory";
+import {createBorder} from "../entities/border";
 
 async function loadAssets() {
     await Promise.all([
@@ -135,7 +136,7 @@ export default function createGameScene() {
                 // Check the wire is from grid or inventory
                 if (isValidCell(k.vec2(wire.wireData.x, wire.wireData.y))) {
                     // The wire is from grid
-                    if (isInPanels(k.get(Tag_InventoryPanel), dropPos)) {
+                    if (!isValidCell(worldToGrid(dropPos.x, dropPos.y, wireVisualSize, gridOffsetX, gridOffsetY))) {
                         // Move to inventory
                         wire.destroy();
                         updateItem(wire.wireData.type, 1);
@@ -185,8 +186,16 @@ export default function createGameScene() {
             k.pos(0, topPanel.panelHeight),
             k.anchor("topleft"),
             panel(k.width() * LEFT_PANEL_RATIO, k.height() - TOP_PANEL_HEIGHT),
-            Tag_InventoryPanel
         ]);
+        const borderWidth = leftPanel.panelWidth * 0.75;
+        const leftBorder = createBorder(
+            INVENTORY_TITLE_TEXT,
+            k.vec2(leftPanel.panelWidth / 2, MAIN_PANEL_PADDING),
+            borderWidth,
+            INVENTORY_BORDER_HEIGHT,
+            [Tag_InventoryPanel],
+            leftPanel
+        );
         const centerPanel = k.add([
             k.pos(leftPanel.pos.x + leftPanel.panelWidth, TOP_PANEL_HEIGHT),
             k.anchor("top"),
@@ -197,8 +206,15 @@ export default function createGameScene() {
             k.pos(centerPanel.pos.x + centerPanel.panelWidth, topPanel.panelHeight),
             k.anchor("topleft"),
             panel(k.width() * RIGHT_PANEL_RATIO, k.height()),
-            Tag_InventoryPanel
         ]);
+        const rightBorder = createBorder(
+            INVENTORY_TITLE_TEXT,
+            k.vec2(rightPanel.panelWidth / 2, MAIN_PANEL_PADDING),
+            borderWidth,
+            INVENTORY_BORDER_HEIGHT,
+            [Tag_InventoryPanel],
+            rightPanel
+        );
 
         wireVisualSize = calculateWireVisualSize(
             centerPanel.panelWidth - MAIN_PANEL_PADDING * 2,
