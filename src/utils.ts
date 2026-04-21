@@ -20,7 +20,7 @@ export function canIn(type: ConnectionType): boolean {
 export const canDrag = (wire: GameObj<WireState>): boolean => {
     const constraint = gridConstraints.get(getPosKey(k.vec2(wire.wireData.x, wire.wireData.y)));
     const isDraggableGridCell = constraint && constraint.canPlace;
-    const isDraggableInventoryItem = wire.is(Tag_InventoryItem) && inventory.get(wire.wireData.type)?.count > 0;
+    const isDraggableInventoryItem = wire.is(Tag_InventoryItem) && inventory.get(getInventoryItemKey(wire.wireData.type, wire.wireData.modifier))?.count > 0;
     return isDraggableGridCell || isDraggableInventoryItem;
 };
 
@@ -74,4 +74,8 @@ export const fromItemToWireData = (itemData: ItemData): WireData => {
 
 export const isFromGrid = (wire: GameObj<WireState>): boolean => {
     return gridConstraints.has(getPosKey(k.vec2(wire.wireData.x, wire.wireData.y)));
+}
+
+export const getInventoryItemKey = (type: string, modifier: number) => {
+    return `${type}-${modifier ?? 0}`;
 }

@@ -1,5 +1,12 @@
 import {GameObj, PosComp, RotateComp, TextComp} from "kaplay";
-import {calculateWireVisualSize, canDrag, fromCellToWireData, getPosKey, getRotationFromStep} from "../utils";
+import {
+    calculateWireVisualSize,
+    canDrag,
+    fromCellToWireData,
+    getInventoryItemKey,
+    getPosKey,
+    getRotationFromStep
+} from "../utils";
 import {audio} from "../core/audio";
 import {panel} from "../components/panel";
 import {LevelData} from "../types";
@@ -121,8 +128,8 @@ export default function createGameScene() {
                         ]
                     ) as GameObj<WireState>;
                     newWire.wireData.x = gridPos.x;
-                    newWire.wireData.y = gridPos.y;
-                    updateItem(wire.wireData.type, -1);
+                    newWire.wireData.y = gridPos.y;                    
+                    updateItem(wire.wireData.type, wire.wireData.modifier, -1);
                 } else {
                     wire.hidden = false;
                     wire.pos = calculateCellPos(gridPos, wireVisualSize, gridOffsetX, gridOffsetY);
@@ -139,7 +146,7 @@ export default function createGameScene() {
                     if (!isValidCell(worldToGrid(dropPos.x, dropPos.y, wireVisualSize, gridOffsetX, gridOffsetY))) {
                         // Move to inventory
                         wire.destroy();
-                        updateItem(wire.wireData.type, 1);
+                        updateItem(wire.wireData.type, wire.wireData.modifier, 1);
                     } else {
                         // Return to the original cell
                         wire.hidden = false;
@@ -161,7 +168,7 @@ export default function createGameScene() {
         /********** EVENTS **********/
 
         level.inventory.forEach((itemData) => {
-            inventory.set(itemData.type, itemData);
+            inventory.set(getInventoryItemKey(itemData.type, itemData.modifier), itemData);
         });
 
         // Background
