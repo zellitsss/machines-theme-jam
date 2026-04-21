@@ -2,5 +2,10 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
+    "moduleResolution": "bundler", // Tells TS to follow Vite/ESM rules
+    "allowImportingTsExtensions": true, // Often needed for Vite
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "strict": false
   }
 }

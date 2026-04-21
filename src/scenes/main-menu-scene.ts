@@ -24,13 +24,11 @@ function createButton(parent: GameObj, text: string, pos: Vec2, onClick: () => v
 
     // --- HOVER LOGIC ---
     btn.onHoverUpdate(() => {
-        btn.color = k.rgb(60, 60, 70);
         btn.scale = k.vec2(1.05);
         k.setCursor("pointer");
     });
 
     btn.onHoverEnd(() => {
-        btn.color = k.rgb(40, 40, 45);
         btn.scale = k.vec2(1);
         k.setCursor("default");
     });
