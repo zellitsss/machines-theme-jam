@@ -76,6 +76,10 @@ export const INVENTORY_TITLE_TEXT = "INVENTORY";
 export const TAG_CURRENT_MODIFIER_TEXT = "current_modifier_text";
 export const TAG_TARGET_MODIFIER_TEXT = "target_modifier_text";
 
+export const LEVEL_SELECTION_CLOSE_SIZE = 48;
+export const LEVEL_SELECTION_PADDING = 8;
+export const LEVEL_SELECTION_ITEM_COLS = 10;
+
 export const HEX_TRANSITION_WIDTH = 221;
 export const HEX_TRANSITION_HEIGHT = 256;
 

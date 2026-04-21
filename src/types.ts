@@ -52,3 +52,7 @@ export interface LevelData {
     inventory: ItemData[];
     targetModifier: number;
 }
+
+export interface LevelList {
+    levels: string[];
+}
