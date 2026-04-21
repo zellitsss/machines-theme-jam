@@ -1,6 +1,6 @@
 import {GameObj, KAPLAYCtx, Vec2} from 'kaplay';
 import {panel} from "../components/panel";
-import {COLOR_Active, k, LAYER_BACKGROUND, LAYER_GAME, LAYER_UI, NAME_Game} from "../constants";
+import {COLOR_Active, COLOR_Background, k, LAYER_BACKGROUND, LAYER_GAME, LAYER_UI, NAME_Game} from "../constants";
 import {audio} from "../core/audio";
 import {playEnterTransition, transitionTo} from "../core/transition";
 
@@ -67,13 +67,13 @@ export default function createMainMenuScene() {
             panel(LAYOUT_PANEL_WIDTH, k.height())
         ]);
 
-        const startButton = createButton(layoutPanel, "Start", k.vec2(), LAYER_GAME, () => {
+        const startButton = createButton(layoutPanel, "Start", k.vec2(), LAYER_UI, () => {
             if (levelSelectionMenu.hidden) {
                 toggleLevelSelection();
             }
         });
 
-        const creditButton = createButton(layoutPanel, "Credit", k.vec2(0, 72), LAYER_GAME, () => {
+        const creditButton = createButton(layoutPanel, "Credit", k.vec2(0, 72), LAYER_UI, () => {
             if (levelSelectionMenu.hidden) {
                 console.log("Credit");
             }
@@ -85,6 +85,7 @@ export default function createMainMenuScene() {
             k.outline(4),
             k.anchor("center"),
             k.pos(k.center()),
+            k.color(COLOR_Background),
             k.layer(LAYER_UI)
         ]);
         levelSelectionMenu.hidden = true;
@@ -92,6 +93,7 @@ export default function createMainMenuScene() {
         
         function toggleLevelSelection() {
             levelSelectionMenu.hidden = !levelSelectionMenu.hidden;
+            levelSelectionMenu.paused = levelSelectionMenu.hidden;
         }
 
         const levelSelectionTitle = levelSelectionMenu.add([
