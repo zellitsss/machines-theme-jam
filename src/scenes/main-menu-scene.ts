@@ -4,7 +4,7 @@ import {COLOR_Active, k, LAYER_BACKGROUND, LAYER_GAME, LAYER_UI, NAME_Game} from
 import {audio} from "../core/audio";
 import {playEnterTransition, transitionTo} from "../core/transition";
 
-function createButton(parent: GameObj, text: string, pos: Vec2, onClick: () => void) {
+function createButton(parent: GameObj, text: string, pos: Vec2, layer: string, onClick: () => void) {
     const btn = parent.add([
         k.rect(240, 60, {fill: false}),
         k.pos(pos),
@@ -12,6 +12,7 @@ function createButton(parent: GameObj, text: string, pos: Vec2, onClick: () => v
         k.area(),
         k.anchor("center"),
         k.scale(1),
+        k.layer(layer),
         "button"
     ]);
 
@@ -45,7 +46,7 @@ function createButton(parent: GameObj, text: string, pos: Vec2, onClick: () => v
 export default function createMainMenuScene() {
     const LAYOUT_PANEL_WIDTH = 480;
     return () => {
-        playEnterTransition();
+        let _ = playEnterTransition();
 
         audio.playBgm("bgm-menu");
 
@@ -56,7 +57,8 @@ export default function createMainMenuScene() {
             k.sprite("background", {
                 width: k.width(),
                 height: k.height(),
-            })
+            }),
+            k.layer(LAYER_BACKGROUND)
         ]);
         
         const layoutPanel = k.add([
@@ -65,13 +67,13 @@ export default function createMainMenuScene() {
             panel(LAYOUT_PANEL_WIDTH, k.height())
         ]);
 
-        const startButton = createButton(layoutPanel, "Start", k.vec2(), () => {
+        const startButton = createButton(layoutPanel, "Start", k.vec2(), LAYER_GAME, () => {
             if (levelSelectionMenu.hidden) {
                 toggleLevelSelection();
             }
         });
 
-        const creditButton = createButton(layoutPanel, "Credit", k.vec2(0, 72), () => {
+        const creditButton = createButton(layoutPanel, "Credit", k.vec2(0, 72), LAYER_GAME, () => {
             if (levelSelectionMenu.hidden) {
                 console.log("Credit");
             }
@@ -83,7 +85,7 @@ export default function createMainMenuScene() {
             k.outline(4),
             k.anchor("center"),
             k.pos(k.center()),
-            k.layer(LAYER_UI),
+            k.layer(LAYER_UI)
         ]);
         levelSelectionMenu.hidden = true;
         levelSelectionMenu.paused = true;
@@ -97,6 +99,7 @@ export default function createMainMenuScene() {
             k.color("black"),
             k.anchor("top"),
             k.pos(0, -levelSelectionMenu.height / 2),
+            k.layer(LAYER_UI),
         ]);
 
         const buttons: [string, () => void][] = [
@@ -104,7 +107,7 @@ export default function createMainMenuScene() {
             ["Close", toggleLevelSelection],
         ];
         buttons.map(([text, onClick], index) => {
-            createButton(levelSelectionMenu, text.toString(), k.vec2(0, (index + 1) * 72 - levelSelectionMenu.height / 2), onClick);
+            let _ = createButton(levelSelectionMenu, text.toString(), k.vec2(0, (index + 1) * 72 - levelSelectionMenu.height / 2), LAYER_UI, onClick);
         });
     }
 }
