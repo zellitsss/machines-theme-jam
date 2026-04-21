@@ -38,7 +38,8 @@ function createButton(parent: GameObj, text: string, pos: Vec2, layer: string, s
     // --- CLICK LOGIC ---
     btn.onClick(() => {
         if (!shouldActive()) return;
-        console.log("Clicked", label.text);
+        if (k.time() - lastClickedTime < clickDelay && lastClickedTime > 0) return;
+        lastClickedTime = k.time();
         onClick();
         audio.playSfx("sfx-button-click");
     });
@@ -47,6 +48,9 @@ function createButton(parent: GameObj, text: string, pos: Vec2, layer: string, s
 }
 
 let isShowingLevelSelection = false;
+// The `topMostOnlyActivated` is not working
+const clickDelay = .2;
+let lastClickedTime = 0;
 export default function createMainMenuScene() {
     const LAYOUT_PANEL_WIDTH = 480;
     return () => {
