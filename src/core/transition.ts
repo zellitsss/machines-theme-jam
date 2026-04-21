@@ -1,6 +1,6 @@
 import { k, HEX_TRANSITION_WIDTH, LAYER_TRANSITION } from "../constants";
 
-const STAGGER_S = 0.125;
+const STAGGER_S = 0.055;
 const FADE_S = 0.4;
 
 interface GridMeta {
