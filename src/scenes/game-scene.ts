@@ -1,4 +1,4 @@
-import {GameObj, PosComp, RotateComp, TextComp} from "kaplay";
+import {GameObj, PosComp, RotateComp} from "kaplay";
 import {calculateWireVisualSize, canDrag, fromCellToWireData, getPosKey, getRotationFromStep} from "../utils";
 import {audio} from "../core/audio";
 import {panel} from "../components/panel";
@@ -7,17 +7,17 @@ import {createGhostWire, createPlaceholderWire, createWire} from "../entities/wi
 import {
     activeTweenByCell,
     animateWireRotation,
-    handleRotatingWire, isInPanels,
+    handleRotatingWire,
     checkWireLineValid,
     needWireBg
 } from "../core/gameplay";
 import {WireState} from "../components/wireState";
 import {calculateCellPos, canPlaceAt, gridConstraints, isValidCell, worldToGrid} from "../core/grid";
 import {
-    CELL_SIZE, CENTER_PANEL_RATIO, COLOR_Active, EVENT_WireClicked, EVENT_WireDraggingUpdate,
+    CELL_SIZE, CENTER_PANEL_RATIO, EVENT_WireClicked, EVENT_WireDraggingUpdate,
     EVENT_WireEndDragging,
     EVENT_WireStartDragging, FOOTER_HEIGHT, INVENTORY_BORDER_HEIGHT, INVENTORY_CELL_SIZE, INVENTORY_TITLE_TEXT,
-    k, LAYER_BACKGROUND, LAYER_GAME,
+    k, LAYER_BACKGROUND,
     LAYER_UI, LEFT_PANEL_RATIO, MAIN_PANEL_PADDING, RIGHT_PANEL_RATIO, TAG_CURRENT_MODIFIER_TEXT, Tag_InventoryItem,
     Tag_InventoryPanel, Tag_Placeholder, TAG_TARGET_MODIFIER_TEXT, Tag_Wire, Tag_Wire_InGrid,
     TOP_PANEL_HEIGHT
@@ -25,6 +25,7 @@ import {
 import {createInventorySlot, inventory, inventorySlots, updateItem} from "../core/inventory";
 import {createBorder} from "../entities/border";
 import {createGameText} from "../entities/gameText";
+import {playEnterTransition} from "../core/transition";
 
 async function loadAssets() {
     await Promise.all([
@@ -52,19 +53,15 @@ function resetContainers() {
     inventorySlots.length = 0;
 }
 
-function setupLayers(): void {
-    k.setLayers([LAYER_BACKGROUND, LAYER_GAME, LAYER_UI], LAYER_GAME);
-}
-
 export default function createGameScene() {
     let gridOffsetX = 0;
     let gridOffsetY = 0;
     let wireVisualSize = CELL_SIZE;
     return async () => {
+        playEnterTransition();
         audio.playBgm("bgm-gameplay");
 
         resetContainers();
-        setupLayers();
 
         await loadAssets();
         // Load Level data

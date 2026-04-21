@@ -1,7 +1,8 @@
-import {GameObj, KAPLAYCtx, Vec2} from 'kaplay';
+import {GameObj, Vec2} from 'kaplay';
 import {panel} from "../components/panel";
-import {k, NAME_Game} from "../constants";
+import {k, LAYER_GAME, LAYER_UI, NAME_Game} from "../constants";
 import {audio} from "../core/audio";
+import {playEnterTransition, transitionTo} from "../core/transition";
 
 function createButton(parent: GameObj, text: string, pos: Vec2, onClick: () => void) {
     const btn = parent.add([
@@ -47,6 +48,8 @@ function createButton(parent: GameObj, text: string, pos: Vec2, onClick: () => v
 export default function createMainMenuScene() {
     const LAYOUT_PANEL_WIDTH = 480;
     return () => {
+        playEnterTransition();
+
         audio.playBgm("bgm-menu");
 
         const layoutPanel = k.add([
@@ -73,7 +76,7 @@ export default function createMainMenuScene() {
             k.outline(4),
             k.anchor("center"),
             k.pos(k.center()),
-            k.layer("ui"),
+            k.layer(LAYER_UI),
         ]);
         levelSelectionMenu.hidden = true;
         levelSelectionMenu.paused = true;
@@ -90,7 +93,7 @@ export default function createMainMenuScene() {
         ]);
 
         const buttons: [string, () => void][] = [
-            ["Start", () => k.go(NAME_Game)],
+            ["Start", () => transitionTo(NAME_Game)],
             ["Close", toggleLevelSelection],
         ];
         buttons.map(([text, onClick], index) => {
