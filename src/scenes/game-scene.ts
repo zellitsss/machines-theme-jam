@@ -39,16 +39,7 @@ async function loadAssets() {
             sliceX: 6,
             sliceY: 3,
             filter: "linear"
-        }),
-        k.loadSprite("background", "sprites/Background.png", {
-            slice9: {
-                top: 232,
-                bottom: 232,
-                left: 217,
-                right: 380,
-                tileMode: "none"
-            }
-        }),
+        })
     ]);
 }
 
@@ -226,7 +217,7 @@ export default function createGameScene() {
         const levelLabel = createGameText(
             k.vec2(MAIN_PANEL_PADDING, 36),
             level.name,
-            48,
+            36,
             "topleft",
             "left",
             [],
@@ -234,7 +225,7 @@ export default function createGameScene() {
         const currentModifierLabel = createGameText(
             k.vec2(leftPanel.panelWidth + MAIN_PANEL_PADDING, 36),
             "Current",
-            36,
+            24,
             "topleft",
             "left",
             [],
@@ -242,7 +233,7 @@ export default function createGameScene() {
         const currentModifierValue = createGameText(
             k.vec2(leftPanel.panelWidth + MAIN_PANEL_PADDING, 36 * 2),
             "0",
-            36,
+            24,
             "topleft",
             "left",
             [TAG_CURRENT_MODIFIER_TEXT],
@@ -252,7 +243,7 @@ export default function createGameScene() {
         const targetModifierLabel = createGameText(
             k.vec2(k.width() - rightPanel.panelWidth - MAIN_PANEL_PADDING, 36),
             "Target",
-            36,
+            24,
             "topright",
             "right",
             [],
@@ -260,7 +251,7 @@ export default function createGameScene() {
         const targetModifierValue = createGameText(
             k.vec2(k.width() - rightPanel.panelWidth - MAIN_PANEL_PADDING, 36 * 2), 
             level.targetModifier != null ? level.targetModifier.toString() : "0",
-            36, 
+            24, 
             "topright", 
             "right", 
             [TAG_TARGET_MODIFIER_TEXT], 

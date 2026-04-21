@@ -1,14 +1,13 @@
 import {GameObj, KAPLAYCtx, Vec2} from 'kaplay';
 import {panel} from "../components/panel";
-import {k, NAME_Game} from "../constants";
+import {COLOR_Active, k, LAYER_BACKGROUND, NAME_Game} from "../constants";
 import {audio} from "../core/audio";
 
 function createButton(parent: GameObj, text: string, pos: Vec2, onClick: () => void) {
     const btn = parent.add([
-        k.rect(240, 60, {radius: 4}),
+        k.rect(240, 60, {fill: false}),
         k.pos(pos),
-        k.color(40, 40, 45),
-        k.outline(3, k.rgb(80, 80, 90)),
+        k.outline(4, k.Color.fromHex(COLOR_Active)),
         k.area(),
         k.anchor("center"),
         k.scale(1),
@@ -17,20 +16,18 @@ function createButton(parent: GameObj, text: string, pos: Vec2, onClick: () => v
 
     // Add the label
     const label = btn.add([
-        k.text(text, {size: 24, font: "monospace"}),
+        k.text(text, {size: 24, font: "Audiowide"}),
         k.anchor("center"),
-        k.color(200, 200, 210)
+        k.color(k.Color.fromHex(COLOR_Active)),
     ]);
 
     // --- HOVER LOGIC ---
     btn.onHoverUpdate(() => {
-        btn.color = k.rgb(60, 60, 70);
         btn.scale = k.vec2(1.05);
         k.setCursor("pointer");
     });
 
     btn.onHoverEnd(() => {
-        btn.color = k.rgb(40, 40, 45);
         btn.scale = k.vec2(1);
         k.setCursor("default");
     });
@@ -49,6 +46,16 @@ export default function createMainMenuScene() {
     return () => {
         audio.playBgm("bgm-menu");
 
+        k.add([
+            k.pos(),
+            k.anchor("topleft"),
+            k.layer(LAYER_BACKGROUND),
+            k.sprite("background", {
+                width: k.width(),
+                height: k.height(),
+            })
+        ]);
+        
         const layoutPanel = k.add([
             k.pos(k.center()),
             k.anchor("center"),
