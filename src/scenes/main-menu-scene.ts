@@ -8,7 +8,7 @@ import {
     LAYER_BACKGROUND,
     LAYER_UI,
     LEVEL_SELECTION_CLOSE_SIZE, LEVEL_SELECTION_ITEM_COLS, LEVEL_SELECTION_PADDING,
-    NAME_Game
+    NAME_Game, TAG_Setting
 } from "../constants";
 import {audio} from "../core/audio";
 import {playEnterTransition, transitionTo} from "../core/transition";
@@ -152,7 +152,7 @@ export default function createMainMenuScene() {
             }
         );
 
-        levelList.levels.map((level, index) => {
+        levelList.levels.map((levelName, index) => {
             const row = Math.floor(index / LEVEL_SELECTION_ITEM_COLS);
             let _ = createButton(
                 levelSelectionMenu,
@@ -163,7 +163,12 @@ export default function createMainMenuScene() {
                 k.vec2(LEVEL_SELECTION_CLOSE_SIZE, LEVEL_SELECTION_CLOSE_SIZE),
                 LAYER_UI,
                 () => isShowingLevelSelection,
-                () => console.log(level));
+                () => {
+                    k.get(TAG_Setting).forEach((setting) => {
+                        setting.levelName = levelName;
+                    });
+                    transitionTo(NAME_Game);
+                });
         });
     }
 }

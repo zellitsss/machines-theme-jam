@@ -26,7 +26,7 @@ import {
     EVENT_WireStartDragging, FOOTER_HEIGHT, INVENTORY_BORDER_HEIGHT, INVENTORY_CELL_SIZE, INVENTORY_TITLE_TEXT,
     k, LAYER_BACKGROUND,
     LAYER_UI, LEFT_PANEL_RATIO, MAIN_PANEL_PADDING, RIGHT_PANEL_RATIO, TAG_CURRENT_MODIFIER_TEXT, Tag_InventoryItem,
-    Tag_InventoryPanel, Tag_Placeholder, TAG_TARGET_MODIFIER_TEXT, Tag_Wire, Tag_Wire_InGrid,
+    Tag_InventoryPanel, Tag_Placeholder, TAG_Setting, TAG_TARGET_MODIFIER_TEXT, Tag_Wire, Tag_Wire_InGrid,
     TOP_PANEL_HEIGHT
 } from "../constants";
 import {createInventorySlot, inventory, inventorySlots, updateItem} from "../core/inventory";
@@ -62,11 +62,16 @@ export default function createGameScene() {
         resetContainers();
 
         await loadAssets();
+        
         // Load Level data
-        const levelData = await k.loadJSON("levelData", "data/level-02.json");
-        const level = levelData as LevelData;
+        const settingObjs = k.get(TAG_Setting);
+        let levelName = "level-01";
+        if (settingObjs.length > 0) {
+            levelName = settingObjs[0].levelName;
+        }
+        const levelData = await k.loadJSON("levelData", `data/${levelName}.json`) as LevelData;
 
-        level.inventory.forEach((itemData) => {
+        levelData.inventory.forEach((itemData) => {
             inventory.set(getInventoryItemKey(itemData.type, itemData.modifier), itemData);
         });
 
@@ -124,8 +129,8 @@ export default function createGameScene() {
 
         const levelLabel = createGameText(
             k.vec2(MAIN_PANEL_PADDING, 36),
-            level.name,
-            36,
+            levelData.name,
+            32,
             "topleft",
             "left",
             [],
@@ -147,7 +152,6 @@ export default function createGameScene() {
             [TAG_CURRENT_MODIFIER_TEXT],
             topPanel);
         
-        console.log(currentModifierValue);
         const targetModifierLabel = createGameText(
             k.vec2(k.width() - rightPanel.panelWidth - MAIN_PANEL_PADDING, 36),
             "Target",
@@ -158,7 +162,7 @@ export default function createGameScene() {
             topPanel);
         const targetModifierValue = createGameText(
             k.vec2(k.width() - rightPanel.panelWidth - MAIN_PANEL_PADDING, 36 * 2), 
-            level.targetModifier != null ? level.targetModifier.toString() : "0",
+            levelData.targetModifier != null ? levelData.targetModifier.toString() : "0",
             24, 
             "topright", 
             "right", 
@@ -168,16 +172,16 @@ export default function createGameScene() {
         wireVisualSize = calculateWireVisualSize(
             centerPanel.panelWidth - MAIN_PANEL_PADDING * 2,
             centerPanel.panelHeight - MAIN_PANEL_PADDING * 2,
-            level.cols,
-            level.rows);
+            levelData.cols,
+            levelData.rows);
 
         //Create grid
-        gridOffsetX = centerPanel.pos.x + ((centerPanel.panelWidth - MAIN_PANEL_PADDING * 2) - level.cols * wireVisualSize) / 2 + MAIN_PANEL_PADDING;
-        gridOffsetY = centerPanel.pos.y + ((centerPanel.panelHeight - MAIN_PANEL_PADDING * 2) - level.rows * wireVisualSize) / 2 + MAIN_PANEL_PADDING;
+        gridOffsetX = centerPanel.pos.x + ((centerPanel.panelWidth - MAIN_PANEL_PADDING * 2) - levelData.cols * wireVisualSize) / 2 + MAIN_PANEL_PADDING;
+        gridOffsetY = centerPanel.pos.y + ((centerPanel.panelHeight - MAIN_PANEL_PADDING * 2) - levelData.rows * wireVisualSize) / 2 + MAIN_PANEL_PADDING;
 
         // Create default grid constraints
-        for (let c = 0; c < level.cols; c++) {
-            for (let r = 0; r < level.rows; r++) {
+        for (let c = 0; c < levelData.cols; c++) {
+            for (let r = 0; r < levelData.rows; r++) {
                 gridConstraints.set(getPosKey(k.vec2(c, r)), {
                     canRotate: true,
                     canPlace: true,
@@ -200,7 +204,7 @@ export default function createGameScene() {
         let startWire: GameObj<WireState>;
         let endWire: GameObj<WireState>;
 
-        level.cells.forEach((cellData) => {
+        levelData.cells.forEach((cellData) => {
             let config = gridConstraints.get(getPosKey(k.vec2(cellData.x, cellData.y)));
             if (config) {
                 config.canRotate = cellData.canRotate ?? true;
@@ -247,7 +251,7 @@ export default function createGameScene() {
         function checkWinCondition() {
             const modifier = checkWireLineValid();
             currentModifierValue.text = Math.max(0, modifier).toString();
-            console.log(modifier, modifier == (level.targetModifier ?? 0) ? "Win" : "Unfinished");
+            console.log(modifier, modifier == (levelData.targetModifier ?? 0) ? "Win" : "Unfinished");
         }
 
         await playEnterTransition();
