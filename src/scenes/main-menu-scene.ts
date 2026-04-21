@@ -1,7 +1,8 @@
 import {GameObj, KAPLAYCtx, Vec2} from 'kaplay';
 import {panel} from "../components/panel";
-import {COLOR_Active, k, LAYER_BACKGROUND, NAME_Game} from "../constants";
+import {COLOR_Active, k, LAYER_BACKGROUND, LAYER_GAME, LAYER_UI, NAME_Game} from "../constants";
 import {audio} from "../core/audio";
+import {playEnterTransition, transitionTo} from "../core/transition";
 
 function createButton(parent: GameObj, text: string, pos: Vec2, onClick: () => void) {
     const btn = parent.add([
@@ -23,11 +24,13 @@ function createButton(parent: GameObj, text: string, pos: Vec2, onClick: () => v
 
     // --- HOVER LOGIC ---
     btn.onHoverUpdate(() => {
+        btn.color = k.rgb(60, 60, 70);
         btn.scale = k.vec2(1.05);
         k.setCursor("pointer");
     });
 
     btn.onHoverEnd(() => {
+        btn.color = k.rgb(40, 40, 45);
         btn.scale = k.vec2(1);
         k.setCursor("default");
     });
@@ -44,6 +47,8 @@ function createButton(parent: GameObj, text: string, pos: Vec2, onClick: () => v
 export default function createMainMenuScene() {
     const LAYOUT_PANEL_WIDTH = 480;
     return () => {
+        playEnterTransition();
+
         audio.playBgm("bgm-menu");
 
         k.add([
@@ -80,7 +85,7 @@ export default function createMainMenuScene() {
             k.outline(4),
             k.anchor("center"),
             k.pos(k.center()),
-            k.layer("ui"),
+            k.layer(LAYER_UI),
         ]);
         levelSelectionMenu.hidden = true;
         levelSelectionMenu.paused = true;
@@ -97,7 +102,7 @@ export default function createMainMenuScene() {
         ]);
 
         const buttons: [string, () => void][] = [
-            ["Start", () => k.go(NAME_Game)],
+            ["Start", () => transitionTo(NAME_Game)],
             ["Close", toggleLevelSelection],
         ];
         buttons.map(([text, onClick], index) => {

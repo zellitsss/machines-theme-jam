@@ -14,17 +14,17 @@ import {createGhostWire, createPlaceholderWire, createWire} from "../entities/wi
 import {
     activeTweenByCell,
     animateWireRotation,
-    handleRotatingWire, isInPanels,
+    handleRotatingWire,
     checkWireLineValid,
     needWireBg
 } from "../core/gameplay";
 import {WireState} from "../components/wireState";
 import {calculateCellPos, canPlaceAt, gridConstraints, isValidCell, worldToGrid} from "../core/grid";
 import {
-    CELL_SIZE, CENTER_PANEL_RATIO, COLOR_Active, EVENT_WireClicked, EVENT_WireDraggingUpdate,
+    CELL_SIZE, CENTER_PANEL_RATIO, EVENT_WireClicked, EVENT_WireDraggingUpdate,
     EVENT_WireEndDragging,
     EVENT_WireStartDragging, FOOTER_HEIGHT, INVENTORY_BORDER_HEIGHT, INVENTORY_CELL_SIZE, INVENTORY_TITLE_TEXT,
-    k, LAYER_BACKGROUND, LAYER_GAME,
+    k, LAYER_BACKGROUND,
     LAYER_UI, LEFT_PANEL_RATIO, MAIN_PANEL_PADDING, RIGHT_PANEL_RATIO, TAG_CURRENT_MODIFIER_TEXT, Tag_InventoryItem,
     Tag_InventoryPanel, Tag_Placeholder, TAG_TARGET_MODIFIER_TEXT, Tag_Wire, Tag_Wire_InGrid,
     TOP_PANEL_HEIGHT
@@ -32,6 +32,7 @@ import {
 import {createInventorySlot, inventory, inventorySlots, updateItem} from "../core/inventory";
 import {createBorder} from "../entities/border";
 import {createGameText} from "../entities/gameText";
+import {playEnterTransition} from "../core/transition";
 
 async function loadAssets() {
     await Promise.all([
@@ -50,113 +51,20 @@ function resetContainers() {
     inventorySlots.length = 0;
 }
 
-function setupLayers(): void {
-    k.setLayers([LAYER_BACKGROUND, LAYER_GAME, LAYER_UI], LAYER_GAME);
-}
-
 export default function createGameScene() {
     let gridOffsetX = 0;
     let gridOffsetY = 0;
     let wireVisualSize = CELL_SIZE;
     return async () => {
+        playEnterTransition();
         audio.playBgm("bgm-gameplay");
 
         resetContainers();
-        setupLayers();
 
         await loadAssets();
         // Load Level data
         const levelData = await k.loadJSON("levelData", "data/level-02.json");
         const level = levelData as LevelData;
-
-        /********** EVENTS **********/
-        k.on("rotationStepUpdated", Tag_Wire, (wire: GameObj<WireState | RotateComp>) => {
-            animateWireRotation(wire, () => {
-                checkWinCondition()
-            });
-        });
-
-        k.on(EVENT_WireClicked, Tag_Wire, (wire: GameObj<WireState>) => {
-            handleRotatingWire(wire);
-        });
-
-        let ghostWire: GameObj | null = null;
-        k.on(EVENT_WireStartDragging, Tag_Wire, (wire: GameObj<WireState>) => {
-            if (!canDrag(wire)) {
-                return;
-            }
-            wire.hidden = !wire.is(Tag_InventoryItem);
-            ghostWire = createGhostWire(wire);
-            audio.playSfx("sfx-pickup");
-        });
-
-        k.on(EVENT_WireEndDragging, Tag_Wire, (wire: GameObj<WireState | PosComp>) => {
-            ghostWire?.destroy();
-
-            if (!canDrag(wire)) {
-                return;
-            }
-
-            const dropPos = k.mousePos();
-            const gridPos = worldToGrid(dropPos.x, dropPos.y, wireVisualSize, gridOffsetX, gridOffsetY);
-            if (canPlaceAt(gridPos, wire.wireData.modifier)) {
-                // Place in the empty cell
-                const isFromInventory = wire.is(Tag_InventoryItem);
-                if (isFromInventory) {
-                    const wireData = wire.wireData;
-                    const constraint = gridConstraints.get(getPosKey(gridPos));
-                    if (constraint && (constraint.placeholder ?? false)) {
-                        wireData.rot = constraint.rot ?? 0;
-                    }
-                    const newWire = createWire(
-                        calculateCellPos(gridPos, wireVisualSize, gridOffsetX, gridOffsetY),
-                        wireVisualSize,
-                        wireData,
-                        true,
-                        [
-                            getPosKey(gridPos),
-                            Tag_Wire_InGrid
-                        ]
-                    ) as GameObj<WireState>;
-                    newWire.wireData.x = gridPos.x;
-                    newWire.wireData.y = gridPos.y;                    
-                    updateItem(wire.wireData.type, wire.wireData.modifier, -1);
-                } else {
-                    wire.hidden = false;
-                    wire.pos = calculateCellPos(gridPos, wireVisualSize, gridOffsetX, gridOffsetY);
-                    wire.untag(getPosKey(k.vec2(wire.wireData.x, wire.wireData.y)));
-                    wire.wireData.x = gridPos.x;
-                    wire.wireData.y = gridPos.y;
-                    wire.tag(getPosKey(gridPos));
-                }
-            } else {
-                // The cell is occupied
-                // Check the wire is from grid or inventory
-                if (isValidCell(k.vec2(wire.wireData.x, wire.wireData.y))) {
-                    // The wire is from grid
-                    if (!isValidCell(worldToGrid(dropPos.x, dropPos.y, wireVisualSize, gridOffsetX, gridOffsetY))) {
-                        // Move to inventory
-                        wire.destroy();
-                        updateItem(wire.wireData.type, wire.wireData.modifier, 1);
-                    } else {
-                        // Return to the original cell
-                        wire.hidden = false;
-                        wire.pos = calculateCellPos(k.vec2(wire.wireData.x, wire.wireData.y), wireVisualSize, gridOffsetX, gridOffsetY);
-                    }
-                }
-            }
-
-            audio.playSfx("sfx-place");
-
-            checkWinCondition();
-        });
-
-        k.on(EVENT_WireDraggingUpdate, Tag_Wire, (wire: GameObj<WireState | PosComp>) => {
-            if (ghostWire) {
-                ghostWire.pos = k.mousePos();
-            }
-        });
-        /********** EVENTS **********/
 
         level.inventory.forEach((itemData) => {
             inventory.set(getInventoryItemKey(itemData.type, itemData.modifier), itemData);
@@ -341,5 +249,96 @@ export default function createGameScene() {
             currentModifierValue.text = Math.max(0, modifier).toString();
             console.log(modifier, modifier == (level.targetModifier ?? 0) ? "Win" : "Unfinished");
         }
+
+        await playEnterTransition();
+
+        /********** EVENTS **********/
+        k.on("rotationStepUpdated", Tag_Wire, (wire: GameObj<WireState | RotateComp>) => {
+            animateWireRotation(wire, () => {
+                checkWinCondition()
+            });
+        });
+
+        k.on(EVENT_WireClicked, Tag_Wire, (wire: GameObj<WireState>) => {
+            handleRotatingWire(wire);
+        });
+
+        let ghostWire: GameObj | null = null;
+        k.on(EVENT_WireStartDragging, Tag_Wire, (wire: GameObj<WireState>) => {
+            if (!canDrag(wire)) {
+                return;
+            }
+            wire.hidden = !wire.is(Tag_InventoryItem);
+            ghostWire = createGhostWire(wire);
+            audio.playSfx("sfx-pickup");
+        });
+
+        k.on(EVENT_WireEndDragging, Tag_Wire, (wire: GameObj<WireState | PosComp>) => {
+            ghostWire?.destroy();
+
+            if (!canDrag(wire)) {
+                return;
+            }
+
+            const dropPos = k.mousePos();
+            const gridPos = worldToGrid(dropPos.x, dropPos.y, wireVisualSize, gridOffsetX, gridOffsetY);
+            if (canPlaceAt(gridPos, wire.wireData.modifier)) {
+                // Place in the empty cell
+                const isFromInventory = wire.is(Tag_InventoryItem);
+                if (isFromInventory) {
+                    const wireData = wire.wireData;
+                    const constraint = gridConstraints.get(getPosKey(gridPos));
+                    if (constraint && (constraint.placeholder ?? false)) {
+                        wireData.rot = constraint.rot ?? 0;
+                    }
+                    const newWire = createWire(
+                        calculateCellPos(gridPos, wireVisualSize, gridOffsetX, gridOffsetY),
+                        wireVisualSize,
+                        wireData,
+                        true,
+                        [
+                            getPosKey(gridPos),
+                            Tag_Wire_InGrid
+                        ]
+                    ) as GameObj<WireState>;
+                    newWire.wireData.x = gridPos.x;
+                    newWire.wireData.y = gridPos.y;                    
+                    updateItem(wire.wireData.type, wire.wireData.modifier, -1);
+                } else {
+                    wire.hidden = false;
+                    wire.pos = calculateCellPos(gridPos, wireVisualSize, gridOffsetX, gridOffsetY);
+                    wire.untag(getPosKey(k.vec2(wire.wireData.x, wire.wireData.y)));
+                    wire.wireData.x = gridPos.x;
+                    wire.wireData.y = gridPos.y;
+                    wire.tag(getPosKey(gridPos));
+                }
+            } else {
+                // The cell is occupied
+                // Check the wire is from grid or inventory
+                if (isValidCell(k.vec2(wire.wireData.x, wire.wireData.y))) {
+                    // The wire is from grid
+                    if (!isValidCell(worldToGrid(dropPos.x, dropPos.y, wireVisualSize, gridOffsetX, gridOffsetY))) {
+                        // Move to inventory
+                        wire.destroy();
+                        updateItem(wire.wireData.type, wire.wireData.modifier, 1);
+                    } else {
+                        // Return to the original cell
+                        wire.hidden = false;
+                        wire.pos = calculateCellPos(k.vec2(wire.wireData.x, wire.wireData.y), wireVisualSize, gridOffsetX, gridOffsetY);
+                    }
+                }
+            }
+
+            audio.playSfx("sfx-place");
+
+            checkWinCondition();
+        });
+
+        k.on(EVENT_WireDraggingUpdate, Tag_Wire, (wire: GameObj<WireState | PosComp>) => {
+            if (ghostWire) {
+                ghostWire.pos = k.mousePos();
+            }
+        });
+        /********** EVENTS **********/
     };
 }

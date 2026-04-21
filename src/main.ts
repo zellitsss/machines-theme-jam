@@ -1,6 +1,10 @@
 import createGameScene from './scenes/game-scene';
 import createMainMenuScene from './scenes/main-menu-scene';
 import {
+    LAYER_BACKGROUND,
+    LAYER_GAME,
+    LAYER_TRANSITION,
+    LAYER_UI,
     NAME_Game, NAME_MainMenu,
     Tag_WireType_Blocked, Tag_WireType_End, Tag_WireType_I,
     Tag_WireType_I_1W, Tag_WireType_L, Tag_WireType_L_1W1, Tag_WireType_L_1W2, Tag_WireType_Modifier_Minus,
@@ -129,6 +133,8 @@ function registerSounds() {
 }
 
 k.loadRoot("./"); // A good idea for Itch.io publishing later
+
+await k.loadSprite("hexagon", "sprites/hexagon.png");
 k.loadSprite("background", "sprites/Background.png", {
     slice9: {
         top: 232,
@@ -146,6 +152,8 @@ registerSounds();
 await audio.loadAll();
 
 audio.setMuted("bgm", true);
+
+    k.setLayers([LAYER_BACKGROUND, LAYER_GAME, LAYER_UI, LAYER_TRANSITION], LAYER_GAME);
 
 k.scene(NAME_MainMenu, createMainMenuScene());
 k.scene(NAME_Game, createGameScene());
