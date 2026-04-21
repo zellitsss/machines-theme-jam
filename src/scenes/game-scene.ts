@@ -334,6 +334,7 @@ export default function createGameScene() {
                 );
             }
         });
+        checkWireLineValid();
 
         // Inventory
         Array.from(inventory.values()).forEach((item, index) => {
