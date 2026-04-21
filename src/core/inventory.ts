@@ -3,14 +3,13 @@ import {GameObj, TextComp} from "kaplay";
 import {
     COLOR_Active,
     INVENTORY_CELL_SIZE,
-    INVENTORY_ITEM_COUNT, INVENTORY_TITLE_HEIGHT, INVENTORY_TITLE_PADDING, ITEM_SLOT_PADDING,
-    k, MAIN_PANEL_PADDING,
+    INVENTORY_ITEM_COUNT, INVENTORY_TITLE_HEIGHT, INVENTORY_TITLE_PADDING, k, MAIN_PANEL_PADDING,
     Tag_InventoryItem,
     Tag_InventoryLabel,
     Tag_InventoryPanel
 } from "../constants";
 import {createWire} from "../entities/wire";
-import {fromItemToWireData} from "../utils";
+import {fromItemToWireData, getInventoryItemKey} from "../utils";
 import {PanelComp} from "../components/panel";
 import {wireDictionary} from "../wire-dictionary";
 
@@ -21,10 +20,12 @@ export const createInventorySlot = (size: number, itemData: ItemData, panels: Ga
     if (panels.length == 0) {
         return null;
     }
+    const itemKey = getInventoryItemKey(itemData.type, itemData.modifier);
     const comps: any[] = [
         k.anchor("center"),
         "inventory_slot",
-        itemData.type
+        itemData.type,
+        itemKey,
     ];
     let itemSlot: GameObj | null = null;
     panels.forEach((panel: GameObj<PanelComp>) => {
@@ -46,17 +47,18 @@ export const createInventorySlot = (size: number, itemData: ItemData, panels: Ga
         k.pos(size / 2 + 16, 0),
         k.color(COLOR_Active),
         Tag_InventoryLabel,
-        itemData.type
+        itemData.type,
+        itemKey,
     ]);
     inventorySlots.push(itemSlot);
     return itemSlot;
 }
 
-export const updateItem = (inType: string, amount: number) => {
-    const item = inventory.get(inType);
+export const updateItem = (inType: string, modifier: number, amount: number) => {
+    const item = inventory.get(getInventoryItemKey(inType, modifier));
     if (item) {
         item.count = Math.max(item.count + amount, 0);
-        updateItemCountLabel(inType);
+        updateItemCountLabel(inType, modifier);
     } else {
         if (amount > 0) {
             inventory.set(inType, {type: inType, count: amount});
@@ -75,11 +77,12 @@ export const updateItem = (inType: string, amount: number) => {
     }
 }
 
-export const updateItemCountLabel = (type: string) => {
+export const updateItemCountLabel = (type: string, modifier: number) => {
+    const itemKey = getInventoryItemKey(type, modifier);
     inventorySlots.forEach((slot) => {
         slot.children.forEach((child) => {
-            if (child.is([type, Tag_InventoryLabel])) {
-                (child as GameObj<TextComp>).text = inventory.get(type)?.count.toString() ?? "0";
+            if (child.is([type, itemKey, Tag_InventoryLabel])) {
+                (child as GameObj<TextComp>).text = inventory.get(itemKey)?.count.toString() ?? "0";
             }
         });
     })

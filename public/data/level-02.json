@@ -98,6 +98,11 @@
             "type": "wire-modifier-plus",
             "count": 1,
             "modifier": 1
+        },
+        {
+            "type": "wire-modifier-plus",
+            "count": 1,
+            "modifier": 2
         }
     ]
 }
