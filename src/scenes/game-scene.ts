@@ -14,7 +14,7 @@ import {
 import {WireState} from "../components/wireState";
 import {calculateCellPos, canPlaceAt, gridConstraints, isValidCell, worldToGrid} from "../core/grid";
 import {
-    CELL_SIZE, CENTER_PANEL_RATIO,
+    CELL_SIZE, CENTER_PANEL_RATIO, COLOR_Active,
     EVENT_WireClicked, EVENT_WireDraggingUpdate,
     EVENT_WireEndDragging,
     EVENT_WireStartDragging, FOOTER_HEIGHT, INVENTORY_CELL_SIZE,
@@ -99,22 +99,22 @@ export default function createGameScene() {
 
             const dropPos = k.mousePos();
             const gridPos = worldToGrid(dropPos.x, dropPos.y, wireVisualSize, gridOffsetX, gridOffsetY);
-            if (canPlaceAt(...gridPos, wire.wireData.modifier)) {
+            if (canPlaceAt(gridPos, wire.wireData.modifier)) {
                 // Place in the empty cell
                 const isFromInventory = wire.is("inventory_item");
                 if (isFromInventory) {
                     const wireData = wire.wireData;
-                    const constraint = gridConstraints.get(getPosKey(gridPos[0], gridPos[1]));
+                    const constraint = gridConstraints.get(getPosKey(gridPos));
                     if (constraint && (constraint.placeholder ?? false)) {
                         wireData.rot = constraint.rot ?? 0;
                     }
                     const newWire = createWire(
-                        ...calculateCellPos(gridPos[0], gridPos[1], wireVisualSize, gridOffsetX, gridOffsetY),
+                        calculateCellPos(gridPos, wireVisualSize, gridOffsetX, gridOffsetY),
                         wireVisualSize,
                         wireData,
                         true,
                         [
-                            getPosKey(gridPos[0], gridPos[1]),
+                            getPosKey(gridPos),
                             "in_grid"
                         ]
                     ) as GameObj<WireState>;
@@ -123,16 +123,16 @@ export default function createGameScene() {
                     updateItem(wire.wireData.type, -1);
                 } else {
                     wire.hidden = false;
-                    wire.pos = k.vec2(...calculateCellPos(gridPos[0], gridPos[1], wireVisualSize, gridOffsetX, gridOffsetY));
-                    wire.untag(getPosKey(wire.wireData.x, wire.wireData.y));
-                    wire.wireData.x = gridPos[0];
-                    wire.wireData.y = gridPos[1];
-                    wire.tag(getPosKey(wire.wireData.x, wire.wireData.y));
+                    wire.pos = calculateCellPos(gridPos, wireVisualSize, gridOffsetX, gridOffsetY);
+                    wire.untag(getPosKey(k.vec2(wire.wireData.x, wire.wireData.y)));
+                    wire.wireData.x = gridPos.x;
+                    wire.wireData.y = gridPos.y;
+                    wire.tag(getPosKey(gridPos));
                 }
             } else {
                 // The cell is occupied
                 // Check the wire is from grid or inventory
-                if (isValidCell(wire.wireData.x, wire.wireData.y)) {
+                if (isValidCell(k.vec2(wire.wireData.x, wire.wireData.y))) {
                     // The wire is from grid
                     if (isInPanels(k.get("inventory_panel"), dropPos)) {
                         // Move to inventory
@@ -141,7 +141,7 @@ export default function createGameScene() {
                     } else {
                         // Return to the original cell
                         wire.hidden = false;
-                        wire.pos = k.vec2(...calculateCellPos(wire.wireData.x, wire.wireData.y, wireVisualSize, gridOffsetX, gridOffsetY));
+                        wire.pos = calculateCellPos(k.vec2(wire.wireData.x, wire.wireData.y), wireVisualSize, gridOffsetX, gridOffsetY);
                     }
                 }
             }
@@ -212,7 +212,7 @@ export default function createGameScene() {
         // Create default grid constraints
         for (let c = 0; c < level.cols; c++) {
             for (let r = 0; r < level.rows; r++) {
-                gridConstraints.set(getPosKey(c, r), {
+                gridConstraints.set(getPosKey(k.vec2(c, r)), {
                     canRotate: true,
                     canPlace: true,
                 });
@@ -226,7 +226,7 @@ export default function createGameScene() {
                         frame: 13
                     }),
                     k.color(199, 199, 199),
-                    `grid_dot_${getPosKey(c, r)}`,
+                    `grid_dot_${getPosKey(k.vec2(c, r))}`,
                 ])
             }
         }
@@ -235,7 +235,7 @@ export default function createGameScene() {
         let endWire: GameObj<WireState>;
 
         level.cells.forEach((cellData) => {
-            let config = gridConstraints.get(getPosKey(cellData.x, cellData.y));
+            let config = gridConstraints.get(getPosKey(k.vec2(cellData.x, cellData.y)));
             if (config) {
                 config.canRotate = cellData.canRotate ?? true;
                 config.canPlace = cellData.canPlace ?? true;
@@ -245,25 +245,23 @@ export default function createGameScene() {
                 config.placeholder = cellData.placeholder ?? false;
             }
 
-            const cellPos = calculateCellPos(cellData.x, cellData.y, wireVisualSize, gridOffsetX, gridOffsetY);
+            const cellPos = calculateCellPos(k.vec2(cellData.x, cellData.y), wireVisualSize, gridOffsetX, gridOffsetY);
 
             if (config.placeholder) {
                 createPlaceholderWire(
-                    cellPos[0],
-                    cellPos[1],
+                    cellPos,
                     wireVisualSize,
                     fromCellToWireData(cellData),
-                    ["placeholder", getPosKey(cellData.x, cellData.y)],
+                    ["placeholder", getPosKey(k.vec2(cellData.x, cellData.y))],
                 );
             } else {
                 const wire = createWire(
-                    cellPos[0],
-                    cellPos[1],
+                    cellPos,
                     wireVisualSize,
                     fromCellToWireData(cellData),
                     needWireBg(cellData),
                     [
-                        getPosKey(cellData.x, cellData.y),
+                        getPosKey(k.vec2(cellData.x, cellData.y)),
                         "in_grid"
                     ]
                 );

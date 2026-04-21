@@ -1,4 +1,4 @@
-import {GameObj} from "kaplay";
+import {GameObj, Vec2} from "kaplay";
 import {getPosKey} from "../utils";
 import {CellConstraint, GridConstraints, TRAVEL_OFFSET} from "../types";
 import {WireState} from "../components/wireState";
@@ -6,22 +6,22 @@ import {k} from "../constants";
 
 export const gridConstraints: GridConstraints = new Map<string, CellConstraint>();
 
-export const canRotateAt = (x: number, y: number): boolean => {
-return gridConstraints.get(getPosKey(x, y))?.canRotate ?? false;
+export const canRotateAt = (gridPos: Vec2): boolean => {
+return gridConstraints.get(getPosKey(gridPos))?.canRotate ?? false;
 }
 
-export const isValidCell = (x: number, y: number): boolean => {
-    return gridConstraints.has(getPosKey(x, y));
+export const isValidCell = (gridPos: Vec2): boolean => {
+    return gridConstraints.has(getPosKey(gridPos));
 }
 
-export const canPlaceAt = (x: number, y: number, modifier: number): boolean => {
+export const canPlaceAt = (gridPos: Vec2, modifier: number): boolean => {
     const existed = k.query({
-        include: ["wire", getPosKey(x, y)],
+        include: ["wire", getPosKey(gridPos)],
         includeOp: "and"
     });
-    const constraint = gridConstraints.get(getPosKey(x, y));
+    const constraint = gridConstraints.get(getPosKey(gridPos));
     const constraintMatched = (constraint?.modifier ?? 0) === modifier && (constraint?.canPlace ?? false);
-    return constraintMatched && existed.length == 0 && isValidCell(x, y);
+    return constraintMatched && existed.length == 0 && isValidCell(gridPos);
 }
 
 export const getNextConnectedCell = (wires: GameObj<WireState>[], currentWire: GameObj<WireState>, side: number): GameObj<WireState> => {
@@ -31,16 +31,16 @@ export const getNextConnectedCell = (wires: GameObj<WireState>[], currentWire: G
     return wires.find((w) => w.wireData.x == nextX && w.wireData.y == nextY);
 }
 
-export const worldToGrid = (worldX: number, worldY: number, size: number, offsetX = 0, offsetY = 0): [number, number] => {
-    return [
+export const worldToGrid = (worldX: number, worldY: number, size: number, offsetX = 0, offsetY = 0): Vec2 => {
+    return k.vec2(
         Math.floor((worldX - offsetX) / size),
         Math.floor((worldY - offsetY) / size)
-    ];
+    );
 }
 
-export const calculateCellPos = (x: number, y: number, size: number, offsetX = 0, offsetY = 0): [number, number] => {
-    return [
-        offsetX + (x + 0.5) * size,
-        offsetY + (y + 0.5) * size
-    ];
+export const calculateCellPos = (gridPos: Vec2, size: number, offsetX = 0, offsetY = 0): Vec2 => {
+    return k.vec2(
+        offsetX + (gridPos.x + 0.5) * size,
+        offsetY + (gridPos.y + 0.5) * size
+    );
 }

@@ -1,8 +1,9 @@
 ﻿import {CellConnections, CellData, ConnectionType, ItemData, WireData} from "./types";
-import {GameObj} from "kaplay";
+import {GameObj, Vec2} from "kaplay";
 import {WireState} from "./components/wireState";
 import {gridConstraints} from "./core/grid";
 import {inventory} from "./core/inventory";
+import {k} from "./constants";
 
 export function canConnect(type: ConnectionType): boolean {
     return type > ConnectionType.None;
@@ -17,7 +18,7 @@ export function canIn(type: ConnectionType): boolean {
 }
 
 export const canDrag = (wire: GameObj<WireState>): boolean => {
-    const constraint = gridConstraints.get(getPosKey(wire.wireData.x, wire.wireData.y));
+    const constraint = gridConstraints.get(getPosKey(k.vec2(wire.wireData.x, wire.wireData.y)));
     const isDraggableGridCell = constraint && constraint.canPlace;
     const isDraggableInventoryItem = wire.is("inventory_item") && inventory.get(wire.wireData.type)?.count > 0;
     return isDraggableGridCell || isDraggableInventoryItem;
@@ -43,8 +44,8 @@ export function calculateWireVisualSize(width: number, height: number, cols: num
     return Math.min(cellWidth, cellHeight);
 }
 
-export function getPosKey(x: number, y: number): string {
-    return `${x},${y}`;
+export function getPosKey(gridPos: Vec2): string {
+    return `${gridPos.x},${gridPos.y}`;
 }
 
 export function getRotationFromStep(step: number): number {
@@ -72,5 +73,5 @@ export const fromItemToWireData = (itemData: ItemData): WireData => {
 }
 
 export const isFromGrid = (wire: GameObj<WireState>): boolean => {
-    return gridConstraints.has(getPosKey(wire.wireData.x, wire.wireData.y));
+    return gridConstraints.has(getPosKey(k.vec2(wire.wireData.x, wire.wireData.y)));
 }

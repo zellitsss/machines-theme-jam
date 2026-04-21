@@ -31,7 +31,7 @@ export const createInventorySlot = (size: number, itemData: ItemData, panels: Ga
         // TODO: handle full inventory
         return null;
     }
-    createWire(0, 0, size, fromItemToWireData(itemData), true, ["inventory_item"], itemSlot);
+    createWire(k.vec2(), size, fromItemToWireData(itemData), true, ["inventory_item"], itemSlot);
     const countLabel = itemSlot.add([
         k.text(itemData.count.toString(), {size: 24, font: "monospace"}),
         k.anchor("center"),

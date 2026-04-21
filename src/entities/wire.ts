@@ -4,7 +4,7 @@ import {getPosKey, getRotationFromStep} from "../utils";
 import {WireState, wireState} from "../components/wireState";
 import {wireInteraction} from "../components/wireInteraction";
 import {COLOR_Active, COLOR_Negative, COLOR_Positive, k} from "../constants";
-import {AreaComp, GameObj, PosComp, Rect, RotateComp} from "kaplay";
+import {AreaComp, GameObj, PosComp, Rect, RotateComp, Vec2} from "kaplay";
 import {fixedRotation} from "../components/fixedRotation";
 import {gridConstraints} from "../core/grid";
 import {getWireColor} from "../core/gameplay";
@@ -39,10 +39,10 @@ export const createWireBg = (size: number) => {
     ];
 }
 
-export const createWire = (posX: number, posY: number, size: number, wireData: WireData, needBg: boolean, tags: string[] = [], parent: GameObj | null = null) => {
+export const createWire = (pos: Vec2, size: number, wireData: WireData, needBg: boolean, tags: string[] = [], parent: GameObj | null = null) => {
     const wireDef = wireDictionary.get(wireData.type);
     const comps = [
-        k.pos(posX, posY),
+        k.pos(pos),
         k.anchor("center"),
         k.rotate(getRotationFromStep(wireData.rot)),
         k.area({
@@ -75,10 +75,10 @@ export const createWire = (posX: number, posY: number, size: number, wireData: W
     return wire;
 }
 
-export const createPlaceholderWire = (posX: number, posY: number, size: number, wireData: WireData, tags: string[], parent: GameObj | null = null) => {
+export const createPlaceholderWire = (pos: Vec2, size: number, wireData: WireData, tags: string[], parent: GameObj | null = null) => {
     const wireDef = wireDictionary.get(wireData.type);
     const comps = [
-        k.pos(posX, posY),
+        k.pos(pos),
         k.rotate(),
         k.anchor("center"),
         k.area({
@@ -113,8 +113,7 @@ export const createPlaceholderWire = (posX: number, posY: number, size: number, 
 export const createGhostWire = (original: GameObj) => {
     const wire = original as GameObj<WireState | PosComp | AreaComp>;
     return createWire(
-        wire.pos.x,
-        wire.pos.y,
+        wire.pos,
         (wire.area.shape as Rect).width,
         wire.wireData,
         true,

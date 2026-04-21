@@ -58,7 +58,7 @@ export const checkWireLineValid = (): number => {
     while (current) {
         setWiresColor(current, getWireColor(current.wireData.type, true));
         currentModifier += current.wireData.modifier ?? 0;
-        const posKey = getPosKey(current.wireData.x, current.wireData.y);
+        const posKey = getPosKey(k.vec2(current.wireData.x, current.wireData.y));
         if (visited.has(posKey)) {
             return -1;
         }
@@ -92,7 +92,7 @@ export const checkWireLineValid = (): number => {
 }
 
 export const handleRotatingWire = (wire: GameObj<WireState>) => {
-    if (canRotateAt(wire.wireData.x, wire.wireData.y)) {
+    if (canRotateAt(k.vec2(wire.wireData.x, wire.wireData.y))) {
         wire.rotateCW();
     }
 }
@@ -117,7 +117,7 @@ export const animateWireRotation = (wire: GameObj<WireState>, onRotationComplete
             obj.tween(scaleSmall, scaleNormal, half, (v) => obj.scaleTo(v), k.easings.easeOutQuad)
         );
 
-    const posKey = getPosKey(obj.wireData.x, obj.wireData.y);
+    const posKey = getPosKey(k.vec2(wire.wireData.x, wire.wireData.y));
     activeTweenByCell.set(posKey, tween);
     tween.onEnd(() => {
         activeTweenByCell.delete(posKey);
