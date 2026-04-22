@@ -1,16 +1,14 @@
-import { GameObj, KAPLAYCtx, KEventController, MouseButton, Vec2 } from "kaplay";
-import { Cell } from "../cell";
-import { PipeDictionary } from "../pipe-dictionary";
-import { CELL_SIZE } from "../constants";
+import { GameObj, KEventController, MouseButton, Vec2 } from "kaplay";
+import { wireDictionary } from "../wire-dictionary";
+import {CELL_SIZE, k} from "../constants";
 
 export type DragPayload = {
-    pipeType: string;
+    wireType: string;
     source: "inventory" | "grid";
-    fromCell?: Cell;
+    fromCell?: any;
 };
 
 export type DragOpts = {
-    k: KAPLAYCtx;
     layer: string; // Layer name for the drag ghost (e.g. ui).
     getPayload: () => DragPayload | null;
     onDrop: (worldPos: Vec2, payload: DragPayload) => void;
@@ -21,7 +19,6 @@ export type DragOpts = {
 const DEFAULT_THRESHOLD = 4;
 
 export function drag(opts: DragOpts) {
-    const k = opts.k;
     const threshold = opts.dragThreshold ?? DEFAULT_THRESHOLD;
 
     let ghost: GameObj | null = null;
@@ -48,10 +45,11 @@ export function drag(opts: DragOpts) {
     }
 
     function beginDrag(p: DragPayload) {
-        const def = PipeDictionary.get(p.pipeType);
+        const def = wireDictionary.get(p.wireType);
         if (!def) return;
         payload = p;
         const mouse = k.mousePos();
+        const angle = p.source === "grid" && p.fromCell?.obj ? p.fromCell.obj.angle : 0;
         ghost = k.add([
             k.layer(opts.layer),
             k.pos(mouse),
@@ -60,6 +58,7 @@ export function drag(opts: DragOpts) {
                 width: CELL_SIZE - 4,
                 height: CELL_SIZE - 4,
             }),
+            k.rotate(angle),
         ]);
         offset = mouse.sub(ghost.pos);
         if (p.source === "grid" && p.fromCell?.obj) {

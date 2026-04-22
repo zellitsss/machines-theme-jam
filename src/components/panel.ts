@@ -1,8 +1,8 @@
-﻿import {Comp, Vec2} from "kaplay";
+﻿import {Comp} from "kaplay";
 
 export interface PanelComp extends Comp {
-    width: number;
-    height: number;
+    panelWidth: number;
+    panelHeight: number;
 }
 
 export function panel(width: number, height: number): PanelComp {
@@ -10,7 +10,7 @@ export function panel(width: number, height: number): PanelComp {
     return {
         id: "panel",
         require: ["pos", "anchor"],
-        width,
-        height
+        panelWidth: width,
+        panelHeight: height,
     };
 }
