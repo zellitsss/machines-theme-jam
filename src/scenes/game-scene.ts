@@ -20,7 +20,8 @@ import {
 import {WireState} from "../components/wireState";
 import {calculateCellPos, canPlaceAt, gridConstraints, isValidCell, worldToGrid} from "../core/grid";
 import {
-    CELL_SIZE, CENTER_PANEL_RATIO, COLOR_Active, COLOR_Neutral, EVENT_WireClicked, EVENT_WireDraggingUpdate,
+    CELL_SIZE, CENTER_PANEL_RATIO, COLOR_Active,
+    COLOR_Background, COLOR_Neutral, EVENT_WireClicked, EVENT_WireDraggingUpdate,
     EVENT_WireEndDragging,
     EVENT_WireStartDragging, FOOTER_HEIGHT,
     gameState, INVENTORY_BORDER_HEIGHT, INVENTORY_CELL_SIZE, INVENTORY_TITLE_TEXT,
@@ -134,6 +135,26 @@ export default function createGameScene() {
             "left",
             [],
             topPanel);
+        const BackButtonWidth = 100;
+        const BackButtonHeight = 36;
+        const backButton = topPanel.add([
+            k.anchor("center"),
+            k.pos(k.width() - MAIN_PANEL_PADDING - BackButtonWidth / 2, MAIN_PANEL_PADDING + BackButtonHeight / 2),
+            k.rect(BackButtonWidth, BackButtonHeight),
+            k.outline(2, k.Color.fromHex(COLOR_Active)),
+            k.area(),
+            k.color(COLOR_Background)
+        ]);
+        backButton.onClick(() => {
+            audio.playSfx("sfx-button-click");
+            transitionTo(NAME_MainMenu);
+        });
+        backButton.add([
+            k.text("Back", {font: "ZenDots", size: 24}),
+            k.anchor("center"),
+            k.pos(0, 0),
+            k.color(COLOR_Active)
+        ])
         const currentModifierLabel = createGameText(
             k.vec2(leftPanel.panelWidth + MAIN_PANEL_PADDING, 36),
             "Current",
@@ -167,7 +188,7 @@ export default function createGameScene() {
             "right",
             [TAG_TARGET_MODIFIER_TEXT],
             topPanel);
-
+        
         wireVisualSize = calculateWireVisualSize(
             centerPanel.panelWidth - MAIN_PANEL_PADDING * 2,
             centerPanel.panelHeight - MAIN_PANEL_PADDING * 2,
