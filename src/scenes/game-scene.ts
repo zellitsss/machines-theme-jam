@@ -141,7 +141,7 @@ export default function createGameScene() {
             k.anchor("center"),
             k.pos(k.width() - MAIN_PANEL_PADDING - BackButtonWidth / 2, MAIN_PANEL_PADDING + BackButtonHeight / 2),
             k.rect(BackButtonWidth, BackButtonHeight),
-            k.outline(2, k.Color.fromHex(COLOR_Active)),
+            k.outline(4, k.Color.fromHex(COLOR_Active)),
             k.area(),
             k.color(COLOR_Background)
         ]);
@@ -378,10 +378,10 @@ export default function createGameScene() {
         function showWinPopup() {
             const popup = k.add([
                 k.rect(360, 360, {radius: 4}),
-                k.outline(8, k.Color.fromHex(COLOR_Active)),
+                k.outline(4, k.Color.fromHex(COLOR_Active)),
                 k.pos(k.width() / 2, k.height() / 2),
                 k.anchor("center"),
-                k.color(COLOR_Neutral),
+                k.color(COLOR_Background),
                 k.layer(LAYER_UI),
             ]);
             popup.add([
