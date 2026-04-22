@@ -251,6 +251,9 @@ export default function createGameScene() {
         function checkWinCondition() {
             const modifier = checkWireLineValid();
             currentModifierValue.text = Math.max(0, modifier).toString();
+            if (modifier == (levelData.targetModifier ?? 0)) {
+                audio.playSfx("sfx-win");
+            }
             console.log(modifier, modifier == (levelData.targetModifier ?? 0) ? "Win" : "Unfinished");
         }
 
