@@ -1,10 +1,8 @@
-import {GameObj, Vec2} from 'kaplay';
 import {panel} from "../components/panel";
 import {
     CENTER_PANEL_RATIO,
     COLOR_Active,
-    COLOR_Background, COLOR_Neutral,
-    k,
+    COLOR_Background, k,
     LAYER_BACKGROUND,
     LAYER_UI,
     LEVEL_SELECTION_CLOSE_SIZE, LEVEL_SELECTION_ITEM_COLS, LEVEL_SELECTION_PADDING,
@@ -13,54 +11,10 @@ import {
 import {audio} from "../core/audio";
 import {playEnterTransition, transitionTo} from "../core/transition";
 import {LevelList} from "../types.ts";
-
-function createButton(parent: GameObj, text: string, pos: Vec2, size: Vec2, layer: string, shouldActive: () => boolean, onClick: () => void) {
-    const btn = parent.add([
-        k.rect(size.x, size.y, {fill: false}),
-        k.pos(pos),
-        k.outline(4, k.Color.fromHex(COLOR_Active)),
-        k.area(),
-        k.anchor("center"),
-        k.scale(1),
-        k.layer(layer),
-        "button"
-    ]);
-
-    // Add the label
-    const label = btn.add([
-        k.text(text, {size: 24, font: "Audiowide"}),
-        k.anchor("center"),
-        k.color(k.Color.fromHex(COLOR_Active)),
-    ]);
-
-    // --- HOVER LOGIC ---
-    btn.onHoverUpdate(() => {
-        if (!shouldActive()) return;
-        btn.scale = k.vec2(1.05);
-        k.setCursor("pointer");
-    });
-
-    btn.onHoverEnd(() => {
-        btn.scale = k.vec2(1);
-        k.setCursor("default");
-    });
-
-    // --- CLICK LOGIC ---
-    btn.onClick(() => {
-        if (!shouldActive()) return;
-        if (k.time() - lastClickedTime < clickDelay && lastClickedTime > 0) return;
-        lastClickedTime = k.time();
-        onClick();
-        audio.playSfx("sfx-button-click");
-    });
-
-    return btn;
-}
+import {createButton} from "../entities/button.ts";
 
 let isShowingLevelSelection = false;
-// The `topMostOnlyActivated` is not working
-const clickDelay = .2;
-let lastClickedTime = 0;
+
 export default function createMainMenuScene() {
     return async () => {
         const levelList = await k.loadJSON("levelList", "data/levelList.json") as LevelList;
