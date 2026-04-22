@@ -59,7 +59,7 @@ export default function createGameScene() {
     let gridOffsetY = 0;
     let wireVisualSize = CELL_SIZE;
     return async () => {
-        playEnterTransition();
+        let _ = playEnterTransition();
         audio.playBgm("bgm-gameplay");
         gameState.won = false;
 
@@ -285,7 +285,6 @@ export default function createGameScene() {
                 await new Promise((resolve) => setTimeout(resolve, 1000));
                 showWinPopup();
             }
-            console.log(modifier, modifier == (levelData.targetModifier ?? 0) ? "Win" : "Unfinished");
         }
 
         await playEnterTransition();
