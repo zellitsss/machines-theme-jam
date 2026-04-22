@@ -355,6 +355,7 @@ export default function createGameScene() {
         function showWinPopup() {
             const popup = k.add([
                 k.rect(360, 360, {radius: 4}),
+                k.outline(8, k.Color.fromHex(COLOR_Active)),
                 k.pos(k.width() / 2, k.height() / 2),
                 k.anchor("center"),
                 k.color(COLOR_Neutral),
@@ -370,7 +371,7 @@ export default function createGameScene() {
                 popup,
                 "Next Level",
                 k.vec2(0, 0),
-                k.vec2(180, 40),
+                k.vec2(200, 40),
                 LAYER_UI,
                 () => true,
                 () => {
@@ -382,7 +383,7 @@ export default function createGameScene() {
                 popup,
                 "Back to Menu",
                 k.vec2(0, 60),
-                k.vec2(180, 40),
+                k.vec2(200, 40),
                 LAYER_UI,
                 () => true,
                 () => {
