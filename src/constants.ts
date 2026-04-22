@@ -98,8 +98,8 @@ export const k = kaplay({
     debugKey: "`",
     topMostOnlyActivated: true,
     canvas: document.getElementById("game-canvas") as HTMLCanvasElement,
-    texFilter: "nearest",
-    fontFilter: "nearest",
+    texFilter: "linear",
+    fontFilter: "linear",
     pixelDensity: Math.min(devicePixelRatio, 2),
     background: "efebe4",
     global: false
