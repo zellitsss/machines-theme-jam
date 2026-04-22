@@ -2,7 +2,7 @@ import {panel} from "../components/panel";
 import {
     CENTER_PANEL_RATIO,
     COLOR_Active,
-    COLOR_Background, COLOR_Negative, gameState, k,
+    COLOR_Background, COLOR_Inactive, COLOR_Negative, COLOR_Positive, gameState, k,
     LAYER_BACKGROUND,
     LAYER_UI,
     LEVEL_SELECTION_CLOSE_SIZE, LEVEL_SELECTION_ITEM_COLS, LEVEL_SELECTION_PADDING,
@@ -36,20 +36,71 @@ export default function createMainMenuScene() {
         ]);
 
         const titleOffset = 56;
+        const titlePos = k.vec2(k.width() / 2 + titleOffset, 240);
         const title = k.add([
-            k.pos(k.width() / 2 + titleOffset, 240),
+            k.pos(titlePos),
             k.anchor("center"),
+            k.scale()
         ]);
-        title.add([
+        const amperText = title.add([
             k.text("AMPER", {font: "Audiowide", size: 72, align: "right"}),
-            k.color(COLOR_Negative),
-            k.anchor("right")
+            k.color(COLOR_Inactive),
+            k.anchor("right"),
+            k.opacity(1)
         ]);
-        title.add([
+        const sumText = title.add([
             k.text("SUM", {font: "Audiowide", size: 72, align: "left"}),
-            k.color(COLOR_Active),
-            k.anchor("left")       
+            k.color(COLOR_Inactive),
+            k.anchor("left"),
+            k.opacity(1)
         ]);
+        
+        const colorPositive = k.Color.fromHex(COLOR_Positive);
+        const colorNegative = k.Color.fromHex(COLOR_Negative);
+        const colorInactive = k.Color.fromHex(COLOR_Inactive);
+        const colorActive = k.Color.fromHex(COLOR_Active);
+
+        const runCycle = () => {
+            // 1. NEUTRAL STATE (Wait 1.5s)
+            k.wait(1.5, () => {
+
+                // 2. BOOT-UP FLICKER (Rapid flash for 0.5s)
+                const flash = k.loop(0.05, () => {
+                    const isRed = Math.random() > 0.5;
+                    amperText.color = isRed ? colorNegative : colorInactive;
+                    sumText.color = isRed ? colorInactive : colorPositive;
+                    title.pos = titlePos.add(k.rand(-3, 3), k.rand(-3, 3));
+                });
+
+                k.wait(0.5, () => {
+                    flash.cancel();
+                    amperText.color = colorActive;
+                    sumText.color = colorActive;
+                    title.pos = titlePos;
+                    title.scale = k.vec2(1.1); // Small "pop" when power stabilizes
+                    k.tween(title.scale, k.vec2(1), 0.2, (p) => title.scale = p);
+
+                    k.wait(3, () => {
+                        const shutDown = k.loop(0.05, () => {
+                            amperText.opacity = Math.random() > 0.5 ? 1 : 0.2;
+                            sumText.opacity = Math.random() > 0.5 ? 1 : 0.2;
+                        });
+
+                        k.wait(0.4, () => {
+                            shutDown.cancel();
+                            amperText.color = colorInactive;
+                            sumText.color = colorInactive;
+                            amperText.opacity = 1;
+                            sumText.opacity = 1;
+
+                            runCycle();
+                        });
+                    });
+                });
+            });
+        };
+
+        runCycle();
 
         const layoutPanel = k.add([
             k.pos(k.center()),
