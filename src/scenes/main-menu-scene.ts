@@ -2,7 +2,7 @@ import {panel} from "../components/panel";
 import {
     CENTER_PANEL_RATIO,
     COLOR_Active,
-    COLOR_Background, gameState, k,
+    COLOR_Background, COLOR_Negative, gameState, k,
     LAYER_BACKGROUND,
     LAYER_UI,
     LEVEL_SELECTION_CLOSE_SIZE, LEVEL_SELECTION_ITEM_COLS, LEVEL_SELECTION_PADDING,
@@ -34,7 +34,23 @@ export default function createMainMenuScene() {
             }),
             k.layer(LAYER_BACKGROUND)
         ]);
-        
+
+        const titleOffset = 56;
+        const title = k.add([
+            k.pos(k.width() / 2 + titleOffset, 240),
+            k.anchor("center"),
+        ]);
+        title.add([
+            k.text("AMPER", {font: "Audiowide", size: 72, align: "right"}),
+            k.color(COLOR_Negative),
+            k.anchor("right")
+        ]);
+        title.add([
+            k.text("SUM", {font: "Audiowide", size: 72, align: "left"}),
+            k.color(COLOR_Active),
+            k.anchor("left")       
+        ]);
+
         const layoutPanel = k.add([
             k.pos(k.center()),
             k.anchor("center"),
@@ -69,7 +85,7 @@ export default function createMainMenuScene() {
         const popupWidth = LEVEL_SELECTION_CLOSE_SIZE * LEVEL_SELECTION_ITEM_COLS + LEVEL_SELECTION_PADDING * (LEVEL_SELECTION_ITEM_COLS + 1);
         const popupHeight = 72 + LEVEL_SELECTION_CLOSE_SIZE * itemRows + LEVEL_SELECTION_PADDING * (itemRows + 1);
         let levelSelectionMenu: GameObj | null = null;
-        
+
         function createLevelSelectionMenu() {
             if (levelSelectionMenu) {
                 levelSelectionMenu.destroy();
@@ -121,7 +137,7 @@ export default function createMainMenuScene() {
                     });
             });
         }
-        
+
         function toggleLevelSelection() {
             if (levelSelectionMenu != null) {
                 levelSelectionMenu.destroy();
@@ -131,6 +147,6 @@ export default function createMainMenuScene() {
             }
         }
 
-        
+
     }
 }
