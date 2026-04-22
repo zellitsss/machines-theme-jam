@@ -170,6 +170,7 @@ export default function createMainMenuScene() {
                 }
             );
 
+            let levelSelected = false;
             levelList.levels.map((levelName, index) => {
                 const row = Math.floor(index / LEVEL_SELECTION_ITEM_COLS);
                 let _ = createButton(
@@ -180,8 +181,9 @@ export default function createMainMenuScene() {
                         72 + LEVEL_SELECTION_CLOSE_SIZE / 2 + LEVEL_SELECTION_PADDING + row * (LEVEL_SELECTION_CLOSE_SIZE + LEVEL_SELECTION_PADDING)),
                     k.vec2(LEVEL_SELECTION_CLOSE_SIZE, LEVEL_SELECTION_CLOSE_SIZE),
                     LAYER_UI,
-                    () => true,
+                    () => !levelSelected,
                     () => {
+                        levelSelected = true;
                         gameState.currentLevel = index;
                         gameState.won = false;
                         transitionTo(NAME_Game);

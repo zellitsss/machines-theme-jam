@@ -373,6 +373,8 @@ export default function createGameScene() {
         /********** EVENTS **********/
 
         /********** Popup **********/
+        // Quick fix the rapid click
+        let nextLevelClicked = false;
         function showWinPopup() {
             const popup = k.add([
                 k.rect(360, 360, {radius: 4}),
@@ -394,8 +396,9 @@ export default function createGameScene() {
                 k.vec2(0, 0),
                 k.vec2(200, 40),
                 LAYER_UI,
-                () => true,
+                () => !nextLevelClicked,
                 () => {
+                    nextLevelClicked = true;
                     gameState.currentLevel++;
                     transitionTo(NAME_Game)
                 }
