@@ -85,6 +85,10 @@ export const LEVEL_SELECTION_ITEM_COLS = 10;
 export const HEX_TRANSITION_WIDTH = 221;
 export const HEX_TRANSITION_HEIGHT = 256;
 
+export const gameState = {
+    won: false,
+}
+
 export const k = kaplay({
     width: 1280,
     height: 720,

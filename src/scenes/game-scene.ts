@@ -1,11 +1,10 @@
-import {GameObj, PosComp, RotateComp, TextComp} from "kaplay";
+import {GameObj, PosComp, RotateComp} from "kaplay";
 import {
     calculateWireVisualSize,
     canDrag,
     fromCellToWireData,
     getInventoryItemKey,
-    getPosKey,
-    getRotationFromStep
+    getPosKey
 } from "../utils";
 import {audio} from "../core/audio";
 import {panel} from "../components/panel";
@@ -23,7 +22,8 @@ import {calculateCellPos, canPlaceAt, gridConstraints, isValidCell, worldToGrid}
 import {
     CELL_SIZE, CENTER_PANEL_RATIO, EVENT_WireClicked, EVENT_WireDraggingUpdate,
     EVENT_WireEndDragging,
-    EVENT_WireStartDragging, FOOTER_HEIGHT, INVENTORY_BORDER_HEIGHT, INVENTORY_CELL_SIZE, INVENTORY_TITLE_TEXT,
+    EVENT_WireStartDragging, FOOTER_HEIGHT,
+    gameState, INVENTORY_BORDER_HEIGHT, INVENTORY_CELL_SIZE, INVENTORY_TITLE_TEXT,
     k, LAYER_BACKGROUND,
     LAYER_UI, LEFT_PANEL_RATIO, MAIN_PANEL_PADDING, RIGHT_PANEL_RATIO, TAG_CURRENT_MODIFIER_TEXT, Tag_InventoryItem,
     Tag_InventoryPanel, Tag_Placeholder, TAG_Setting, TAG_TARGET_MODIFIER_TEXT, Tag_Wire, Tag_Wire_InGrid,
@@ -58,6 +58,7 @@ export default function createGameScene() {
     return async () => {
         playEnterTransition();
         audio.playBgm("bgm-gameplay");
+        gameState.won = false;
 
         resetContainers();
 

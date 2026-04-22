@@ -2,7 +2,7 @@ import {panel} from "../components/panel";
 import {
     CENTER_PANEL_RATIO,
     COLOR_Active,
-    COLOR_Background, k,
+    COLOR_Background, gameState, k,
     LAYER_BACKGROUND,
     LAYER_UI,
     LEVEL_SELECTION_CLOSE_SIZE, LEVEL_SELECTION_ITEM_COLS, LEVEL_SELECTION_PADDING,
@@ -121,6 +121,7 @@ export default function createMainMenuScene() {
                     k.get(TAG_Setting).forEach((setting) => {
                         setting.levelName = levelName;
                     });
+                    gameState.won = false;
                     transitionTo(NAME_Game);
                 });
         });
