@@ -1,5 +1,5 @@
 {
-	"name": "machines-theme-jam",
+	"name": "amper-sum",
 	"type": "module",
 	"scripts": {
 		"build": "vite build",
