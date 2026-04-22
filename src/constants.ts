@@ -94,7 +94,8 @@ export const k = kaplay({
     height: 720,
     scale: 1,
     letterbox: true,
-    debug: true,
+    debug: false,
     debugKey: "`",
     topMostOnlyActivated: true,
+    canvas: document.getElementById("game-canvas") as HTMLCanvasElement,
 });

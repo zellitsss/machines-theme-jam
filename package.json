@@ -12,6 +12,7 @@
 	},
 	"devDependencies": {
 		"@types/node": "^25.6.0",
+		"@wvdsh/sdk-js": "^0.0.38",
 		"vite": "^8.0.8"
 	}
 }

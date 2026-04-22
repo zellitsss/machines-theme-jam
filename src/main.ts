@@ -1,3 +1,4 @@
+
 import createGameScene from './scenes/game-scene';
 import createMainMenuScene from './scenes/main-menu-scene';
 import {
@@ -13,9 +14,13 @@ import {
 import {wireDictionary} from "./wire-dictionary";
 import {ConnectionType} from "./types";
 import {audio} from "./core/audio";
-
 import {k} from './constants'
 
+// @ts-ignore
+const WavedashJS = await window.WavedashJS;
+WavedashJS?.init({
+    debug: false,
+});
 function initializeWireDictionary() {
     wireDictionary.add(Tag_WireType_I, {
         sprite: "atlas",
