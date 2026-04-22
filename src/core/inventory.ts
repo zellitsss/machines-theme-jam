@@ -42,7 +42,7 @@ export const createInventorySlot = (size: number, itemData: ItemData, panels: Ga
     }
     createWire(k.vec2(), size, fromItemToWireData(itemData), true, [Tag_InventoryItem], itemSlot);
     const countLabel = itemSlot.add([
-        k.text(itemData.count.toString(), {size: 24, font: "monospace"}),
+        k.text(itemData.count.toString(), {size: 24, font: "Audiowide"}),
         k.anchor("center"),
         k.pos(size / 2 + 16, 0),
         k.color(COLOR_Active),
