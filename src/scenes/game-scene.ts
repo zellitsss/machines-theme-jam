@@ -97,6 +97,7 @@ export default function createGameScene() {
             k.pos(0, topPanel.panelHeight),
             k.anchor("topleft"),
             panel(k.width() * LEFT_PANEL_RATIO, k.height() - TOP_PANEL_HEIGHT),
+            Tag_InventoryPanel
         ]);
         const borderWidth = leftPanel.panelWidth * 0.75;
         const leftBorder = createBorder(
@@ -104,7 +105,7 @@ export default function createGameScene() {
             k.vec2(leftPanel.panelWidth / 2, MAIN_PANEL_PADDING),
             borderWidth,
             INVENTORY_BORDER_HEIGHT,
-            [Tag_InventoryPanel],
+            [],
             leftPanel
         );
         const centerPanel = k.add([
@@ -117,13 +118,14 @@ export default function createGameScene() {
             k.pos(centerPanel.pos.x + centerPanel.panelWidth, topPanel.panelHeight),
             k.anchor("topleft"),
             panel(k.width() * RIGHT_PANEL_RATIO, k.height()),
+            Tag_InventoryPanel
         ]);
         const rightBorder = createBorder(
             INVENTORY_TITLE_TEXT,
             k.vec2(rightPanel.panelWidth / 2, MAIN_PANEL_PADDING),
             borderWidth,
             INVENTORY_BORDER_HEIGHT,
-            [Tag_InventoryPanel],
+            [],
             rightPanel
         );
 

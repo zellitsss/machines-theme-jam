@@ -61,7 +61,7 @@ export const updateItem = (inType: string, modifier: number, amount: number) => 
         updateItemCountLabel(inType, modifier);
     } else {
         if (amount > 0) {
-            inventory.set(inType, {type: inType, count: amount});
+            inventory.set(getInventoryItemKey(inType, modifier), {type: inType, count: amount});
             const itemDef = wireDictionary.get(inType);
             const newSlot = createInventorySlot(
                 INVENTORY_CELL_SIZE,
