@@ -12,6 +12,7 @@ import {audio} from "../core/audio";
 import {playEnterTransition, transitionTo} from "../core/transition";
 import {LevelList} from "../types.ts";
 import {createButton} from "../entities/button.ts";
+import {GameObj} from "kaplay";
 
 let isShowingLevelSelection = false;
 
@@ -46,11 +47,9 @@ export default function createMainMenuScene() {
             k.vec2(),
             k.vec2(240, 60),
             LAYER_UI,
-            () => !isShowingLevelSelection,
+            () => true,
             () => {
-                if (!isShowingLevelSelection) {
-                    toggleLevelSelection();
-                }
+                toggleLevelSelection();
             });
 
         // const creditButton = createButton(
@@ -69,60 +68,69 @@ export default function createMainMenuScene() {
         const itemRows = Math.max(Math.ceil(levelList.levels.length / LEVEL_SELECTION_ITEM_COLS));
         const popupWidth = LEVEL_SELECTION_CLOSE_SIZE * LEVEL_SELECTION_ITEM_COLS + LEVEL_SELECTION_PADDING * (LEVEL_SELECTION_ITEM_COLS + 1);
         const popupHeight = 72 + LEVEL_SELECTION_CLOSE_SIZE * itemRows + LEVEL_SELECTION_PADDING * (itemRows + 1);
-        const levelSelectionMenu = k.add([
-            k.rect(popupWidth, popupHeight, {radius: 4}),
-            k.color(255, 255, 255),
-            k.outline(4),
-            k.anchor("top"),
-            k.pos(k.width() / 2, (k.height() - popupHeight) / 2),
-            k.color(COLOR_Background),
-            k.layer(LAYER_UI)
-        ]);
-        levelSelectionMenu.hidden = true;
-        levelSelectionMenu.paused = true;
-
-        function toggleLevelSelection() {
-            isShowingLevelSelection = !isShowingLevelSelection;
-            levelSelectionMenu.hidden = !isShowingLevelSelection;
-            levelSelectionMenu.paused = !isShowingLevelSelection;
-        }
-
-        const levelSelectionTitle = levelSelectionMenu.add([
-            k.text("Select level", {font: "Audiowide", size: 28}),
-            k.color(COLOR_Active),
-            k.anchor("top"),
-            k.pos(0, 16),
-            k.layer(LAYER_UI),
-        ]);
-
-        createButton(
-            levelSelectionMenu,
-            "X",
-            k.vec2(levelSelectionMenu.width / 2 - LEVEL_SELECTION_CLOSE_SIZE / 2 - LEVEL_SELECTION_PADDING, LEVEL_SELECTION_CLOSE_SIZE / 2 + LEVEL_SELECTION_PADDING),
-            k.vec2(LEVEL_SELECTION_CLOSE_SIZE, LEVEL_SELECTION_CLOSE_SIZE),
-            LAYER_UI,
-            () => isShowingLevelSelection,
-            () => {
-                toggleLevelSelection();
+        let levelSelectionMenu: GameObj | null = null;
+        
+        function createLevelSelectionMenu() {
+            if (levelSelectionMenu) {
+                levelSelectionMenu.destroy();
             }
-        );
+            levelSelectionMenu = k.add([
+                k.rect(popupWidth, popupHeight, {radius: 4}),
+                k.color(255, 255, 255),
+                k.outline(4),
+                k.anchor("top"),
+                k.pos(k.width() / 2, (k.height() - popupHeight) / 2),
+                k.color(COLOR_Background),
+                k.layer(LAYER_UI)
+            ]);
+            const levelSelectionTitle = levelSelectionMenu.add([
+                k.text("Select level", {font: "Audiowide", size: 28}),
+                k.color(COLOR_Active),
+                k.anchor("top"),
+                k.pos(0, 16),
+                k.layer(LAYER_UI),
+            ]);
 
-        levelList.levels.map((levelName, index) => {
-            const row = Math.floor(index / LEVEL_SELECTION_ITEM_COLS);
-            let _ = createButton(
+            createButton(
                 levelSelectionMenu,
-                (index + 1).toString(),
-                k.vec2(
-                    (index + 0.5) * (LEVEL_SELECTION_CLOSE_SIZE) - popupWidth / 2 + LEVEL_SELECTION_PADDING * (index + 1) - row * (LEVEL_SELECTION_CLOSE_SIZE + LEVEL_SELECTION_PADDING) * LEVEL_SELECTION_ITEM_COLS,
-                    72 + LEVEL_SELECTION_CLOSE_SIZE / 2 + LEVEL_SELECTION_PADDING + row * (LEVEL_SELECTION_CLOSE_SIZE + LEVEL_SELECTION_PADDING)),
+                "X",
+                k.vec2(levelSelectionMenu.width / 2 - LEVEL_SELECTION_CLOSE_SIZE / 2 - LEVEL_SELECTION_PADDING, LEVEL_SELECTION_CLOSE_SIZE / 2 + LEVEL_SELECTION_PADDING),
                 k.vec2(LEVEL_SELECTION_CLOSE_SIZE, LEVEL_SELECTION_CLOSE_SIZE),
                 LAYER_UI,
-                () => isShowingLevelSelection,
+                () => true,
                 () => {
-                    gameState.currentLevel = index;
-                    gameState.won = false;
-                    transitionTo(NAME_Game);
-                });
-        });
+                    toggleLevelSelection();
+                }
+            );
+
+            levelList.levels.map((levelName, index) => {
+                const row = Math.floor(index / LEVEL_SELECTION_ITEM_COLS);
+                let _ = createButton(
+                    levelSelectionMenu,
+                    (index + 1).toString(),
+                    k.vec2(
+                        (index + 0.5) * (LEVEL_SELECTION_CLOSE_SIZE) - popupWidth / 2 + LEVEL_SELECTION_PADDING * (index + 1) - row * (LEVEL_SELECTION_CLOSE_SIZE + LEVEL_SELECTION_PADDING) * LEVEL_SELECTION_ITEM_COLS,
+                        72 + LEVEL_SELECTION_CLOSE_SIZE / 2 + LEVEL_SELECTION_PADDING + row * (LEVEL_SELECTION_CLOSE_SIZE + LEVEL_SELECTION_PADDING)),
+                    k.vec2(LEVEL_SELECTION_CLOSE_SIZE, LEVEL_SELECTION_CLOSE_SIZE),
+                    LAYER_UI,
+                    () => true,
+                    () => {
+                        gameState.currentLevel = index;
+                        gameState.won = false;
+                        transitionTo(NAME_Game);
+                    });
+            });
+        }
+        
+        function toggleLevelSelection() {
+            if (levelSelectionMenu != null) {
+                levelSelectionMenu.destroy();
+                levelSelectionMenu = null;
+            } else {
+                createLevelSelectionMenu();
+            }
+        }
+
+        
     }
 }
