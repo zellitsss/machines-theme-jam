@@ -147,8 +147,19 @@ export default function createGameScene() {
             LAYER_UI,
             () => true,
             () => {
-                audio.playSfx("sfx-button-click");
                 transitionTo(NAME_MainMenu);
+            }
+        )
+        
+        createButton(
+            topPanel,
+            "Reset",
+            k.vec2(k.width() - MAIN_PANEL_PADDING - BackButtonWidth * 1.5 - 16, MAIN_PANEL_PADDING + BackButtonHeight / 2),
+            k.vec2(BackButtonWidth, BackButtonHeight),
+            LAYER_UI,
+            () => true,
+            () => {
+                k.go(NAME_Game);
             }
         )
         
