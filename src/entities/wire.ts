@@ -74,7 +74,7 @@ export const createWire = (pos: Vec2, size: number, wireData: WireData, needBg: 
             k.pos(),
             k.rotate(-getRotationFromStep(wireData.rot)),
             k.anchor("center"),
-            k.text(wireData.modifier.toString(), {size: 24, font: "monospace"}),
+            k.text((wireData.modifier??0).toString(), {size: 24, font: "ZenDots"}),
             k.color("white"),
             fixedRotation(),
             Tag_Wire_Modifier_Label,
