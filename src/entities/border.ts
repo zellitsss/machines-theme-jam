@@ -15,7 +15,7 @@ export const createBorder = (title: string, pos: Vec2, width: number, height: nu
     border.add([
         k.pos(k.vec2(0, INVENTORY_TITLE_PADDING)),
         k.anchor("top"),
-        k.text(title, {size: 24}),
+        k.text(title, {size: 24, font: "Audiowide"}),
         k.color(COLOR_Active),
     ]);
     return border;
