@@ -7,17 +7,17 @@ import {
     COLOR_Active,
     COLOR_Negative,
     COLOR_Positive,
-    k,
+    k, Tag_InventoryItem, Tag_InventoryPanel,
     Tag_Wire, Tag_Wire_Bg, Tag_Wire_Ghost,
     Tag_Wire_Modifier_Label, Tag_Wire_Placeholder,
     Tag_Wire_Visual
 } from "../constants";
 import {AreaComp, GameObj, PosComp, Rect, RotateComp, Vec2} from "kaplay";
 import {fixedRotation} from "../components/fixedRotation";
-import {gridConstraints} from "../core/grid";
+import {gridConstraints, isValidCell} from "../core/grid";
 import {getWireColor} from "../core/gameplay";
 
-export const createWireVisual = (type: string, wireDef: WireDefinition, size: number) => {
+export const createWireVisual = (wireData: WireData, wireDef: WireDefinition, size: number, isInInventory: boolean) => {
     return [
         k.pos(),
         k.rotate(0),
@@ -27,7 +27,7 @@ export const createWireVisual = (type: string, wireDef: WireDefinition, size: nu
             height: size,
             frame: wireDef?.frame,
         }),
-        k.color(getWireColor(type, false)),
+        k.color(getWireColor(wireData, isInInventory)),
         k.scale(1),
         k.opacity(1),
         Tag_Wire_Visual,
@@ -68,7 +68,7 @@ export const createWire = (pos: Vec2, size: number, wireData: WireData, needBg: 
     if (needBg) {
         wire.add(createWireBg(size));
     }
-    wire.add(createWireVisual(wireData.type, wireDef, size));
+    wire.add(createWireVisual(wireData, wireDef, size, tags.includes(Tag_InventoryItem)));
     if (wireDef?.modifier != null && wireDef.modifier != 0) {
         wire.add([
             k.pos(),

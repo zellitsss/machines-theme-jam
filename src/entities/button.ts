@@ -1,5 +1,5 @@
 ﻿import {GameObj, Vec2} from "kaplay";
-import {COLOR_Active, k} from "../constants.ts";
+import {COLOR_Active, COLOR_Background, k} from "../constants.ts";
 import {audio} from "../core/audio.ts";
 
 // The `topMostOnlyActivated` is not working
@@ -7,13 +7,14 @@ let clickDelay = .2;
 let lastClickedTime = 0;
 export function createButton(parent: GameObj, text: string, pos: Vec2, size: Vec2, layer: string, shouldActive: () => boolean, onClick: () => void) {
     const btn = parent.add([
-        k.rect(size.x, size.y, {fill: false}),
+        k.rect(size.x, size.y),
         k.pos(pos),
         k.outline(4, k.Color.fromHex(COLOR_Active)),
         k.area(),
         k.anchor("center"),
         k.scale(1),
         k.layer(layer),
+        k.color(k.Color.fromHex(COLOR_Background)),
         "button"
     ]);
 
@@ -28,10 +29,14 @@ export function createButton(parent: GameObj, text: string, pos: Vec2, size: Vec
     btn.onHoverUpdate(() => {
         if (!shouldActive()) return;
         btn.scale = k.vec2(1.05);
+        btn.color = k.Color.fromHex(COLOR_Active);
+        label.color = k.Color.fromHex(COLOR_Background);
     });
 
     btn.onHoverEnd(() => {
         btn.scale = k.vec2(1);
+        btn.color = k.Color.fromHex(COLOR_Background);
+        label.color = k.Color.fromHex(COLOR_Active);
     });
 
     // --- CLICK LOGIC ---

@@ -59,7 +59,7 @@ export default function createGameScene() {
     let gridOffsetY = 0;
     let wireVisualSize = CELL_SIZE;
     return async () => {
-        playEnterTransition();
+        let _ = playEnterTransition();
         audio.playBgm("bgm-gameplay");
         gameState.won = false;
 
@@ -139,24 +139,30 @@ export default function createGameScene() {
             topPanel);
         const BackButtonWidth = 100;
         const BackButtonHeight = 36;
-        const backButton = topPanel.add([
-            k.anchor("center"),
-            k.pos(k.width() - MAIN_PANEL_PADDING - BackButtonWidth / 2, MAIN_PANEL_PADDING + BackButtonHeight / 2),
-            k.rect(BackButtonWidth, BackButtonHeight),
-            k.outline(4, k.Color.fromHex(COLOR_Active)),
-            k.area(),
-            k.color(COLOR_Background)
-        ]);
-        backButton.onClick(() => {
-            audio.playSfx("sfx-button-click");
-            transitionTo(NAME_MainMenu);
-        });
-        backButton.add([
-            k.text("Back", {font: "ZenDots", size: 24}),
-            k.anchor("center"),
-            k.pos(0, 0),
-            k.color(COLOR_Active)
-        ])
+        createButton(
+            topPanel,
+            "Back",
+            k.vec2(k.width() - MAIN_PANEL_PADDING - BackButtonWidth / 2, MAIN_PANEL_PADDING + BackButtonHeight / 2),
+            k.vec2(BackButtonWidth, BackButtonHeight),
+            LAYER_UI,
+            () => true,
+            () => {
+                transitionTo(NAME_MainMenu);
+            }
+        )
+        
+        createButton(
+            topPanel,
+            "Reset",
+            k.vec2(k.width() - MAIN_PANEL_PADDING - BackButtonWidth * 1.5 - 16, MAIN_PANEL_PADDING + BackButtonHeight / 2),
+            k.vec2(BackButtonWidth, BackButtonHeight),
+            LAYER_UI,
+            () => true,
+            () => {
+                k.go(NAME_Game);
+            }
+        )
+        
         const currentModifierLabel = createGameText(
             k.vec2(leftPanel.panelWidth + MAIN_PANEL_PADDING, 36),
             "Current",
@@ -279,7 +285,6 @@ export default function createGameScene() {
                 await new Promise((resolve) => setTimeout(resolve, 1000));
                 showWinPopup();
             }
-            console.log(modifier, modifier == (levelData.targetModifier ?? 0) ? "Win" : "Unfinished");
         }
 
         await playEnterTransition();

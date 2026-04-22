@@ -1,112 +1,42 @@
 {
     "name":"LEVEL 001",
-    "cols": 3,
-    "rows": 5,
+    "cols": 5,
+    "rows": 3,
     "cells": [
         {
-            "x": 0,
-            "y": 0,
-            "type": "wire-l",
-            "rot": 3
+            "x": 0, "y": 0, "type": "wire-gate-start", "canRotate": false, "canPlace": false
         },
         {
-            "x": 1,
-            "y": 0,
-            "type": "wire-i",
-            "rot": 1
+            "x": 1, "y": 0, "type": "wire-l", "rot": 0
         },
         {
-            "x": 2,
-            "y": 0,
-            "type": "wire-gate-end",
-            "rot": 2,
-            "canRotate": false,
-            "canPlace": false
+            "x": 2, "y": 0, "type": "wire-blocked", "canRotate": false, "canPlace": false
         },
         {
-            "x": 0,
-            "y": 1,
-            "type": "wire-l",
-            "rot": 2
+            "x": 3, "y": 0, "type": "wire-blocked", "canRotate": false, "canPlace": false
         },
         {
-            "x": 1,
-            "y": 1,
-            "type": "wire-i-1w",
-            "rot": 3
+            "x": 4, "y": 0, "type": "wire-gate-end", "canRotate": false, "canPlace": false, "rot": 1
         },
         {
-            "x": 2,
-            "y": 1,
-            "type": "wire-l"
+            "x": 1, "y": 2, "type": "wire-blocked", "canRotate": false, "canPlace": false
         },
         {
-            "x": 0,
-            "y": 2,
-            "type": "wire-blocked",
-            "rot": 0,
-            "canRotate": false,
-            "canPlace": false
+            "x": 2, "y": 2, "type": "wire-i", "rot": 1
         },
         {
-            "x": 1,
-            "y": 2,
-            "type": "wire-blocked",
-            "rot": 0,
-            "canRotate": false,
-            "canPlace": false
+            "x": 4, "y": 2, "type": "wire-blocked", "canRotate": false, "canPlace": false
         },
         {
-            "x": 2,
-            "y": 2,
-            "type": "wire-i"
+            "x": 1, "y": 1, "type": "wire-l", "rot": 2
         },
         {
-            "x": 0,
-            "y": 3,
-            "type": "wire-l",
-            "rot": 3
-        },
-        {
-            "x": 1,
-            "y": 3,
-            "type": "wire-i",
-            "rot": 1
-        },
-        {
-            "x": 2,
-            "y": 3,
-            "type": "wire-l",
-            "rot": 1
-        },
-        {
-            "x": 0,
-            "y": 4,
-            "type": "wire-gate-start",
-            "rot": 3,
-            "canRotate": false,
-            "canPlace": false
+            "x": 4, "y": 1, "type": "wire-l", "rot": 1
         }
     ],
     "inventory": [
         {
             "type": "wire-i",
-            "count": 1
-        },
-        {
-            "type": "wire-modifier-minus",
-            "count": 1
-        },
-        {
-            "type": "wire-i-1w",
-            "count": 1
-        },
-        {
-            "type": "wire-l-1w1",
-            "count": 1
-        },
-        {
-            "type": "wire-l-1w2",
             "count": 1
         }
     ]

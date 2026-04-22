@@ -1,12 +1,13 @@
 import {AreaComp, Color, ColorComp, GameObj, RotateComp, ScaleComp, TimerComp, TweenController, Vec2} from "kaplay";
 import {canIn, canOut, getOppositeSide, getPosKey, getRotatedConnections} from "../utils";
 import {wireDictionary} from "../wire-dictionary";
-import {canRotateAt, getNextConnectedCell} from "./grid";
+import {canRotateAt, getNextConnectedCell, isValidCell} from "./grid";
 import {WireState} from "../components/wireState";
 import * as Constants from "../constants";
-import {CellData, WireDefinition} from "../types";
+import {CellData, WireData, WireDefinition} from "../types";
 import {
-    COLOR_Active, COLOR_Inactive, k, Tag_Wire, Tag_Wire_InGrid, Tag_Wire_Visual, Tag_WireType_End,
+    COLOR_Active, COLOR_Inactive,
+    COLOR_Neutral, k, Tag_Wire, Tag_Wire_InGrid, Tag_Wire_Visual, Tag_WireType_Blocked, Tag_WireType_End,
     Tag_WireType_Modifier_Minus, Tag_WireType_Modifier_Plus, Tag_WireType_Start
 } from "../constants";
 import {PanelComp} from "../components/panel";
@@ -36,10 +37,10 @@ export const checkWireLineValid = (): number => {
         includeOp: "and"
     }) as GameObj<WireState>[];
     wires.forEach((wire) => {
-        setWiresColor(wire, getWireColor(wire.wireData.type, false));
+        setWiresColor(wire, getWireColor(wire.wireData, false));
     });
     // Reset color
-    
+
     let startWire: GameObj<WireState> | null = null;
     let endWire: GameObj<WireState> | null = null;
     wires.forEach((wire) => {
@@ -59,7 +60,7 @@ export const checkWireLineValid = (): number => {
     let currentModifier = 0;
 
     while (current) {
-        setWiresColor(current, getWireColor(current.wireData.type, true));
+        setWiresColor(current, getWireColor(current.wireData, true));
         currentModifier += current.wireData.modifier ?? 0;
         const posKey = getPosKey(k.vec2(current.wireData.x, current.wireData.y));
         if (visited.has(posKey)) {
@@ -143,18 +144,25 @@ export const isInPanels = (objs: GameObj[], pos: Vec2): boolean => {
     return isIn;
 }
 
-export const getWireColor = (type: string, connected: boolean): number => {
-    if (type === Tag_WireType_Modifier_Minus || type === Tag_WireType_Modifier_Plus)
-    {
+export const getWireColor = (wireData: WireData, connected: boolean): number => {
+    const type = wireData.type;
+    if (type === Tag_WireType_Blocked) {
+        return 0xffffff;
+    }
+    if (!isValidCell(k.vec2(wireData.x, wireData.y))) {
+        return COLOR_Active;
+    }
+    if (type === Tag_WireType_Modifier_Minus
+        || type === Tag_WireType_Modifier_Plus
+    ) {
         return 0xffffff;
     }
     return connected ? COLOR_Active : COLOR_Inactive;
 }
 
-export const setWiresColor =  (wire: GameObj, color: number) => {
+export const setWiresColor = (wire: GameObj, color: number) => {
     wire.children.forEach((child) => {
-        if (child.is(Tag_Wire_Visual))
-        {
+        if (child.is(Tag_Wire_Visual)) {
             (child as GameObj<ColorComp>).color = k.Color.fromHex(color);
         }
     })
