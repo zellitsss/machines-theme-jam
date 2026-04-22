@@ -1,4 +1,9 @@
-import { k, HEX_TRANSITION_WIDTH, LAYER_TRANSITION } from "../constants";
+import {
+    k,
+    HEX_TRANSITION_WIDTH,
+    LAYER_TRANSITION,
+    COLOR_Active,
+} from "../constants";
 
 const STAGGER_S = 0.055;
 const FADE_S = 0.4;
@@ -37,7 +42,7 @@ function createHexGrid(): GridMeta {
                 k.sprite("hexagon"),
                 k.anchor("center"),
                 k.pos(col * hexW + oddRowOffset - hexW / 2, row * rowPitch - rowPitch / 2),
-                k.color(0, 0, 0),
+                k.color(COLOR_Active),
                 k.scale(0),
                 k.fixed(),
                 k.stay(),
