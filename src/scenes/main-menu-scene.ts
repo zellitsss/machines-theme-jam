@@ -2,7 +2,7 @@ import {panel} from "../components/panel";
 import {
     CENTER_PANEL_RATIO,
     COLOR_Active,
-    COLOR_Background, COLOR_Inactive, COLOR_Negative, COLOR_Positive, gameState, k,
+    COLOR_Background, COLOR_Inactive, COLOR_Negative, COLOR_Neutral, COLOR_Positive, gameState, k,
     LAYER_BACKGROUND,
     LAYER_UI,
     LEVEL_SELECTION_CLOSE_SIZE, LEVEL_SELECTION_ITEM_COLS, LEVEL_SELECTION_PADDING,
@@ -143,10 +143,10 @@ export default function createMainMenuScene() {
             }
             levelSelectionMenu = k.add([
                 k.rect(popupWidth, popupHeight, {radius: 4}),
-                k.color(255, 255, 255),
-                k.outline(4),
+                k.color(COLOR_Background),
+                k.outline(4, k.Color.fromHex(COLOR_Active)),
                 k.anchor("top"),
-                k.pos(k.width() / 2, (k.height() - popupHeight) / 2),
+                k.pos(k.width() / 2, (k.height() - popupHeight) / 2 + 36),
                 k.color(COLOR_Background),
                 k.layer(LAYER_UI)
             ]);
