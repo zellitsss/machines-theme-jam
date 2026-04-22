@@ -5,7 +5,7 @@ import {
     LAYER_GAME,
     LAYER_TRANSITION,
     LAYER_UI,
-    NAME_Game, NAME_MainMenu, TAG_Setting,
+    NAME_Game, NAME_MainMenu,
     Tag_WireType_Blocked, Tag_WireType_End, Tag_WireType_I,
     Tag_WireType_I_1W, Tag_WireType_L, Tag_WireType_L_1W1, Tag_WireType_L_1W2, Tag_WireType_Modifier_Minus,
     Tag_WireType_Modifier_Plus, Tag_WireType_Start
@@ -155,14 +155,6 @@ await audio.loadAll();
 audio.setMuted("bgm", true);
 
 k.setLayers([LAYER_BACKGROUND, LAYER_GAME, LAYER_UI, LAYER_TRANSITION], LAYER_GAME);
-
-k.add([
-    k.stay(),
-    {
-        levelName: "level-01"
-    },
-    TAG_Setting
-]);
 
 k.scene(NAME_MainMenu, createMainMenuScene());
 k.scene(NAME_Game, createGameScene());

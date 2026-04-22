@@ -20,19 +20,21 @@ import {
 import {WireState} from "../components/wireState";
 import {calculateCellPos, canPlaceAt, gridConstraints, isValidCell, worldToGrid} from "../core/grid";
 import {
-    CELL_SIZE, CENTER_PANEL_RATIO, EVENT_WireClicked, EVENT_WireDraggingUpdate,
+    CELL_SIZE, CENTER_PANEL_RATIO, COLOR_Active, COLOR_Neutral, EVENT_WireClicked, EVENT_WireDraggingUpdate,
     EVENT_WireEndDragging,
     EVENT_WireStartDragging, FOOTER_HEIGHT,
     gameState, INVENTORY_BORDER_HEIGHT, INVENTORY_CELL_SIZE, INVENTORY_TITLE_TEXT,
     k, LAYER_BACKGROUND,
-    LAYER_UI, LEFT_PANEL_RATIO, MAIN_PANEL_PADDING, RIGHT_PANEL_RATIO, TAG_CURRENT_MODIFIER_TEXT, Tag_InventoryItem,
-    Tag_InventoryPanel, Tag_Placeholder, TAG_Setting, TAG_TARGET_MODIFIER_TEXT, Tag_Wire, Tag_Wire_InGrid,
+    LAYER_UI, LEFT_PANEL_RATIO, MAIN_PANEL_PADDING, NAME_Game,
+    NAME_MainMenu, RIGHT_PANEL_RATIO, TAG_CURRENT_MODIFIER_TEXT, Tag_InventoryItem,
+    Tag_InventoryPanel, Tag_Placeholder, TAG_TARGET_MODIFIER_TEXT, Tag_Wire, Tag_Wire_InGrid,
     TOP_PANEL_HEIGHT
 } from "../constants";
 import {createInventorySlot, inventory, inventorySlots, updateItem} from "../core/inventory";
 import {createBorder} from "../entities/border";
 import {createGameText} from "../entities/gameText";
-import {playEnterTransition} from "../core/transition";
+import {playEnterTransition, transitionTo} from "../core/transition";
+import {createButton} from "../entities/button.ts";
 
 async function loadAssets() {
     await Promise.all([
@@ -63,13 +65,9 @@ export default function createGameScene() {
         resetContainers();
 
         await loadAssets();
-        
+
         // Load Level data
-        const settingObjs = k.get(TAG_Setting);
-        let levelName = "level-01";
-        if (settingObjs.length > 0) {
-            levelName = settingObjs[0].levelName;
-        }
+        const levelName = gameState.levels.at(gameState.currentLevel) ?? "level-01";
         const levelData = await k.loadJSON("levelData", `data/${levelName}.json`) as LevelData;
 
         levelData.inventory.forEach((itemData) => {
@@ -152,7 +150,7 @@ export default function createGameScene() {
             "left",
             [TAG_CURRENT_MODIFIER_TEXT],
             topPanel);
-        
+
         const targetModifierLabel = createGameText(
             k.vec2(k.width() - rightPanel.panelWidth - MAIN_PANEL_PADDING, 36),
             "Target",
@@ -162,12 +160,12 @@ export default function createGameScene() {
             [],
             topPanel);
         const targetModifierValue = createGameText(
-            k.vec2(k.width() - rightPanel.panelWidth - MAIN_PANEL_PADDING, 36 * 2), 
+            k.vec2(k.width() - rightPanel.panelWidth - MAIN_PANEL_PADDING, 36 * 2),
             levelData.targetModifier != null ? levelData.targetModifier.toString() : "0",
-            24, 
-            "topright", 
-            "right", 
-            [TAG_TARGET_MODIFIER_TEXT], 
+            24,
+            "topright",
+            "right",
+            [TAG_TARGET_MODIFIER_TEXT],
             topPanel);
 
         wireVisualSize = calculateWireVisualSize(
@@ -249,11 +247,14 @@ export default function createGameScene() {
             );
         });
 
-        function checkWinCondition() {
+        async function checkWinCondition() {
             const modifier = checkWireLineValid();
             currentModifierValue.text = Math.max(0, modifier).toString();
             if (modifier == (levelData.targetModifier ?? 0)) {
+                gameState.won = true;
                 audio.playSfx("sfx-win");
+                await new Promise((resolve) => setTimeout(resolve, 1000));
+                showWinPopup();
             }
             console.log(modifier, modifier == (levelData.targetModifier ?? 0) ? "Win" : "Unfinished");
         }
@@ -263,7 +264,7 @@ export default function createGameScene() {
         /********** EVENTS **********/
         k.on("rotationStepUpdated", Tag_Wire, (wire: GameObj<WireState | RotateComp>) => {
             animateWireRotation(wire, () => {
-                checkWinCondition()
+                checkWinCondition();
             });
         });
 
@@ -310,7 +311,7 @@ export default function createGameScene() {
                         ]
                     ) as GameObj<WireState>;
                     newWire.wireData.x = gridPos.x;
-                    newWire.wireData.y = gridPos.y;                    
+                    newWire.wireData.y = gridPos.y;
                     updateItem(wire.wireData.type, wire.wireData.modifier, -1);
                 } else {
                     wire.hidden = false;
@@ -347,6 +348,49 @@ export default function createGameScene() {
                 ghostWire.pos = k.mousePos();
             }
         });
+
         /********** EVENTS **********/
+
+        /********** Popup **********/
+        function showWinPopup() {
+            const popup = k.add([
+                k.rect(360, 360, {radius: 4}),
+                k.pos(k.width() / 2, k.height() / 2),
+                k.anchor("center"),
+                k.color(COLOR_Neutral),
+                k.layer(LAYER_UI),
+            ]);
+            popup.add([
+                k.text("Level cleared!", {font: "ZenDots", size: 24}),
+                k.pos(k.vec2(0, -150)),
+                k.anchor("top"),
+                k.color(COLOR_Active)
+            ]);
+            createButton(
+                popup,
+                "Next Level",
+                k.vec2(0, 0),
+                k.vec2(180, 40),
+                LAYER_UI,
+                () => true,
+                () => {
+                    gameState.currentLevel++;
+                    transitionTo(NAME_Game)
+                }
+            );
+            createButton(
+                popup,
+                "Back to Menu",
+                k.vec2(0, 60),
+                k.vec2(180, 40),
+                LAYER_UI,
+                () => true,
+                () => {
+                    transitionTo(NAME_MainMenu)
+                }
+            )
+        }
+
+        /********** Popup **********/
     };
 }

@@ -6,7 +6,7 @@ import {
     LAYER_BACKGROUND,
     LAYER_UI,
     LEVEL_SELECTION_CLOSE_SIZE, LEVEL_SELECTION_ITEM_COLS, LEVEL_SELECTION_PADDING,
-    NAME_Game, TAG_Setting
+    NAME_Game
 } from "../constants";
 import {audio} from "../core/audio";
 import {playEnterTransition, transitionTo} from "../core/transition";
@@ -18,6 +18,7 @@ let isShowingLevelSelection = false;
 export default function createMainMenuScene() {
     return async () => {
         const levelList = await k.loadJSON("levelList", "data/levelList.json") as LevelList;
+        gameState.levels = levelList.levels;
         let _ = playEnterTransition();
 
         audio.playBgm("bgm-menu");
@@ -118,9 +119,7 @@ export default function createMainMenuScene() {
                 LAYER_UI,
                 () => isShowingLevelSelection,
                 () => {
-                    k.get(TAG_Setting).forEach((setting) => {
-                        setting.levelName = levelName;
-                    });
+                    gameState.currentLevel = index;
                     gameState.won = false;
                     transitionTo(NAME_Game);
                 });
