@@ -104,7 +104,7 @@ export const animateWireRotation = (wire: GameObj<WireState>, onRotationComplete
     const obj = wire as GameObj<WireState | RotateComp | TimerComp | ScaleComp>;
 
     const from = obj.angle;
-    const to = obj.wireData.rot * Constants.ROTATION_ANGLE_PER_STEP;
+    const to = from + Constants.ROTATION_ANGLE_PER_STEP;
     // Rotate tween
     const tween = obj.tween(from, to, Constants.ROTATE_TWEEN_SEC, (a) => {
         obj.angle = a;

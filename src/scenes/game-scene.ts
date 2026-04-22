@@ -20,7 +20,8 @@ import {
 import {WireState} from "../components/wireState";
 import {calculateCellPos, canPlaceAt, gridConstraints, isValidCell, worldToGrid} from "../core/grid";
 import {
-    CELL_SIZE, CENTER_PANEL_RATIO, COLOR_Active, COLOR_Neutral, EVENT_WireClicked, EVENT_WireDraggingUpdate,
+    CELL_SIZE, CENTER_PANEL_RATIO, COLOR_Active,
+    COLOR_Background, COLOR_Neutral, EVENT_WireClicked, EVENT_WireDraggingUpdate,
     EVENT_WireEndDragging,
     EVENT_WireStartDragging, FOOTER_HEIGHT,
     gameState, INVENTORY_BORDER_HEIGHT, INVENTORY_CELL_SIZE, INVENTORY_TITLE_TEXT,
@@ -96,6 +97,7 @@ export default function createGameScene() {
             k.pos(0, topPanel.panelHeight),
             k.anchor("topleft"),
             panel(k.width() * LEFT_PANEL_RATIO, k.height() - TOP_PANEL_HEIGHT),
+            Tag_InventoryPanel
         ]);
         const borderWidth = leftPanel.panelWidth * 0.75;
         const leftBorder = createBorder(
@@ -103,7 +105,7 @@ export default function createGameScene() {
             k.vec2(leftPanel.panelWidth / 2, MAIN_PANEL_PADDING),
             borderWidth,
             INVENTORY_BORDER_HEIGHT,
-            [Tag_InventoryPanel],
+            [],
             leftPanel
         );
         const centerPanel = k.add([
@@ -116,13 +118,14 @@ export default function createGameScene() {
             k.pos(centerPanel.pos.x + centerPanel.panelWidth, topPanel.panelHeight),
             k.anchor("topleft"),
             panel(k.width() * RIGHT_PANEL_RATIO, k.height()),
+            Tag_InventoryPanel
         ]);
         const rightBorder = createBorder(
             INVENTORY_TITLE_TEXT,
             k.vec2(rightPanel.panelWidth / 2, MAIN_PANEL_PADDING),
             borderWidth,
             INVENTORY_BORDER_HEIGHT,
-            [Tag_InventoryPanel],
+            [],
             rightPanel
         );
 
@@ -134,6 +137,26 @@ export default function createGameScene() {
             "left",
             [],
             topPanel);
+        const BackButtonWidth = 100;
+        const BackButtonHeight = 36;
+        const backButton = topPanel.add([
+            k.anchor("center"),
+            k.pos(k.width() - MAIN_PANEL_PADDING - BackButtonWidth / 2, MAIN_PANEL_PADDING + BackButtonHeight / 2),
+            k.rect(BackButtonWidth, BackButtonHeight),
+            k.outline(4, k.Color.fromHex(COLOR_Active)),
+            k.area(),
+            k.color(COLOR_Background)
+        ]);
+        backButton.onClick(() => {
+            audio.playSfx("sfx-button-click");
+            transitionTo(NAME_MainMenu);
+        });
+        backButton.add([
+            k.text("Back", {font: "ZenDots", size: 24}),
+            k.anchor("center"),
+            k.pos(0, 0),
+            k.color(COLOR_Active)
+        ])
         const currentModifierLabel = createGameText(
             k.vec2(leftPanel.panelWidth + MAIN_PANEL_PADDING, 36),
             "Current",
@@ -167,7 +190,7 @@ export default function createGameScene() {
             "right",
             [TAG_TARGET_MODIFIER_TEXT],
             topPanel);
-
+        
         wireVisualSize = calculateWireVisualSize(
             centerPanel.panelWidth - MAIN_PANEL_PADDING * 2,
             centerPanel.panelHeight - MAIN_PANEL_PADDING * 2,
@@ -352,13 +375,15 @@ export default function createGameScene() {
         /********** EVENTS **********/
 
         /********** Popup **********/
+        // Quick fix the rapid click
+        let nextLevelClicked = false;
         function showWinPopup() {
             const popup = k.add([
                 k.rect(360, 360, {radius: 4}),
-                k.outline(8, k.Color.fromHex(COLOR_Active)),
+                k.outline(4, k.Color.fromHex(COLOR_Active)),
                 k.pos(k.width() / 2, k.height() / 2),
                 k.anchor("center"),
-                k.color(COLOR_Neutral),
+                k.color(COLOR_Background),
                 k.layer(LAYER_UI),
             ]);
             popup.add([
@@ -373,8 +398,9 @@ export default function createGameScene() {
                 k.vec2(0, 0),
                 k.vec2(200, 40),
                 LAYER_UI,
-                () => true,
+                () => !nextLevelClicked,
                 () => {
+                    nextLevelClicked = true;
                     gameState.currentLevel++;
                     transitionTo(NAME_Game)
                 }
