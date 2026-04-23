@@ -45,7 +45,7 @@ function initializeWireDictionary() {
     });
     wireDictionary.add(Tag_WireType_Start, {
         sprite: "atlas",
-        frame: 0,
+        frame: 12,
         flow: [
             ConnectionType.None,
             ConnectionType.Outlet,
