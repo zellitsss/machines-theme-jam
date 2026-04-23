@@ -24,15 +24,20 @@ export default function createMainMenuScene() {
 
         audio.playBgm("bgm-menu");
 
+        const electricBgRgb = k.Color.fromHex(COLOR_Background);
+        const electricLineRgb = k.Color.fromHex(COLOR_Neutral);
+
+        // Background
         k.add([
-            k.pos(),
+            k.pos(0, 0),
             k.anchor("topleft"),
             k.layer(LAYER_BACKGROUND),
-            k.sprite("background", {
-                width: k.width(),
-                height: k.height(),
-            }),
-            k.layer(LAYER_BACKGROUND)
+            k.uvquad(k.width(), k.height()),
+            k.shader("electricBg", () => ({
+                u_time: k.time(),
+                u_background_rgb: electricBgRgb,
+                u_line_rgb: electricLineRgb,
+            })),
         ]);
 
         const titleOffset = 56;

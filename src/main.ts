@@ -141,17 +141,54 @@ function registerSounds() {
 k.loadRoot("./"); // A good idea for Itch.io publishing later
 
 await k.loadSprite("hexagon", "sprites/hexagon.png");
-k.loadSprite("background", "sprites/Background.png", {
-    slice9: {
-        top: 232,
-        bottom: 232,
-        left: 217,
-        right: 380,
-        tileMode: "none"
-    }
-});
+// k.loadSprite("background", "sprites/Background.png", {
+//     slice9: {
+//         top: 232,
+//         bottom: 232,
+//         left: 217,
+//         right: 380,
+//         tileMode: "none"
+//     }
+// });
 k.loadFont("Audiowide", "fonts/Audiowide-Regular.woff2");
 k.loadFont("ZenDots", "fonts/ZenDots-Regular.woff2");
+
+// Electric background shader
+// Ported from "Procedural Electric Background Shader" by Yui Kinomoto (@arlez80), MIT License.
+k.loadShader(
+    "electricBg",
+    null,
+    `
+    uniform float u_time;
+    uniform vec3 u_background_rgb;
+    uniform vec3 u_line_rgb;
+
+    const float LINE_FREQ       = 9.56;
+    const float HEIGHT          = 0.6;
+    const float SPEED           = 0.8;
+    const vec2  SCALE           = vec2(2.0, 16.0);
+
+    vec4 frag(vec2 pos, vec2 uv, vec4 color, sampler2D tex) {
+        vec2 st = uv * SCALE;
+        float shift = cos(floor(st.y));
+        st.x += shift;
+
+        float freq = clamp(cos(st.x * LINE_FREQ) * 3.0, 0.0, 1.0) * HEIGHT;
+        float line = 1.0 - clamp(abs(freq - mod(st.y, 1.0)) * 11.0, 0.0, 1.0);
+
+        // Kaplay passes Color as uniform3f with r,g,b in 0–255, not 0–1.
+        vec3 bg = u_background_rgb / 255.0;
+        vec3 ln = u_line_rgb / 255.0;
+
+        return mix(
+            vec4(bg, 1.0),
+            vec4(ln, 1.0),
+            line * mod(st.x - u_time * SPEED * abs(shift), 1.0)
+        );
+    }
+`,
+);
+
 initializeWireDictionary();
 
 registerSounds();
