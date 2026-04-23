@@ -1,0 +1,41 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Crucial for creating releases
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Project
+        run: npm run build # Assuming this generates your files in dist/
+
+      - name: Create ZIP Archive
+        # -r: recursive, -j: junk paths (don't include "dist/" folder inside the zip)
+        run: |
+          cd dist
+          zip -r ../amper-sum-build.zip .
+          cd ..
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: amper-sum-build.zip
+          body: "Automated machine build for AMPER-SUM."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
