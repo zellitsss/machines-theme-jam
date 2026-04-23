@@ -14,7 +14,7 @@ import {PanelComp} from "../components/panel";
 
 export const activeTweenByCell = new Map<string, TweenController>();
 
-export const getExitSide = (wire: GameObj<WireState>, enteredSide: number): number[] => {
+export const getExitSides = (wire: GameObj<WireState>, enteredSide: number): number[] => {
     const rotatedConnections = getRotatedConnections(wireDictionary.get(wire.wireData.type)?.flow ?? [0, 0, 0, 0], wire.wireData.rot);
     const exitSides: number[] = [];
     for (let side = 0; side < 4; side++) {
@@ -37,10 +37,7 @@ export const checkWireLineValid = (): { result: boolean, count: number } => {
         include: [Tag_Wire, Tag_Wire_InGrid],
         includeOp: "and"
     }) as GameObj<WireState>[];
-    wires.forEach((wire) => {
-        setWiresColor(wire, getWireColor(wire.wireData, false));
-    });
-    // Reset color
+    wires.forEach((wire) => setWiresColor(wire, getWireColor(wire.wireData, false)));
 
     let startWire: GameObj<WireState> | null = null;
     let endWire: GameObj<WireState> | null = null;
@@ -52,48 +49,47 @@ export const checkWireLineValid = (): { result: boolean, count: number } => {
         }
     })
 
-    let currentModifier = 0;
     if (!startWire || !endWire) {
-        return {result: false, count: currentModifier};
+        return {result: false, count: 0};
     }
-    let current = startWire;
     let visited = new Set<string>();
-    let incomingSide = -1;
-
-    while (current) {
-        setWiresColor(current, getWireColor(current.wireData, true));
-        currentModifier += current.wireData.modifier ?? 0;
+    
+    const traverse = (current: GameObj<WireState>, incomingSide: number): { success: boolean, sum: number } => {
         const posKey = getPosKey(k.vec2(current.wireData.x, current.wireData.y));
-        if (visited.has(posKey)) {
-            return {result: false, count: currentModifier};
-        }
+
+        if (visited.has(posKey)) return { success: false, sum: 0 };
         visited.add(posKey);
+        
+        setWiresColor(current, getWireColor(current.wireData, true));
+        const myModifier = current.wireData.modifier ?? 0;
 
         if (current === endWire) {
-            return {result: true, count: currentModifier};
-        }
-        const exitSides = getExitSide(current, incomingSide);
-        if (exitSides.length == 0) {
-            return {result: false, count: currentModifier};
+            return { success: true, sum: myModifier };
         }
 
-        const next = getNextConnectedCell(wires, current, exitSides[0]);
-        if (!next) {
-            return {result: false, count: currentModifier};
+        const exitSides = getExitSides(current, incomingSide);
+
+        for (const exitSide of exitSides) {
+            const next = getNextConnectedCell(wires, current, exitSide);
+            if (!next) continue;
+
+            const nextEntrySide = getOppositeSide(exitSide);
+            const nextConfig = wireDictionary.get(next.wireData.type);
+            const nextRotatedFlow = getRotatedConnections(nextConfig?.flow ?? [0, 0, 0, 0], next.wireData.rot);
+
+            if (canIn(nextRotatedFlow[nextEntrySide])) {
+                const res = traverse(next, nextEntrySide);
+                if (res.success) {
+                    return { success: true, sum: myModifier + res.sum };
+                }
+            }
         }
+        
+        return { success: false, sum: 0 };
+    };
 
-        // Check if next cell is connected to the current cell
-        const nextEntrySide = getOppositeSide(exitSides[0]);
-        const nextRotatedConnections = getRotatedConnections(wireDictionary.get(next.wireData.type)?.flow ?? [0, 0, 0, 0], next.wireData.rot);
-        if (!canIn(nextRotatedConnections[nextEntrySide])) {
-            return {result: false, count: currentModifier};
-        }
-
-        incomingSide = (exitSides[0] + 2) % 4;
-        current = next;
-    }
-
-    return {result: false, count: currentModifier};
+    const finalResult = traverse(startWire, -1);
+    return { result: finalResult.success, count: finalResult.sum };
 }
 
 export const handleRotatingWire = (wire: GameObj<WireState>) => {
