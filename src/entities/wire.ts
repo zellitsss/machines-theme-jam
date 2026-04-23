@@ -92,7 +92,7 @@ export const createPlaceholderWire = (pos: Vec2, size: number, wireData: WireDat
         k.area({
             shape: new k.Rect(k.vec2(), size, size)
         }),
-        k.color(199, 199, 199),
+        k.color("white"),
         k.scale(1),
         k.opacity(1),
         k.sprite("atlas", {
