@@ -25,7 +25,7 @@ import {
     EVENT_WireEndDragging,
     EVENT_WireStartDragging, FOOTER_HEIGHT,
     gameState, INVENTORY_BORDER_HEIGHT, INVENTORY_CELL_SIZE, INVENTORY_TITLE_TEXT,
-    k, LAYER_BACKGROUND,
+    k, LAYER_BACKGROUND, LAYER_GAME,
     LAYER_UI, LEFT_PANEL_RATIO, MAIN_PANEL_PADDING, NAME_Game,
     NAME_MainMenu, RIGHT_PANEL_RATIO, TAG_CURRENT_MODIFIER_TEXT, Tag_InventoryItem,
     Tag_InventoryPanel, Tag_Placeholder, TAG_TARGET_MODIFIER_TEXT, Tag_Wire, Tag_Wire_InGrid,
@@ -99,7 +99,7 @@ export default function createGameScene() {
             panel(k.width(), TOP_PANEL_HEIGHT)
         ]);
         const leftPanel = k.add([
-            k.layer(LAYER_UI),
+            k.layer(LAYER_GAME),
             k.pos(0, topPanel.panelHeight),
             k.anchor("topleft"),
             panel(k.width() * LEFT_PANEL_RATIO, k.height() - TOP_PANEL_HEIGHT),
@@ -116,11 +116,14 @@ export default function createGameScene() {
         );
         const centerPanel = k.add([
             k.pos(leftPanel.pos.x + leftPanel.panelWidth, TOP_PANEL_HEIGHT),
-            k.anchor("top"),
+            k.rect(k.width() * CENTER_PANEL_RATIO, k.height() - TOP_PANEL_HEIGHT - FOOTER_HEIGHT, {radius: 0}),
+            k.color(COLOR_Background),
+            k.outline(4, k.Color.fromHex(COLOR_Active)),
+            k.anchor("topleft"),
             panel(k.width() * CENTER_PANEL_RATIO, k.height() - TOP_PANEL_HEIGHT - FOOTER_HEIGHT)
         ]);
         const rightPanel = k.add([
-            k.layer(LAYER_UI),
+            k.layer(LAYER_GAME),
             k.pos(centerPanel.pos.x + centerPanel.panelWidth, topPanel.panelHeight),
             k.anchor("topleft"),
             panel(k.width() * RIGHT_PANEL_RATIO, k.height()),
