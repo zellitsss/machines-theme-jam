@@ -69,13 +69,13 @@ export const createWire = (pos: Vec2, size: number, wireData: WireData, needBg: 
         wire.add(createWireBg(size));
     }
     wire.add(createWireVisual(wireData, wireDef, size, tags.includes(Tag_InventoryItem)));
-    if (wireDef?.modifier != null && wireDef.modifier != 0) {
+    if (wireDef?.modifier != null && wireData.modifier != 0) {
         wire.add([
             k.pos(),
             k.rotate(-getRotationFromStep(wireData.rot)),
             k.anchor("center"),
             k.text((wireData.modifier??0).toString(), {size: 24, font: "ZenDots"}),
-            k.color("white"),
+            k.color(wireData.type.includes("req") ? COLOR_Active : 0xffffff),
             fixedRotation(),
             Tag_Wire_Modifier_Label,
         ]);

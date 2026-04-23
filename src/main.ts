@@ -12,9 +12,11 @@ import {
     Tag_WireType_End,
     Tag_WireType_I,
     Tag_WireType_I_1W,
+    Tag_WireType_I_Req,
     Tag_WireType_L,
     Tag_WireType_L_1W1,
     Tag_WireType_L_1W2,
+    Tag_WireType_L_Req,
     Tag_WireType_Modifier_Minus,
     Tag_WireType_Modifier_Plus,
     Tag_WireType_Start,
@@ -30,6 +32,7 @@ const WavedashJS = await window.WavedashJS;
 WavedashJS?.init({
     debug: false,
 });
+
 function initializeWireDictionary() {
     wireDictionary.add(Tag_WireType_I, {
         sprite: "atlas",
@@ -144,7 +147,29 @@ function initializeWireDictionary() {
             ConnectionType.Both,
             ConnectionType.Both
         ]
-    })
+    });
+    wireDictionary.add(Tag_WireType_I_Req, {
+        sprite: "atlas",
+        frame: 13,
+        flow: [
+            ConnectionType.Both,
+            ConnectionType.None,
+            ConnectionType.Both,
+            ConnectionType.None
+        ],
+        modifier: 1
+    });
+    wireDictionary.add(Tag_WireType_L_Req, {
+        sprite: "atlas",
+        frame: 14,
+        flow: [
+            ConnectionType.None,
+            ConnectionType.None,
+            ConnectionType.Both,
+            ConnectionType.Both
+        ],
+        modifier: 1
+    });
 }
 
 function registerSounds() {

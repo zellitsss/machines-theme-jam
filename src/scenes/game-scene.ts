@@ -230,7 +230,7 @@ export default function createGameScene() {
                     k.sprite("atlas", {
                         width: wireVisualSize,
                         height: wireVisualSize,
-                        frame: 17
+                        frame: 16
                     }),
                     k.color(199, 199, 199),
                     `grid_dot_${getPosKey(k.vec2(c, r))}`,
