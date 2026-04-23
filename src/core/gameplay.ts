@@ -31,7 +31,7 @@ export const getExitSide = (wire: GameObj<WireState>, enteredSide: number): numb
  * Check if the wire line is valid.
  * @returns -1 if the wire line is not valid, otherwise the modifier value of the wire line.
  */
-export const checkWireLineValid = (): number => {
+export const checkWireLineValid = (): { result: boolean, count: number } => {
     const wires = k.query({
         include: [Tag_Wire, Tag_Wire_InGrid],
         includeOp: "and"
@@ -51,48 +51,48 @@ export const checkWireLineValid = (): number => {
         }
     })
 
+    let currentModifier = 0;
     if (!startWire || !endWire) {
-        return -1;
+        return {result: false, count: currentModifier};
     }
     let current = startWire;
     let visited = new Set<string>();
     let incomingSide = -1;
-    let currentModifier = 0;
 
     while (current) {
         setWiresColor(current, getWireColor(current.wireData, true));
         currentModifier += current.wireData.modifier ?? 0;
         const posKey = getPosKey(k.vec2(current.wireData.x, current.wireData.y));
         if (visited.has(posKey)) {
-            return -1;
+            return {result: false, count: currentModifier};
         }
         visited.add(posKey);
 
         if (current === endWire) {
-            return currentModifier;
+            return {result: true, count: currentModifier};
         }
         const exitSide = getExitSide(current, incomingSide);
         if (exitSide === null) {
-            break;
+            return {result: false, count: currentModifier};
         }
 
         const next = getNextConnectedCell(wires, current, exitSide);
         if (!next) {
-            break;
+            return {result: false, count: currentModifier};
         }
 
         // Check if next cell is connected to the current cell
         const nextEntrySide = getOppositeSide(exitSide);
         const nextRotatedConnections = getRotatedConnections(wireDictionary.get(next.wireData.type)?.flow ?? [0, 0, 0, 0], next.wireData.rot);
         if (!canIn(nextRotatedConnections[nextEntrySide])) {
-            break;
+            return {result: false, count: currentModifier};
         }
 
         incomingSide = (exitSide + 2) % 4;
         current = next;
     }
 
-    return -1;
+    return {result: false, count: currentModifier};
 }
 
 export const handleRotatingWire = (wire: GameObj<WireState>) => {
@@ -146,16 +146,14 @@ export const isInPanels = (objs: GameObj[], pos: Vec2): boolean => {
 
 export const getWireColor = (wireData: WireData, connected: boolean): number => {
     const type = wireData.type;
-    if (type === Tag_WireType_Blocked) {
+    if (type === Tag_WireType_Modifier_Minus
+        || type === Tag_WireType_Modifier_Plus
+        || type === Tag_WireType_Blocked
+    ) {
         return 0xffffff;
     }
     if (!isValidCell(k.vec2(wireData.x, wireData.y))) {
         return COLOR_Active;
-    }
-    if (type === Tag_WireType_Modifier_Minus
-        || type === Tag_WireType_Modifier_Plus
-    ) {
-        return 0xffffff;
     }
     return connected ? COLOR_Active : COLOR_Inactive;
 }

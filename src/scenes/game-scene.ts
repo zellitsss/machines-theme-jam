@@ -277,9 +277,9 @@ export default function createGameScene() {
         });
 
         async function checkWinCondition() {
-            const modifier = checkWireLineValid();
-            currentModifierValue.text = Math.max(0, modifier).toString();
-            if (modifier == (levelData.targetModifier ?? 0)) {
+            const {result, count} = checkWireLineValid();
+            currentModifierValue.text = Math.max(0, count).toString();
+            if (count == (levelData.targetModifier ?? 0) && result) {
                 gameState.won = true;
                 audio.playSfx("sfx-win");
                 await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -319,7 +319,7 @@ export default function createGameScene() {
 
             const dropPos = k.mousePos();
             const gridPos = worldToGrid(dropPos.x, dropPos.y, wireVisualSize, gridOffsetX, gridOffsetY);
-            if (canPlaceAt(gridPos, wire.wireData.modifier)) {
+            if (canPlaceAt(gridPos, wire.wireData.type, wire.wireData.modifier)) {
                 // Place in the empty cell
                 const isFromInventory = wire.is(Tag_InventoryItem);
                 if (isFromInventory) {

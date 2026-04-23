@@ -1,8 +1,8 @@
 import {GameObj, Vec2} from "kaplay";
-import {getPosKey} from "../utils";
+import {getPosKey, isModifierType} from "../utils";
 import {CellConstraint, GridConstraints} from "../types";
 import {WireState} from "../components/wireState";
-import {gameState, k, Tag_Wire, TRAVEL_OFFSET} from "../constants";
+import {gameState, k, Tag_Wire, Tag_WireType_Modifier_Plus, TRAVEL_OFFSET} from "../constants";
 
 export const gridConstraints: GridConstraints = new Map<string, CellConstraint>();
 
@@ -17,7 +17,7 @@ export const isValidCell = (gridPos: Vec2): boolean => {
     return gridConstraints.has(getPosKey(gridPos));
 }
 
-export const canPlaceAt = (gridPos: Vec2, modifier: number): boolean => {
+export const canPlaceAt = (gridPos: Vec2, type: string, modifier: number): boolean => {
     if (gameState.won) {
         return false;
     }
@@ -26,7 +26,17 @@ export const canPlaceAt = (gridPos: Vec2, modifier: number): boolean => {
         includeOp: "and"
     });
     const constraint = gridConstraints.get(getPosKey(gridPos));
-    const constraintMatched = (constraint?.modifier ?? 0) === modifier && (constraint?.canPlace ?? false);
+    let constraintMatched = constraint?.canPlace ?? false;
+    let constraintModifier = constraint?.modifier ?? 0;
+    const constraintType = constraint?.type ?? "";
+    if (isModifierType(type) || isModifierType(constraintType)) {
+        if (type === constraintType
+            && (constraintModifier == modifier || constraintModifier == 0)) {
+            constraintMatched = constraintMatched && true;
+        } else { 
+            constraintMatched = false;
+        }
+    }
     return constraintMatched && existed.length == 0 && isValidCell(gridPos);
 }
 

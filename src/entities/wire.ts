@@ -108,7 +108,7 @@ export const createPlaceholderWire = (pos: Vec2, size: number, wireData: WireDat
         placeholder.add([
             k.pos(),
             k.anchor("center"),
-            k.text(wireData.modifier.toString(), {size: 24, font: "monospace"}),
+            k.text((wireData.modifier?? "").toString(), {size: 24, font: "ZenDots"}),
             k.color(wireDef?.modifier > 0 ? COLOR_Positive : COLOR_Negative),
             fixedRotation(),
             Tag_Wire_Modifier_Label,
