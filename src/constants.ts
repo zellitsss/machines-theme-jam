@@ -85,10 +85,13 @@ export const LEVEL_SELECTION_ITEM_COLS = 7;
 export const HEX_TRANSITION_WIDTH = 221;
 export const HEX_TRANSITION_HEIGHT = 256;
 
+export const STORAGE_KEY_PROGRESS = "amper-sum:progress";
+
 export const gameState = {
     won: false,
-    levels: [],
+    levels: [] as string[],
     currentLevel: 0,
+    highestUnlockedLevel: 0,
 }
 
 export const k = kaplay({
