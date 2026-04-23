@@ -15,6 +15,7 @@ import {wireDictionary} from "./wire-dictionary";
 import {ConnectionType} from "./types";
 import {audio} from "./core/audio";
 import {k} from './constants'
+import {loadProgress} from "./core/progress";
 
 // @ts-ignore
 const WavedashJS = await window.WavedashJS;
@@ -197,6 +198,8 @@ await audio.loadAll();
 audio.setMuted("bgm", true);
 
 k.setLayers([LAYER_BACKGROUND, LAYER_GAME, LAYER_UI, LAYER_TRANSITION], LAYER_GAME);
+
+loadProgress();
 
 k.scene(NAME_MainMenu, createMainMenuScene());
 k.scene(NAME_Game, createGameScene());

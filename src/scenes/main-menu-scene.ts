@@ -186,7 +186,7 @@ export default function createMainMenuScene() {
                         72 + LEVEL_SELECTION_ITEM_SIZE / 2 + LEVEL_SELECTION_PADDING + row * (LEVEL_SELECTION_ITEM_SIZE + LEVEL_SELECTION_PADDING)),
                     k.vec2(LEVEL_SELECTION_ITEM_SIZE, LEVEL_SELECTION_ITEM_SIZE),
                     LAYER_UI,
-                    () => !levelSelected,
+                    () => !levelSelected && index <= gameState.highestUnlockedLevel,
                     () => {
                         levelSelected = true;
                         gameState.currentLevel = index;

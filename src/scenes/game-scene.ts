@@ -36,6 +36,7 @@ import {createBorder} from "../entities/border";
 import {createGameText} from "../entities/gameText";
 import {playEnterTransition, transitionTo} from "../core/transition";
 import {createButton} from "../entities/button.ts";
+import {unlockLevel} from "../core/progress";
 
 async function loadAssets() {
     await Promise.all([
@@ -286,6 +287,7 @@ export default function createGameScene() {
             currentModifierValue.text = Math.max(0, count).toString();
             if (count == (levelData.targetModifier ?? 0) && result) {
                 gameState.won = true;
+                unlockLevel(gameState.currentLevel + 1);
                 audio.playSfx("sfx-win");
                 await new Promise((resolve) => setTimeout(resolve, 1000));
                 showWinPopup();
