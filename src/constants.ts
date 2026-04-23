@@ -33,6 +33,7 @@ export const Tag_WireType_Blocked = "wire-blocked";
 export const Tag_WireType_I_1W = "wire-i-1w";
 export const Tag_WireType_L_1W1 = "wire-l-1w1";
 export const Tag_WireType_L_1W2 = "wire-l-1w2";
+export const Tag_WireType_T = "wire-t";
 export const Tag_Wire_Modifier_Label = "wire_modifier_label";
 export const Tag_Wire_Ghost = "ghost";
 export const Tag_Wire_Placeholder = "placeholder_wire";

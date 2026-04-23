@@ -1,20 +1,28 @@
-
 import createGameScene from './scenes/game-scene';
 import createMainMenuScene from './scenes/main-menu-scene';
 import {
+    k,
     LAYER_BACKGROUND,
     LAYER_GAME,
     LAYER_TRANSITION,
     LAYER_UI,
-    NAME_Game, NAME_MainMenu,
-    Tag_WireType_Blocked, Tag_WireType_End, Tag_WireType_I,
-    Tag_WireType_I_1W, Tag_WireType_L, Tag_WireType_L_1W1, Tag_WireType_L_1W2, Tag_WireType_Modifier_Minus,
-    Tag_WireType_Modifier_Plus, Tag_WireType_Start
+    NAME_Game,
+    NAME_MainMenu,
+    Tag_WireType_Blocked,
+    Tag_WireType_End,
+    Tag_WireType_I,
+    Tag_WireType_I_1W,
+    Tag_WireType_L,
+    Tag_WireType_L_1W1,
+    Tag_WireType_L_1W2,
+    Tag_WireType_Modifier_Minus,
+    Tag_WireType_Modifier_Plus,
+    Tag_WireType_Start,
+    Tag_WireType_T
 } from "./constants";
 import {wireDictionary} from "./wire-dictionary";
 import {ConnectionType} from "./types";
 import {audio} from "./core/audio";
-import {k} from './constants'
 import {loadProgress} from "./core/progress";
 
 // @ts-ignore
@@ -127,6 +135,16 @@ function initializeWireDictionary() {
         modifier: 1,
         placeholderFrame: 11
     });
+    wireDictionary.add(Tag_WireType_T, {
+        sprite: "atlas",
+        frame: 15,
+        flow: [
+            ConnectionType.None,
+            ConnectionType.Both,
+            ConnectionType.Both,
+            ConnectionType.Both
+        ]
+    })
 }
 
 function registerSounds() {
