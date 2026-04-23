@@ -14,17 +14,18 @@ import {PanelComp} from "../components/panel";
 
 export const activeTweenByCell = new Map<string, TweenController>();
 
-export const getExitSide = (wire: GameObj<WireState>, enteredSide: number): number | null => {
+export const getExitSide = (wire: GameObj<WireState>, enteredSide: number): number[] => {
     const rotatedConnections = getRotatedConnections(wireDictionary.get(wire.wireData.type)?.flow ?? [0, 0, 0, 0], wire.wireData.rot);
+    const exitSides: number[] = [];
     for (let side = 0; side < 4; side++) {
         if (side === enteredSide) {
             continue;
         }
         if (canOut(rotatedConnections[side])) {
-            return side;
+            exitSides.push(side);
         }
     }
-    return null;
+    return exitSides;
 }
 
 /**
@@ -71,24 +72,24 @@ export const checkWireLineValid = (): { result: boolean, count: number } => {
         if (current === endWire) {
             return {result: true, count: currentModifier};
         }
-        const exitSide = getExitSide(current, incomingSide);
-        if (exitSide === null) {
+        const exitSides = getExitSide(current, incomingSide);
+        if (exitSides.length == 0) {
             return {result: false, count: currentModifier};
         }
 
-        const next = getNextConnectedCell(wires, current, exitSide);
+        const next = getNextConnectedCell(wires, current, exitSides[0]);
         if (!next) {
             return {result: false, count: currentModifier};
         }
 
         // Check if next cell is connected to the current cell
-        const nextEntrySide = getOppositeSide(exitSide);
+        const nextEntrySide = getOppositeSide(exitSides[0]);
         const nextRotatedConnections = getRotatedConnections(wireDictionary.get(next.wireData.type)?.flow ?? [0, 0, 0, 0], next.wireData.rot);
         if (!canIn(nextRotatedConnections[nextEntrySide])) {
             return {result: false, count: currentModifier};
         }
 
-        incomingSide = (exitSide + 2) % 4;
+        incomingSide = (exitSides[0] + 2) % 4;
         current = next;
     }
 
