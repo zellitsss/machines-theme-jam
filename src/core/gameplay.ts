@@ -53,15 +53,30 @@ export const checkWireLineValid = (): { result: boolean, count: number } => {
         return {result: false, count: 0};
     }
     let visited = new Set<string>();
-    
-    const traverse = (current: GameObj<WireState>, incomingSide: number): { success: boolean, sum: number } => {
-        const posKey = getPosKey(k.vec2(current.wireData.x, current.wireData.y));
 
+    const traverse = (
+        current: GameObj<WireState>,
+        incomingSide: number,
+        runningSum: number // Track the sum on this specific branch
+    ): { success: boolean, sum: number } => {
+
+        const posKey = getPosKey(k.vec2(current.wireData.x, current.wireData.y));
         if (visited.has(posKey)) return { success: false, sum: 0 };
+
+        const isRequirementType = current.wireData.type.includes("-req"); 
+        if (isRequirementType) {
+            const requirement = current.wireData.modifier ?? 0;
+            if (runningSum < requirement) {
+                return { success: false, sum: 0 };
+            }
+        }
+
         visited.add(posKey);
-        
         setWiresColor(current, getWireColor(current.wireData, true));
-        const myModifier = current.wireData.modifier ?? 0;
+
+        // Modifiers on the gate itself contribute to the path AFTER passing the check
+        const myModifier = isRequirementType ? 0 : current.wireData.modifier ?? 0;
+        const newTotal = runningSum + myModifier;
 
         if (current === endWire) {
             return { success: true, sum: myModifier };
@@ -78,7 +93,7 @@ export const checkWireLineValid = (): { result: boolean, count: number } => {
             const nextRotatedFlow = getRotatedConnections(nextConfig?.flow ?? [0, 0, 0, 0], next.wireData.rot);
 
             if (canIn(nextRotatedFlow[nextEntrySide])) {
-                const res = traverse(next, nextEntrySide);
+                const res = traverse(next, nextEntrySide, newTotal);
                 if (res.success) {
                     return { success: true, sum: myModifier + res.sum };
                 }
@@ -88,7 +103,7 @@ export const checkWireLineValid = (): { result: boolean, count: number } => {
         return { success: false, sum: 0 };
     };
 
-    const finalResult = traverse(startWire, -1);
+    const finalResult = traverse(startWire, -1, 0);
     return { result: finalResult.success, count: finalResult.sum };
 }
 
