@@ -4,7 +4,7 @@ import {
     COLOR_Active,
     INVENTORY_CELL_SIZE,
     INVENTORY_ITEM_COUNT, INVENTORY_TITLE_HEIGHT, INVENTORY_TITLE_PADDING, k, MAIN_PANEL_PADDING,
-    Tag_InventoryItem,
+    Tag_InventoryItem, Tag_InventoryItemSlot,
     Tag_InventoryLabel,
     Tag_InventoryPanel
 } from "../constants";
@@ -23,13 +23,13 @@ export const createInventorySlot = (size: number, itemData: ItemData, panels: Ga
     const itemKey = getInventoryItemKey(itemData.type, itemData.modifier);
     const comps: any[] = [
         k.anchor("center"),
-        "inventory_slot",
+        Tag_InventoryItemSlot,
         itemData.type,
         itemKey,
     ];
     let itemSlot: GameObj | null = null;
     panels.forEach((panel: GameObj<PanelComp>) => {
-        const existedSlots = panel.children.filter((child) => child.is("inventory_slot"));
+        const existedSlots = panel.children.filter((child) => child.is(Tag_InventoryItemSlot));
         if (existedSlots.length < INVENTORY_ITEM_COUNT && itemSlot === null) {
             comps.push(k.pos(panel.panelWidth / 2, MAIN_PANEL_PADDING + INVENTORY_TITLE_PADDING * 2 + INVENTORY_TITLE_HEIGHT + (size * (existedSlots.length + 0.5)) ));
             itemSlot = panel.add(comps);

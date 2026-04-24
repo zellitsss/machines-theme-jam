@@ -3,7 +3,7 @@ import {GameObj, Vec2} from "kaplay";
 import {WireState} from "./components/wireState";
 import {gridConstraints} from "./core/grid";
 import {inventory} from "./core/inventory";
-import {gameState, k, Tag_InventoryItem} from "./constants";
+import {gameState, k, Tag_InventoryItem, Tag_WireType_Modifier_Minus, Tag_WireType_Modifier_Plus} from "./constants";
 
 export function canConnect(type: ConnectionType): boolean {
     return type > ConnectionType.None;
@@ -81,4 +81,8 @@ export const isFromGrid = (wire: GameObj<WireState>): boolean => {
 
 export const getInventoryItemKey = (type: string, modifier: number) => {
     return `${type}-${modifier ?? 0}`;
+}
+
+export const isModifierType = (type: string): boolean => {
+    return [Tag_WireType_Modifier_Plus, Tag_WireType_Modifier_Minus].includes(type);
 }

@@ -25,7 +25,7 @@ import {
     EVENT_WireEndDragging,
     EVENT_WireStartDragging, FOOTER_HEIGHT,
     gameState, INVENTORY_BORDER_HEIGHT, INVENTORY_CELL_SIZE, INVENTORY_TITLE_TEXT,
-    k, LAYER_BACKGROUND,
+    k, LAYER_BACKGROUND, LAYER_GAME,
     LAYER_UI, LEFT_PANEL_RATIO, MAIN_PANEL_PADDING, NAME_Game,
     NAME_MainMenu, RIGHT_PANEL_RATIO, TAG_CURRENT_MODIFIER_TEXT, Tag_InventoryItem,
     Tag_InventoryPanel, Tag_Placeholder, TAG_TARGET_MODIFIER_TEXT, Tag_Wire, Tag_Wire_InGrid,
@@ -36,6 +36,7 @@ import {createBorder} from "../entities/border";
 import {createGameText} from "../entities/gameText";
 import {playEnterTransition, transitionTo} from "../core/transition";
 import {createButton} from "../entities/button.ts";
+import {unlockLevel} from "../core/progress";
 
 async function loadAssets() {
     await Promise.all([
@@ -75,15 +76,20 @@ export default function createGameScene() {
             inventory.set(getInventoryItemKey(itemData.type, itemData.modifier), itemData);
         });
 
+        const electricBgRgb = k.Color.fromHex(COLOR_Background);
+        const electricLineRgb = k.Color.fromHex(COLOR_Neutral);
+
         // Background
         k.add([
             k.pos(),
             k.anchor("topleft"),
             k.layer(LAYER_BACKGROUND),
-            k.sprite("background", {
-                width: k.width(),
-                height: k.height(),
-            })
+            k.uvquad(k.width(), k.height()),
+            k.shader("electricBg", () => ({
+                u_time: k.time(),
+                u_background_rgb: electricBgRgb,
+                u_line_rgb: electricLineRgb,
+            })),
         ])
 
         // Layout
@@ -93,7 +99,7 @@ export default function createGameScene() {
             panel(k.width(), TOP_PANEL_HEIGHT)
         ]);
         const leftPanel = k.add([
-            k.layer(LAYER_UI),
+            k.layer(LAYER_GAME),
             k.pos(0, topPanel.panelHeight),
             k.anchor("topleft"),
             panel(k.width() * LEFT_PANEL_RATIO, k.height() - TOP_PANEL_HEIGHT),
@@ -110,11 +116,14 @@ export default function createGameScene() {
         );
         const centerPanel = k.add([
             k.pos(leftPanel.pos.x + leftPanel.panelWidth, TOP_PANEL_HEIGHT),
-            k.anchor("top"),
+            k.rect(k.width() * CENTER_PANEL_RATIO, k.height() - TOP_PANEL_HEIGHT - FOOTER_HEIGHT, {radius: 0}),
+            k.color(COLOR_Background),
+            k.outline(4, k.Color.fromHex(COLOR_Active)),
+            k.anchor("topleft"),
             panel(k.width() * CENTER_PANEL_RATIO, k.height() - TOP_PANEL_HEIGHT - FOOTER_HEIGHT)
         ]);
         const rightPanel = k.add([
-            k.layer(LAYER_UI),
+            k.layer(LAYER_GAME),
             k.pos(centerPanel.pos.x + centerPanel.panelWidth, topPanel.panelHeight),
             k.anchor("topleft"),
             panel(k.width() * RIGHT_PANEL_RATIO, k.height()),
@@ -221,7 +230,7 @@ export default function createGameScene() {
                     k.sprite("atlas", {
                         width: wireVisualSize,
                         height: wireVisualSize,
-                        frame: 13
+                        frame: 16
                     }),
                     k.color(199, 199, 199),
                     `grid_dot_${getPosKey(k.vec2(c, r))}`,
@@ -277,10 +286,11 @@ export default function createGameScene() {
         });
 
         async function checkWinCondition() {
-            const modifier = checkWireLineValid();
-            currentModifierValue.text = Math.max(0, modifier).toString();
-            if (modifier == (levelData.targetModifier ?? 0)) {
+            const {result, count} = checkWireLineValid();
+            currentModifierValue.text = Math.max(0, count).toString();
+            if (count == (levelData.targetModifier ?? 0) && result) {
                 gameState.won = true;
+                unlockLevel(gameState.currentLevel + 1);
                 audio.playSfx("sfx-win");
                 await new Promise((resolve) => setTimeout(resolve, 1000));
                 showWinPopup();
@@ -319,7 +329,7 @@ export default function createGameScene() {
 
             const dropPos = k.mousePos();
             const gridPos = worldToGrid(dropPos.x, dropPos.y, wireVisualSize, gridOffsetX, gridOffsetY);
-            if (canPlaceAt(gridPos, wire.wireData.modifier)) {
+            if (canPlaceAt(gridPos, wire.wireData.type, wire.wireData.modifier)) {
                 // Place in the empty cell
                 const isFromInventory = wire.is(Tag_InventoryItem);
                 if (isFromInventory) {

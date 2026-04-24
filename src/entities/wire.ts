@@ -69,13 +69,13 @@ export const createWire = (pos: Vec2, size: number, wireData: WireData, needBg: 
         wire.add(createWireBg(size));
     }
     wire.add(createWireVisual(wireData, wireDef, size, tags.includes(Tag_InventoryItem)));
-    if (wireDef?.modifier != null && wireDef.modifier != 0) {
+    if (wireDef?.modifier != null && wireData.modifier != 0) {
         wire.add([
             k.pos(),
             k.rotate(-getRotationFromStep(wireData.rot)),
             k.anchor("center"),
             k.text((wireData.modifier??0).toString(), {size: 24, font: "ZenDots"}),
-            k.color("white"),
+            k.color(wireData.type.includes("req") ? COLOR_Active : 0xffffff),
             fixedRotation(),
             Tag_Wire_Modifier_Label,
         ]);
@@ -92,7 +92,7 @@ export const createPlaceholderWire = (pos: Vec2, size: number, wireData: WireDat
         k.area({
             shape: new k.Rect(k.vec2(), size, size)
         }),
-        k.color(199, 199, 199),
+        k.color("white"),
         k.scale(1),
         k.opacity(1),
         k.sprite("atlas", {
@@ -108,7 +108,7 @@ export const createPlaceholderWire = (pos: Vec2, size: number, wireData: WireDat
         placeholder.add([
             k.pos(),
             k.anchor("center"),
-            k.text(wireData.modifier.toString(), {size: 24, font: "monospace"}),
+            k.text((wireData.modifier?? "").toString(), {size: 24, font: "ZenDots"}),
             k.color(wireDef?.modifier > 0 ? COLOR_Positive : COLOR_Negative),
             fixedRotation(),
             Tag_Wire_Modifier_Label,

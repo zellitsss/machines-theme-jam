@@ -5,7 +5,7 @@ import {
     COLOR_Background, COLOR_Inactive, COLOR_Negative, COLOR_Neutral, COLOR_Positive, gameState, k,
     LAYER_BACKGROUND,
     LAYER_UI,
-    LEVEL_SELECTION_CLOSE_SIZE, LEVEL_SELECTION_ITEM_COLS, LEVEL_SELECTION_PADDING,
+    LEVEL_SELECTION_CLOSE_SIZE, LEVEL_SELECTION_ITEM_COLS, LEVEL_SELECTION_ITEM_SIZE, LEVEL_SELECTION_PADDING,
     NAME_Game
 } from "../constants";
 import {audio} from "../core/audio";
@@ -24,15 +24,20 @@ export default function createMainMenuScene() {
 
         audio.playBgm("bgm-menu");
 
+        const electricBgRgb = k.Color.fromHex(COLOR_Background);
+        const electricLineRgb = k.Color.fromHex(COLOR_Neutral);
+
+        // Background
         k.add([
-            k.pos(),
+            k.pos(0, 0),
             k.anchor("topleft"),
             k.layer(LAYER_BACKGROUND),
-            k.sprite("background", {
-                width: k.width(),
-                height: k.height(),
-            }),
-            k.layer(LAYER_BACKGROUND)
+            k.uvquad(k.width(), k.height()),
+            k.shader("electricBg", () => ({
+                u_time: k.time(),
+                u_background_rgb: electricBgRgb,
+                u_line_rgb: electricLineRgb,
+            })),
         ]);
 
         const titleOffset = 56;
@@ -133,8 +138,8 @@ export default function createMainMenuScene() {
         //     });
 
         const itemRows = Math.max(Math.ceil(levelList.levels.length / LEVEL_SELECTION_ITEM_COLS));
-        const popupWidth = LEVEL_SELECTION_CLOSE_SIZE * LEVEL_SELECTION_ITEM_COLS + LEVEL_SELECTION_PADDING * (LEVEL_SELECTION_ITEM_COLS + 1);
-        const popupHeight = 72 + LEVEL_SELECTION_CLOSE_SIZE * itemRows + LEVEL_SELECTION_PADDING * (itemRows + 1);
+        const popupWidth = LEVEL_SELECTION_ITEM_SIZE * LEVEL_SELECTION_ITEM_COLS + LEVEL_SELECTION_PADDING * (LEVEL_SELECTION_ITEM_COLS + 1);
+        const popupHeight = 72 + LEVEL_SELECTION_ITEM_SIZE * itemRows + LEVEL_SELECTION_PADDING * (itemRows + 1);
         let levelSelectionMenu: GameObj | null = null;
 
         function createLevelSelectionMenu() {
@@ -177,11 +182,11 @@ export default function createMainMenuScene() {
                     levelSelectionMenu,
                     (index + 1).toString(),
                     k.vec2(
-                        (index + 0.5) * (LEVEL_SELECTION_CLOSE_SIZE) - popupWidth / 2 + LEVEL_SELECTION_PADDING * (index + 1) - row * (LEVEL_SELECTION_CLOSE_SIZE + LEVEL_SELECTION_PADDING) * LEVEL_SELECTION_ITEM_COLS,
-                        72 + LEVEL_SELECTION_CLOSE_SIZE / 2 + LEVEL_SELECTION_PADDING + row * (LEVEL_SELECTION_CLOSE_SIZE + LEVEL_SELECTION_PADDING)),
-                    k.vec2(LEVEL_SELECTION_CLOSE_SIZE, LEVEL_SELECTION_CLOSE_SIZE),
+                        (index + 0.5) * (LEVEL_SELECTION_ITEM_SIZE) - popupWidth / 2 + LEVEL_SELECTION_PADDING * (index + 1) - row * (LEVEL_SELECTION_ITEM_SIZE + LEVEL_SELECTION_PADDING) * LEVEL_SELECTION_ITEM_COLS,
+                        72 + LEVEL_SELECTION_ITEM_SIZE / 2 + LEVEL_SELECTION_PADDING + row * (LEVEL_SELECTION_ITEM_SIZE + LEVEL_SELECTION_PADDING)),
+                    k.vec2(LEVEL_SELECTION_ITEM_SIZE, LEVEL_SELECTION_ITEM_SIZE),
                     LAYER_UI,
-                    () => !levelSelected,
+                    () => !levelSelected && index <= gameState.highestUnlockedLevel,
                     () => {
                         levelSelected = true;
                         gameState.currentLevel = index;

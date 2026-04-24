@@ -33,6 +33,9 @@ export const Tag_WireType_Blocked = "wire-blocked";
 export const Tag_WireType_I_1W = "wire-i-1w";
 export const Tag_WireType_L_1W1 = "wire-l-1w1";
 export const Tag_WireType_L_1W2 = "wire-l-1w2";
+export const Tag_WireType_T = "wire-t";
+export const Tag_WireType_I_Req = "wire-i-req";
+export const Tag_WireType_L_Req = "wire-l-req";
 export const Tag_Wire_Modifier_Label = "wire_modifier_label";
 export const Tag_Wire_Ghost = "ghost";
 export const Tag_Wire_Placeholder = "placeholder_wire";
@@ -43,6 +46,7 @@ export const Tag_Placeholder = "placeholder";
 export const Tag_InventoryPanel = "inventory_panel";
 export const Tag_InventoryLabel = "inventory_label";
 export const Tag_InventoryItem = "inventory_item";
+export const Tag_InventoryItemSlot = "inventory_item_slot";
 
 export const COLOR_Background = 0xefebe4;
 export const COLOR_Active = 0x3858e5;
@@ -77,16 +81,20 @@ export const TAG_CURRENT_MODIFIER_TEXT = "current_modifier_text";
 export const TAG_TARGET_MODIFIER_TEXT = "target_modifier_text";
 
 export const LEVEL_SELECTION_CLOSE_SIZE = 48;
+export const LEVEL_SELECTION_ITEM_SIZE = 64;
 export const LEVEL_SELECTION_PADDING = 8;
-export const LEVEL_SELECTION_ITEM_COLS = 10;
+export const LEVEL_SELECTION_ITEM_COLS = 7;
 
 export const HEX_TRANSITION_WIDTH = 221;
 export const HEX_TRANSITION_HEIGHT = 256;
 
+export const STORAGE_KEY_PROGRESS = "amper-sum:progress";
+
 export const gameState = {
     won: false,
-    levels: [],
+    levels: [] as string[],
     currentLevel: 0,
+    highestUnlockedLevel: 0,
 }
 
 export const k = kaplay({
