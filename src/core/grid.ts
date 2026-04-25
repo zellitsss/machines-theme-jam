@@ -32,7 +32,7 @@ export const canPlaceAt = (gridPos: Vec2, type: string, modifier: number): boole
     if (isModifierType(type) || isModifierType(constraintType)) {
         if (type === constraintType
             && (constraintModifier == modifier || constraintModifier == 0)) {
-            constraintMatched = constraintMatched && true;
+            constraintMatched = constraintMatched || true;
         } else { 
             constraintMatched = false;
         }

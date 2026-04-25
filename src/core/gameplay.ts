@@ -32,54 +32,49 @@ export const getExitSides = (wire: GameObj<WireState>, enteredSide: number): num
  * Check if the wire line is valid.
  * @returns -1 if the wire line is not valid, otherwise the modifier value of the wire line.
  */
-export const checkWireLineValid = (): { result: boolean, count: number } => {
+export const checkWireLineValid = (targetSum: number): { result: boolean, count: number } => {
     const wires = k.query({
         include: [Tag_Wire, Tag_Wire_InGrid],
         includeOp: "and"
     }) as GameObj<WireState>[];
     wires.forEach((wire) => setWiresColor(wire, getWireColor(wire.wireData, false)));
 
-    let startWire: GameObj<WireState> | null = null;
-    let endWire: GameObj<WireState> | null = null;
-    wires.forEach((wire) => {
-        if (wire.wireData.type === Tag_WireType_Start) {
-            startWire = wire;
-        } else if (wire.wireData.type === Tag_WireType_End) {
-            endWire = wire;
-        }
-    })
-
-    if (!startWire || !endWire) {
+    let startWire = wires.find((w) => w.wireData.type === Tag_WireType_Start);
+    if (!startWire) {
         return {result: false, count: 0};
     }
+    
     let visited = new Set<string>();
-
+    let totalSum = 0;
+    let endWireReached = false;
+    
     const traverse = (
         current: GameObj<WireState>,
         incomingSide: number,
         runningSum: number // Track the sum on this specific branch
-    ): { success: boolean, sum: number } => {
+    ) => {
 
         const posKey = getPosKey(k.vec2(current.wireData.x, current.wireData.y));
-        if (visited.has(posKey)) return { success: false, sum: 0 };
+        if (visited.has(posKey)) return;
 
         const isRequirementType = current.wireData.type.includes("-req"); 
         if (isRequirementType) {
             const requirement = current.wireData.modifier ?? 0;
             if (runningSum < requirement) {
-                return { success: false, sum: 0 };
+                return;
             }
         }
 
         visited.add(posKey);
         setWiresColor(current, getWireColor(current.wireData, true));
 
-        // Modifiers on the gate itself contribute to the path AFTER passing the check
         const myModifier = isRequirementType ? 0 : current.wireData.modifier ?? 0;
         const newTotal = runningSum + myModifier;
 
-        if (current === endWire) {
-            return { success: true, sum: myModifier };
+        if (current.wireData.type === Tag_WireType_End) {
+            totalSum += newTotal;
+            endWireReached = true;
+            return;
         }
 
         const exitSides = getExitSides(current, incomingSide);
@@ -93,18 +88,13 @@ export const checkWireLineValid = (): { result: boolean, count: number } => {
             const nextRotatedFlow = getRotatedConnections(nextConfig?.flow ?? [0, 0, 0, 0], next.wireData.rot);
 
             if (canIn(nextRotatedFlow[nextEntrySide])) {
-                const res = traverse(next, nextEntrySide, newTotal);
-                if (res.success) {
-                    return { success: true, sum: myModifier + res.sum };
-                }
+                traverse(next, nextEntrySide, newTotal);
             }
         }
-        
-        return { success: false, sum: 0 };
     };
 
-    const finalResult = traverse(startWire, -1, 0);
-    return { result: finalResult.success, count: finalResult.sum };
+    traverse(startWire, -1, 0);
+    return { result: endWireReached && totalSum == targetSum , count: totalSum };
 }
 
 export const handleRotatingWire = (wire: GameObj<WireState>) => {

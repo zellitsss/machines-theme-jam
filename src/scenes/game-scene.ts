@@ -274,7 +274,7 @@ export default function createGameScene() {
                 );
             }
         });
-        checkWireLineValid();
+        checkWireLineValid(levelData.targetModifier ?? 0);
 
         // Inventory
         Array.from(inventory.values()).forEach((item, index) => {
@@ -286,9 +286,9 @@ export default function createGameScene() {
         });
 
         async function checkWinCondition() {
-            const {result, count} = checkWireLineValid();
+            const {result, count} = checkWireLineValid(levelData.targetModifier ?? 0);
             currentModifierValue.text = Math.max(0, count).toString();
-            if (count == (levelData.targetModifier ?? 0) && result) {
+            if (result) {
                 gameState.won = true;
                 unlockLevel(gameState.currentLevel + 1);
                 audio.playSfx("sfx-win");
