@@ -1,98 +1,64 @@
 ﻿{
-  "name":"LEVEL 007",
-  "cols": 6,
+  "name": "LEVEL 007",
+  "cols": 4,
   "rows": 6,
+  "targetModifier": 3,
   "cells": [
     {
       "x": 0,
       "y": 0,
-      "type": "wire-l",
-      "rot": 3
-    },
-    {
-      "x": 1,
-      "y": 0,
-      "type": "wire-i",
-      "rot": 1
-    },
-    {
-      "x": 2,
-      "y": 0,
       "type": "wire-gate-end",
-      "rot": 1,
-      "canRotate": false,
-      "canPlace": false
-    },
-    {
-      "x": 0,
-      "y": 1,
-      "type": "wire-l",
-      "rot": 2
-    },
-    {
-      "x": 2,
-      "y": 1,
-      "type": "wire-l"
-    },
-    {
-      "x": 2,
-      "y": 2,
-      "type": "wire-i"
-    },
-    {
-      "x": 0,
-      "y": 3,
-      "type": "wire-l",
-      "rot": 3
-    },
-    {
-      "x": 2,
-      "y": 3,
-      "type": "wire-l",
-      "rot": 1
-    },
-    {
-      "x": 0,
-      "y": 4,
-      "type": "wire-gate-start",
-      "canRotate": false,
-      "canPlace": false
+      "canPlace": true,
+      "canRotate": true
     },
     {
       "x": 3,
       "y": 2,
-      "type": "wire-modifier-plus",
-      "rot": 1,
-      "modifier": 1,
+      "type": "wire-gate-end",
+      "canPlace": true,
+      "canRotate": true,
+      "rot": 2
+    },
+    {
+      "x": 1,
+      "y": 5,
+      "type": "wire-gate-start",
+      "canPlace": false,
       "canRotate": false,
+      "rot": 3
+    },
+    {
+      "x": 1,
+      "y": 1,
+      "type": "wire-modifier-plus",
+      "canPlace": false,
+      "canRotate": false,
+      "modifier": 1,
       "placeholder": true
+    },
+    {
+      "x": 2,
+      "y": 2,
+      "type": "wire-modifier-plus",
+      "canPlace": false,
+      "canRotate": false,
+      "modifier": 2,
+      "placeholder": true,
+      "rot": 1
     }
   ],
   "inventory": [
     {
+      "type": "wire-t",
+      "count": 1
+    },
+    {
       "type": "wire-i",
-      "count": 3
+      "count": 2
     },
     {
       "type": "wire-l",
-      "count": 1
-    },
-    {
-      "type": "wire-i-1w",
-      "count": 1
-    },
-    {
-      "type": "wire-l-1w1",
-      "count": 1
-    },
-    {
-      "type": "wire-l-1w2",
-      "count": 1
-    },
-    {
-      "type": "wire-modifier-minus",
-      "count": 1,
-      "modifier": -2
+      "count": 2
     },
     {
       "type": "wire-modifier-plus",
