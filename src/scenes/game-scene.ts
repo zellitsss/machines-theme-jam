@@ -60,7 +60,6 @@ export default function createGameScene() {
     let gridOffsetY = 0;
     let wireVisualSize = CELL_SIZE;
     return async () => {
-        let _ = playEnterTransition();
         audio.playBgm("bgm-gameplay");
         gameState.won = false;
 
