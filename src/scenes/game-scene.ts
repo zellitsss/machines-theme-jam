@@ -336,7 +336,8 @@ export default function createGameScene() {
                 // Place in the empty cell
                 const isFromInventory = wire.is(Tag_InventoryItem);
                 if (isFromInventory) {
-                    const wireData = wire.wireData;
+                    // Copy so the inventory item's own data (e.g. rot) is left untouched
+                    const wireData = {...wire.wireData};
                     const constraint = gridConstraints.get(getPosKey(gridPos));
                     if (constraint && (constraint.placeholder ?? false)) {
                         wireData.rot = constraint.rot ?? 0;
