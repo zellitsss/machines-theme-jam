@@ -11,7 +11,6 @@ import {
 import {createWire} from "../entities/wire";
 import {fromItemToWireData, getInventoryItemKey} from "../utils";
 import {PanelComp} from "../components/panel";
-import {wireDictionary} from "../wire-dictionary";
 
 export const inventory = new Map<string, ItemData>();
 export const inventorySlots: GameObj[] = [];
@@ -61,18 +60,10 @@ export const updateItem = (inType: string, modifier: number, amount: number) => 
         updateItemCountLabel(inType, modifier);
     } else {
         if (amount > 0) {
-            inventory.set(getInventoryItemKey(inType, modifier), {type: inType, count: amount});
-            const itemDef = wireDictionary.get(inType);
-            const newSlot = createInventorySlot(
-                INVENTORY_CELL_SIZE,
-                {
-                    type: inType,
-                    modifier: itemDef.modifier ?? 0,
-                    count: amount
-                },
-                k.get([Tag_InventoryPanel])
-            );
-            inventorySlots.push(newSlot);
+            const newItem: ItemData = {type: inType, modifier: modifier ?? 0, count: amount};
+            inventory.set(getInventoryItemKey(inType, modifier), newItem);
+            // createInventorySlot registers the slot in inventorySlots itself
+            createInventorySlot(INVENTORY_CELL_SIZE, newItem, k.get([Tag_InventoryPanel]));
         }
     }
 }
