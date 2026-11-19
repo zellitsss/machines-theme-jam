@@ -21,6 +21,8 @@ let hexes: HexObj[] = [];
 let grid: GridMeta | null = null;
 // True while the hex grid fully covers the screen (between transitionTo and playEnterTransition)
 let isCovered = false;
+// True from the start of transitionTo until the following reveal finishes
+let isTransitioning = false;
 
 function createHexGrid(): GridMeta {
     const hexW = HEX_TRANSITION_WIDTH;
@@ -86,6 +88,10 @@ function animateGrid(
 }
 
 export function transitionTo(sceneName: string, ...args: unknown[]): Promise<void> {
+    if (isTransitioning) {
+        return Promise.resolve();
+    }
+    isTransitioning = true;
     return new Promise((resolve) => {
         if (!grid) {
             grid = createHexGrid();
@@ -117,6 +123,7 @@ export function playEnterTransition(): Promise<void> {
         const trigger = k.add([k.timer(), k.stay()]);
         trigger.wait(totalDuration(grid), () => {
             trigger.destroy();
+            isTransitioning = false;
             resolve();
         });
     });
