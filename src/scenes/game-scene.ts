@@ -285,7 +285,7 @@ export default function createGameScene() {
             );
         });
 
-        async function checkWinCondition() {
+        function checkWinCondition() {
             if (gameState.won) {
                 return;
             }
@@ -295,8 +295,8 @@ export default function createGameScene() {
                 gameState.won = true;
                 unlockLevel(gameState.currentLevel + 1);
                 audio.playSfx("sfx-win");
-                await new Promise((resolve) => setTimeout(resolve, 1000));
-                showWinPopup();
+                // k.wait is scene-bound, so it is cancelled if the scene changes first
+                k.wait(1, showWinPopup);
             }
         }
 
