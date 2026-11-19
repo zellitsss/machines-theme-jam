@@ -106,8 +106,15 @@ export const handleRotatingWire = (wire: GameObj<WireState>) => {
 export const animateWireRotation = (wire: GameObj<WireState>, onRotationCompleted: () => void) => {
     const obj = wire as GameObj<WireState | RotateComp | TimerComp | ScaleComp>;
 
+    const posKey = getPosKey(k.vec2(wire.wireData.x, wire.wireData.y));
+    // A previous rotation may still be animating; stop it so the two don't fight over the angle
+    activeTweenByCell.get(posKey)?.cancel();
+
     const from = obj.angle;
-    const to = from + Constants.ROTATION_ANGLE_PER_STEP;
+    // Rotate clockwise from the current (possibly mid-tween) angle to the target step
+    const targetAngle = obj.wireData.rot * Constants.ROTATION_ANGLE_PER_STEP;
+    const delta = ((targetAngle - from) % 360 + 360) % 360;
+    const to = from + delta;
     // Rotate tween
     const tween = obj.tween(from, to, Constants.ROTATE_TWEEN_SEC, (a) => {
         obj.angle = a;
@@ -123,7 +130,6 @@ export const animateWireRotation = (wire: GameObj<WireState>, onRotationComplete
             obj.tween(scaleSmall, scaleNormal, half, (v) => obj.scaleTo(v), k.easings.easeOutQuad)
         );
 
-    const posKey = getPosKey(k.vec2(wire.wireData.x, wire.wireData.y));
     activeTweenByCell.set(posKey, tween);
     tween.onEnd(() => {
         activeTweenByCell.delete(posKey);
