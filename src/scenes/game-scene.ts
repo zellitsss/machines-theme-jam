@@ -286,6 +286,9 @@ export default function createGameScene() {
         });
 
         async function checkWinCondition() {
+            if (gameState.won) {
+                return;
+            }
             const {result, count} = checkWireLineValid(levelData.targetModifier ?? 0);
             currentModifierValue.text = Math.max(0, count).toString();
             if (result) {
