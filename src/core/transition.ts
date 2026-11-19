@@ -19,6 +19,8 @@ type HexObj = any & { diagIndex: number };
 
 let hexes: HexObj[] = [];
 let grid: GridMeta | null = null;
+// True while the hex grid fully covers the screen (between transitionTo and playEnterTransition)
+let isCovered = false;
 
 function createHexGrid(): GridMeta {
     const hexW = HEX_TRANSITION_WIDTH;
@@ -94,6 +96,7 @@ export function transitionTo(sceneName: string, ...args: unknown[]): Promise<voi
         const trigger = k.add([k.timer(), k.stay()]);
         trigger.wait(totalDuration(grid), () => {
             trigger.destroy();
+            isCovered = true;
             resolve();
             k.go(sceneName, ...args);
         });
@@ -102,10 +105,12 @@ export function transitionTo(sceneName: string, ...args: unknown[]): Promise<voi
 
 export function playEnterTransition(): Promise<void> {
     return new Promise((resolve) => {
-        if (hexes.length === 0 || !grid) {
+        // Revealing an uncovered screen would pop every hex to full size and shrink it
+        if (hexes.length === 0 || !grid || !isCovered) {
             resolve();
             return;
         }
+        isCovered = false;
 
         animateGrid(grid, 1, 0, k.easings.easeInBack, true);
 

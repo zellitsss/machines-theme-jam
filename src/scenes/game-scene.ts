@@ -167,7 +167,7 @@ export default function createGameScene() {
             LAYER_UI,
             () => true,
             () => {
-                k.go(NAME_Game);
+                transitionTo(NAME_Game);
             }
         )
         
