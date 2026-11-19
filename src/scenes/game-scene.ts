@@ -404,29 +404,32 @@ export default function createGameScene() {
                 k.color(COLOR_Background),
                 k.layer(LAYER_UI),
             ]);
+            const isLastLevel = gameState.currentLevel >= gameState.levels.length - 1;
             popup.add([
-                k.text("Level cleared!", {font: "ZenDots", size: 24}),
+                k.text(isLastLevel ? "All levels cleared!" : "Level cleared!", {font: "ZenDots", size: 24}),
                 k.pos(k.vec2(0, -150)),
                 k.anchor("top"),
                 k.color(COLOR_Active)
             ]);
-            createButton(
-                popup,
-                "Next Level",
-                k.vec2(0, 0),
-                k.vec2(200, 40),
-                LAYER_UI,
-                () => !nextLevelClicked,
-                () => {
-                    nextLevelClicked = true;
-                    gameState.currentLevel++;
-                    transitionTo(NAME_Game)
-                }
-            );
+            if (!isLastLevel) {
+                createButton(
+                    popup,
+                    "Next Level",
+                    k.vec2(0, 0),
+                    k.vec2(200, 40),
+                    LAYER_UI,
+                    () => !nextLevelClicked,
+                    () => {
+                        nextLevelClicked = true;
+                        gameState.currentLevel++;
+                        transitionTo(NAME_Game)
+                    }
+                );
+            }
             createButton(
                 popup,
                 "Back to Menu",
-                k.vec2(0, 60),
+                k.vec2(0, isLastLevel ? 0 : 60),
                 k.vec2(200, 40),
                 LAYER_UI,
                 () => true,
