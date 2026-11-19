@@ -324,6 +324,7 @@ export default function createGameScene() {
 
         k.on(EVENT_WireEndDragging, Tag_Wire, (wire: GameObj<WireState | PosComp>) => {
             ghostWire?.destroy();
+            ghostWire = null;
 
             if (!canDrag(wire)) {
                 return;
